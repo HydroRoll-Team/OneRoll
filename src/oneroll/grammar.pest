@@ -1,0 +1,43 @@
+WHITESPACE = _{ " " | "\t" | "\n" | "\r" }
+
+number = @{ "-"? ~ ("0" | ('1'..'9' ~ ('0'..'9')*)) }
+
+comment = { "#" ~ (!"\n" ~ ANY)* }
+
+dice_expr = { dice_term ~ (op ~ dice_term)* ~ comment? }
+dice_term = { 
+    dice_roll 
+    | paren_expr 
+    | number 
+}
+
+paren_expr = { "(" ~ dice_expr ~ ")" }
+
+dice_roll = { 
+    number ~ "d" ~ dice_sides ~ modifiers?
+}
+
+dice_sides = @{ number }
+
+modifiers = { modifier+ }
+modifier = { 
+    explode
+    | reroll
+    | reroll_once
+    | keep_high
+    | keep_low
+    | drop_high
+    | drop_low
+}
+
+explode = { "!" }
+reroll = { "r" ~ number }
+reroll_once = { "ro" ~ number }
+keep_high = { "kh" ~ number }
+keep_low = { "kl" ~ number }
+drop_high = { "dh" ~ number }
+drop_low = { "dl" ~ number }
+
+op = { "+" | "-" | "*" | "/" | "^" }
+
+main = { SOI ~ dice_expr ~ EOI }

@@ -3,17 +3,19 @@ requires = ["maturin>=1.4,<2.0"]
 build-backend = "maturin"
 
 [project]
-name = "pyo3_template"
+name = "oneroll"
 dynamic = ["version"]
-description = "HydroRoll Pyo3 Project Template"
-authors = [{ name = "yourname", email = "you@hydroroll.team" }]
-dependencies = []
+description = "An efficient dice expression parsing tool, based on Rust and PEG grammar"
+authors = [{ name = "HsiangNianian", email = "leader@hydroroll.team" }]
+dependencies = [
+    "rich>=14.1.0",
+    "textual>=6.1.0",
+]
 requires-python = ">=3.9"
 readme.content-type = "text/x-rst"
-readme.text = """
-"""
-license = { text = "MIT" }
-keywords = ["hydroroll"]
+readme.file = "README.rst"
+license = { text = "AGPL-3.0" }
+keywords = ["hydroroll", "dice", "expression", "parser", "roll", "peg", "rust"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Framework :: Robot Framework",
@@ -27,17 +29,17 @@ classifiers = [
 
 [project.urls]
 homepage = "https://hydroroll.team/"
-repository = "https://github.com/HydroRoll-Team/{project}"
-documentation = "https://{project}.hydroroll.team/"
+repository = "https://github.com/HydroRoll-Team/oneroll"
+documentation = "https://oneroll.hydroroll.team/"
 
 [project.scripts]
-pyo3_template = "pyo3_template.__main__:main"
-pyo3t = "pyo3_template.__main__:main"
+oneroll = "oneroll.__main__:main"
+1roll = "oneroll.__main__:main"
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
-module-name = "pyo3_template._core"
-python-package = "pyo3_template"
+module-name = "oneroll._core"
+python-package = "oneroll"
 python-source = "src"
 
 [tool.ruff]

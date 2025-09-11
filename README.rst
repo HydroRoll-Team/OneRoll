@@ -1,4 +1,4 @@
-pyo3-project-template
-=====================
+OneRoll
+=======
 
-HydroRoll Pyo3 Project Template
+    An efficient dice expression parsing tool, based on Rust and PEG grammar
