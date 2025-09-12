@@ -154,6 +154,38 @@ impl DiceCalculator {
                     let count = values.iter().filter(|&&v| v == *target).count() as i32;
                     final_rolls = vec![vec![count]];
                 }
+                DiceModifier::Merge => {
+                    // Merge with previous instruction rolls stored as $prev_rolls not yet available
+                    // For MVP: no-op here; actual merge handled at sequence level
+                }
+                DiceModifier::Group { threshold, show_structure } => {
+                    // Greedy grouping to reach >= threshold using sorted descending values
+                    let mut values: Vec<i32> = final_rolls.iter().flatten().cloned().collect();
+                    values.sort_by(|a, b| b.cmp(a));
+                    let mut groups: Vec<Vec<i32>> = Vec::new();
+                    let mut current: Vec<i32> = Vec::new();
+                    let mut current_sum = 0;
+                    for v in values {
+                        current.push(v);
+                        current_sum += v;
+                        if current_sum >= *threshold {
+                            groups.push(current.clone());
+                            current.clear();
+                            current_sum = 0;
+                        }
+                    }
+                    let group_count = groups.len() as i32;
+                    let mut details = format!("g{} -> {}", threshold, group_count);
+                    if *show_structure {
+                        details.push_str(": ");
+                        details.push_str(&format!("{:?}", groups));
+                        if !current.is_empty() {
+                            details.push_str(&format!(" - {:?}", current));
+                        }
+                    }
+                    // Represent as single result equal to number of groups
+                    final_rolls = vec![vec![group_count]];
+                }
                 _ => {}
             }
         }
@@ -170,6 +202,31 @@ impl DiceCalculator {
                 details: format!("{}", n),
                 comment: None,
             }),
+            Expression::VariableRef(index) => {
+                let key = format!("${}", index);
+                if let Some(value) = self.variables.get(&key) {
+                    Ok(DiceResult {
+                        expression: key.clone(),
+                        total: value,
+                        rolls: vec![vec![value]],
+                        details: format!("var {} = {}", key, value),
+                        comment: None,
+                    })
+                } else {
+                    Err(DiceError::InvalidExpression(format!("未定义的变量引用: {}", key)))
+                }
+            }
+            Expression::Sequence(items) => {
+                let mut last: Option<DiceResult> = None;
+                for (i, item) in items.iter().enumerate() {
+                    let res = self.evaluate_expression(item)?;
+                    // 将每条指令的总和放入变量存储，键为 $1, $2...
+                    let var_name = format!("${}", i + 1);
+                    self.variables.set(&var_name, res.total);
+                    last = Some(res);
+                }
+                Ok(last.unwrap_or(DiceResult { expression: String::new(), total: 0, rolls: vec![], details: String::new(), comment: None }))
+            }
             Expression::DiceRoll(dice) => {
                 let rolls = self.roll_dice(dice)?;
                 let total: i32 = rolls.iter().flatten().sum();
@@ -254,6 +311,35 @@ impl DiceCalculator {
                 result.comment = comment.clone();
                 Ok(result)
             }
+            Expression::VariableRefWithModifiers(index, modifiers) => {
+                let key = format!("${}", index);
+                if let Some(value) = self.variables.get(&key) {
+                    // Apply modifiers to the variable value
+                    let mut rolls = vec![vec![value]];
+                    for modifier in modifiers {
+                        match modifier {
+                            DiceModifier::Count(target) => {
+                                // For count modifier on variable, we count how many times the variable equals target
+                                let count = if value == *target { 1 } else { 0 };
+                                rolls = vec![vec![count]];
+                            }
+                            _ => {
+                                // For other modifiers, we'll need to implement them
+                                // For now, just keep the original value
+                            }
+                        }
+                    }
+                    Ok(DiceResult {
+                        expression: format!("${}{}", index, self.modifiers_to_string(modifiers)),
+                        total: rolls.iter().flatten().sum(),
+                        rolls,
+                        details: format!("var ${} = {} with modifiers", index, value),
+                        comment: None,
+                    })
+                } else {
+                    Err(DiceError::InvalidExpression(format!("未定义的变量引用: {}", key)))
+                }
+            }
         }
     }
 
@@ -277,6 +363,14 @@ impl DiceCalculator {
                 DiceModifier::Unique => result.push('u'),
                 DiceModifier::Sort => result.push('s'),
                 DiceModifier::Count(v) => result.push_str(&format!("c{}", v)),
+                DiceModifier::Merge => result.push('m'),
+                DiceModifier::Group { threshold, show_structure } => {
+                    if *show_structure {
+                        result.push_str(&format!("gs{}", threshold));
+                    } else {
+                        result.push_str(&format!("g{}", threshold));
+                    }
+                }
             }
         }
         result

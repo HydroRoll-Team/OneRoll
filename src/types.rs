@@ -34,6 +34,8 @@ pub enum DiceModifier {
     Unique,            // u
     Sort,              // s (sort results)
     Count(i32),        // cV (count value V)
+    Merge,             // m (merge with previous instruction)
+    Group { threshold: i32, show_structure: bool }, // gN / gsN
 }
 
 
@@ -41,6 +43,9 @@ pub enum DiceModifier {
 pub enum Expression {
     Number(i32),
     DiceRoll(DiceRoll),
+    VariableRef(usize), // $n
+    VariableRefWithModifiers(usize, Vec<DiceModifier>), // $n with modifiers
+    Sequence(Vec<Expression>), // e1; e2; ...
     Add(Box<Expression>, Box<Expression>),
     Subtract(Box<Expression>, Box<Expression>),
     Multiply(Box<Expression>, Box<Expression>),

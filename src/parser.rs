@@ -16,15 +16,38 @@ impl DiceParser {
             .map_err(|e| DiceError::ParseError(e.to_string()))?;
         
         let pair = pairs.peek().unwrap();
-        Self::parse_dice_expr(pair)
+        Self::parse_instruction_list(pair)
     }
 
     fn parse_dice_expr(pair: pest::iterators::Pair<Rule>) -> Result<Expression, DiceError> {
         match pair.as_rule() {
             Rule::main => {
-                // main 规则包含 dice_expr
                 let inner = pair.into_inner().next().unwrap();
-                Self::parse_dice_expr(inner)
+                Self::parse_instruction_list(inner)
+            }
+            Rule::instruction_list => Self::parse_instruction_list(pair),
+            Rule::instruction => {
+                let inner = pair.into_inner().next().unwrap();
+                match inner.as_rule() {
+                    Rule::var_ref => {
+                        let mut pairs = inner.into_inner();
+                        let n = pairs.next().unwrap().as_str().trim_start_matches('$').parse::<i32>()
+                            .map_err(|_| DiceError::ParseError("无效的变量引用".to_string()))?;
+                        if n <= 0 { return Err(DiceError::ParseError("变量引用必须>=1".to_string())); }
+                        
+                        let mut modifiers = Vec::new();
+                        if let Some(modifiers_pair) = pairs.next() {
+                            for modifier_pair in modifiers_pair.into_inner() {
+                                let modifier = Self::parse_modifier(modifier_pair)?;
+                                modifiers.push(modifier);
+                            }
+                        }
+                        
+                        // Store variable reference with modifiers for special handling
+                        Ok(Expression::VariableRefWithModifiers(n as usize, modifiers))
+                    }
+                    _ => Self::parse_dice_expr(inner),
+                }
             }
             Rule::dice_expr => {
                 let mut pairs = pair.into_inner();
@@ -168,10 +191,40 @@ impl DiceParser {
                             .map_err(|_| DiceError::ParseError("无效的计数数值".to_string()))?;
                         Ok(DiceModifier::Count(num))
                     }
+                    Rule::merge => Ok(DiceModifier::Merge),
+                    Rule::group => {
+                        let s = inner.as_str();
+                        let show_structure = s.starts_with("gs");
+                        let inn = inner.into_inner();
+                        // last number
+                        let num = inn.last().unwrap().as_str().parse::<i32>()
+                            .map_err(|_| DiceError::ParseError("无效的分组阈值".to_string()))?;
+                        Ok(DiceModifier::Group { threshold: num, show_structure })
+                    }
                     _ => Err(DiceError::ParseError("未知的修饰符".to_string())),
                 }
             }
             _ => Err(DiceError::ParseError("期望修饰符".to_string())),
+        }
+    }
+
+    fn parse_instruction_list(pair: pest::iterators::Pair<Rule>) -> Result<Expression, DiceError> {
+        match pair.as_rule() {
+            Rule::instruction_list => {
+                let mut exprs = Vec::new();
+                for p in pair.into_inner() {
+                    if p.as_rule() == Rule::instruction {
+                        let e = Self::parse_dice_expr(p)?;
+                        exprs.push(e);
+                    }
+                }
+                if exprs.len() == 1 {
+                    Ok(exprs.into_iter().next().unwrap())
+                } else {
+                    Ok(Expression::Sequence(exprs))
+                }
+            }
+            _ => Self::parse_dice_expr(pair),
         }
     }
 

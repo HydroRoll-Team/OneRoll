@@ -29,6 +29,8 @@ modifier = {
     | unique
     | sort
     | count
+    | merge
+    | group
 }
 explode = { "!" }
 explode_alias = { "e" }
@@ -45,5 +47,15 @@ drop_low = { "dl" ~ number }
 unique = { "u" }
 sort = { "s" }
 count = { "c" ~ number }
+merge = { "m" }
+group = { "g" ~ ("s")? ~ number }
+
 op = { "+" | "-" | "*" | "/" | "^" }
-main = { SOI ~ dice_expr ~ EOI }
+
+// Instruction sequences and variable references
+var_ref = { "$" ~ number ~ modifiers? }
+
+instruction = { dice_expr | var_ref }
+instruction_list = { instruction ~ (";" ~ instruction)* }
+
+main = { SOI ~ instruction_list ~ EOI }

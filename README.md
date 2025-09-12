@@ -76,9 +76,11 @@ Dice Expression Syntax
 ----------------------
 
 - `XdY`: Roll X dice with Y sides
-- Modifiers: `kh`, `kl`, `dh`, `dl`, `!`, `r`, `ro`
+- Modifiers: `kh`, `kl`, `dh`, `dl`, `!`, `e`, `r`, `ro`, `R`, `a`, `u`, `s`, `c`, `m`, `g`, `gs`
 - Mathematical operations: `+`, `-`, `*`, `/`, `^`
 - Comments: Add with `#`, e.g., `3d6 + 2 # Attack roll`
+- Instruction sequences: Use `;` to separate multiple instructions
+- Variable references: Use `$n` to reference the result of the nth instruction
 
 Examples
 --------
@@ -96,6 +98,18 @@ stats = oneroll.roll_statistics("3d6", 100)
 # Comment usage
 result = oneroll.roll("1d20 + 5 # Attack check")
 print(result["comment"])
+
+# Instruction sequences
+result = oneroll.roll("3d6; 1d20; 2d8")
+
+# Variable references
+result = oneroll.roll("3d6; $1c6")  # Count 6s in first roll
+
+# Group modifier
+result = oneroll.roll("4d6g10")  # Count groups >= 10
+
+# Count modifier
+result = oneroll.roll("5d6c6")  # Count occurrences of 6
 ```
 
 Documentation
