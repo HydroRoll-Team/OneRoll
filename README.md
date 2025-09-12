@@ -9,6 +9,7 @@ Overview
 OneRoll is a high-performance dice expression parser and roller, implemented in Rust and exposed to Python via PyO3. It supports complex dice expressions, modifiers, mathematical operations, and user comments.
 
 Features
+
 --------
 
 - Basic dice rolling (XdY)
@@ -24,23 +25,23 @@ Features
 Installation
 ------------
 
-.. code-block:: shell
-
-   pip install oneroll
+```shell
+pip install oneroll
+```
 
 Or build from source:
 
-.. code-block:: shell
-
-   maturin build
-   pip install target/wheels/oneroll-*.whl
+```shell
+maturin build
+pip install target/wheels/oneroll-*.whl
+```
 
 Usage
 -----
 
 Python SDK Example:
 
-.. code-block:: python
+```python
 
    import oneroll
 
@@ -55,19 +56,21 @@ Python SDK Example:
    # Use OneRoll class
    roller = oneroll.OneRoll()
    result = roller.roll("2d6! # Exploding dice")
+```
 
 Command Line Example:
 
-.. code-block:: shell
+```shell
 
-   python -m oneroll "3d6 + 2"
-   python -m oneroll --stats "3d6" --times 100
+python -m oneroll "3d6 + 2"
+python -m oneroll --stats "3d6" --times 100
+```
 
 Terminal UI:
 
-.. code-block:: shell
-
-   python -m oneroll.tui
+```shell
+python -m oneroll.tui
+```
 
 Dice Expression Syntax
 ----------------------
@@ -80,20 +83,20 @@ Dice Expression Syntax
 Examples
 --------
 
-.. code-block:: python
+```python
+# Basic
+result = oneroll.roll("3d6 + 2")
 
-   # Basic
-   result = oneroll.roll("3d6 + 2")
+# D&D attribute roll
+result = oneroll.roll("4d6kh3 # Attribute")
 
-   # D&D attribute roll
-   result = oneroll.roll("4d6kh3 # Attribute")
+# Statistical analysis
+stats = oneroll.roll_statistics("3d6", 100)
 
-   # Statistical analysis
-   stats = oneroll.roll_statistics("3d6", 100)
-
-   # Comment usage
-   result = oneroll.roll("1d20 + 5 # Attack check")
-   print(result["comment"])
+# Comment usage
+result = oneroll.roll("1d20 + 5 # Attack check")
+print(result["comment"])
+```
 
 Documentation
 -------------
