@@ -35,6 +35,12 @@ impl DiceCalculator {
                             final_rolls.push(roll as i32);
                         }
                     }
+                    DiceModifier::ExplodeAlias => {
+                        while roll == dice.sides as u32 {
+                            roll = rand::random::<u32>() % dice.sides as u32 + 1;
+                            final_rolls.push(roll as i32);
+                        }
+                    }
                     _ => {}
                 }
             }
@@ -61,8 +67,18 @@ impl DiceCalculator {
             rolls.push(final_rolls);
         }
         
-        // handle high/low, discard high/low and unique deduplication
+        // handle keep alias before global aggregation
         let mut final_rolls = rolls;
+        for modifier in &dice.modifiers {
+            if let DiceModifier::KeepAlias(n) = modifier {
+                let all_values: Vec<i32> = final_rolls.iter().flatten().cloned().collect();
+                let mut sorted = all_values;
+                sorted.sort_by(|a, b| b.cmp(a));
+                final_rolls = sorted.iter().take(*n as usize).map(|&v| vec![v]).collect();
+            }
+        }
+
+        // handle high/low, discard high/low and unique/sort/count
         for modifier in &dice.modifiers {
             match modifier {
                 DiceModifier::KeepHigh(n) => {
@@ -89,6 +105,13 @@ impl DiceCalculator {
                     sorted.sort();
                     final_rolls = sorted.iter().skip(*n as usize).map(|&v| vec![v]).collect();
                 }
+                DiceModifier::ExplodeKeepHigh(n) => {
+                    // equivalent to explode then keep high n
+                    let all_values: Vec<i32> = final_rolls.iter().flatten().cloned().collect();
+                    let mut sorted = all_values;
+                    sorted.sort_by(|a, b| b.cmp(a));
+                    final_rolls = sorted.iter().take(*n as usize).map(|&v| vec![v]).collect();
+                }
                 DiceModifier::Unique => {
                     use std::collections::HashSet;
                     let mut seen = HashSet::new();
@@ -99,6 +122,16 @@ impl DiceCalculator {
                         }
                     }
                     final_rolls = uniques.into_iter().map(|v| vec![v]).collect();
+                }
+                DiceModifier::Sort => {
+                    let mut values: Vec<i32> = final_rolls.iter().flatten().cloned().collect();
+                    values.sort();
+                    final_rolls = values.into_iter().map(|v| vec![v]).collect();
+                }
+                DiceModifier::Count(target) => {
+                    let values: Vec<i32> = final_rolls.iter().flatten().cloned().collect();
+                    let count = values.iter().filter(|&&v| v == *target).count() as i32;
+                    final_rolls = vec![vec![count]];
                 }
                 _ => {}
             }
@@ -209,13 +242,18 @@ impl DiceCalculator {
         for modifier in modifiers {
             match modifier {
                 DiceModifier::Explode => result.push('!'),
+                DiceModifier::ExplodeAlias => result.push('e'),
+                DiceModifier::ExplodeKeepHigh(n) => result.push_str(&format!("K{}", n)),
                 DiceModifier::Reroll(n) => result.push_str(&format!("r{}", n)),
                 DiceModifier::RerollOnce(n) => result.push_str(&format!("ro{}", n)),
+                DiceModifier::KeepAlias(n) => result.push_str(&format!("k{}", n)),
                 DiceModifier::KeepHigh(n) => result.push_str(&format!("kh{}", n)),
                 DiceModifier::KeepLow(n) => result.push_str(&format!("kl{}", n)),
                 DiceModifier::DropHigh(n) => result.push_str(&format!("dh{}", n)),
                 DiceModifier::DropLow(n) => result.push_str(&format!("dl{}", n)),
                 DiceModifier::Unique => result.push('u'),
+                DiceModifier::Sort => result.push('s'),
+                DiceModifier::Count(v) => result.push_str(&format!("c{}", v)),
             }
         }
         result

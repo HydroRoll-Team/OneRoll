@@ -110,6 +110,12 @@ impl DiceParser {
                 let inner = pair.into_inner().next().unwrap();
                 match inner.as_rule() {
                     Rule::explode => Ok(DiceModifier::Explode),
+                    Rule::explode_alias => Ok(DiceModifier::ExplodeAlias),
+                    Rule::explode_keep_high => {
+                        let num = inner.into_inner().next().unwrap().as_str().parse::<i32>()
+                            .map_err(|_| DiceError::ParseError("无效的ExplodeKeepHigh数值".to_string()))?;
+                        Ok(DiceModifier::ExplodeKeepHigh(num))
+                    }
                     Rule::reroll => {
                         let num = inner.into_inner().next().unwrap().as_str().parse::<i32>()
                             .map_err(|_| DiceError::ParseError("无效的重投数值".to_string()))?;
@@ -119,6 +125,11 @@ impl DiceParser {
                         let num = inner.into_inner().next().unwrap().as_str().parse::<i32>()
                             .map_err(|_| DiceError::ParseError("无效的条件重投数值".to_string()))?;
                         Ok(DiceModifier::RerollOnce(num))
+                    }
+                    Rule::keep_alias => {
+                        let num = inner.into_inner().next().unwrap().as_str().parse::<i32>()
+                            .map_err(|_| DiceError::ParseError("无效的取高数值".to_string()))?;
+                        Ok(DiceModifier::KeepAlias(num))
                     }
                     Rule::keep_high => {
                         let num = inner.into_inner().next().unwrap().as_str().parse::<i32>()
@@ -140,8 +151,12 @@ impl DiceParser {
                             .map_err(|_| DiceError::ParseError("无效的丢弃低数值".to_string()))?;
                         Ok(DiceModifier::DropLow(num))
                     }
-                    Rule::unique => {
-                        Ok(DiceModifier::Unique)
+                    Rule::unique => Ok(DiceModifier::Unique),
+                    Rule::sort => Ok(DiceModifier::Sort),
+                    Rule::count => {
+                        let num = inner.into_inner().next().unwrap().as_str().parse::<i32>()
+                            .map_err(|_| DiceError::ParseError("无效的计数数值".to_string()))?;
+                        Ok(DiceModifier::Count(num))
                     }
                     _ => Err(DiceError::ParseError("未知的修饰符".to_string())),
                 }

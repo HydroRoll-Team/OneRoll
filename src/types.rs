@@ -20,13 +20,18 @@ pub struct DiceRoll {
 #[derive(Debug, Clone, PartialEq)]
 pub enum DiceModifier {
     Explode,           // !
+    ExplodeAlias,      // e (alias of !)
+    ExplodeKeepHigh(i32), // KX == explode then keep high X
     Reroll(i32),       // rX
     RerollOnce(i32),   // roX
+    KeepAlias(i32),    // kX == khX
     KeepHigh(i32),     // khX
     KeepLow(i32),      // klX
     DropHigh(i32),     // dhX
     DropLow(i32),      // dlX
     Unique,            // u
+    Sort,              // s (sort results)
+    Count(i32),        // cV (count value V)
 }
 
 

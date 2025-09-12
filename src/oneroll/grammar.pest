@@ -22,23 +22,33 @@ dice_sides = @{ number }
 modifiers = { modifier+ }
 modifier = { 
     explode
+    | explode_alias
+    | explode_keep_high
     | reroll
     | reroll_once
+    | keep_alias
     | keep_high
     | keep_low
     | drop_high
     | drop_low
     | unique
+    | sort
+    | count
 }
 
 explode = { "!" }
+explode_alias = { "e" }
+explode_keep_high = { "K" ~ number }
 reroll = { "r" ~ number }
 reroll_once = { "ro" ~ number }
+keep_alias = { "k" ~ number }
 keep_high = { "kh" ~ number }
 keep_low = { "kl" ~ number }
 drop_high = { "dh" ~ number }
 drop_low = { "dl" ~ number }
 unique = { "u" }
+sort = { "s" }
+count = { "c" ~ number }
 
 op = { "+" | "-" | "*" | "/" | "^" }
 
