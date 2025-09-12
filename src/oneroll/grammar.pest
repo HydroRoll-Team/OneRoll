@@ -1,24 +1,17 @@
 WHITESPACE = _{ " " | "\t" | "\n" | "\r" }
-
 number = @{ "-"? ~ ("0" | ('1'..'9' ~ ('0'..'9')*)) }
-
 comment = { "#" ~ (!"\n" ~ ANY)* }
-
 dice_expr = { dice_term ~ (op ~ dice_term)* ~ comment? }
 dice_term = { 
     dice_roll 
     | paren_expr 
     | number 
 }
-
 paren_expr = { "(" ~ dice_expr ~ ")" }
-
 dice_roll = { 
     number ~ "d" ~ dice_sides ~ modifiers?
 }
-
 dice_sides = @{ number }
-
 modifiers = { modifier+ }
 modifier = { 
     explode
@@ -37,7 +30,6 @@ modifier = {
     | sort
     | count
 }
-
 explode = { "!" }
 explode_alias = { "e" }
 explode_keep_high = { "K" ~ number }
@@ -53,7 +45,5 @@ drop_low = { "dl" ~ number }
 unique = { "u" }
 sort = { "s" }
 count = { "c" ~ number }
-
 op = { "+" | "-" | "*" | "/" | "^" }
-
 main = { SOI ~ dice_expr ~ EOI }
