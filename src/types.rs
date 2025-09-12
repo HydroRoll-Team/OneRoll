@@ -24,6 +24,8 @@ pub enum DiceModifier {
     ExplodeKeepHigh(i32), // KX == explode then keep high X
     Reroll(i32),       // rX
     RerollOnce(i32),   // roX
+    RerollUntil(i32),  // RX (until > X; with cap)
+    RerollAndAdd(i32), // aX (reroll if <= X and add)
     KeepAlias(i32),    // kX == khX
     KeepHigh(i32),     // khX
     KeepLow(i32),      // klX

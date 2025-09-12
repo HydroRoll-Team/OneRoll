@@ -45,7 +45,7 @@ impl DiceCalculator {
                 }
             }
             
-            // handle reroll
+            // handle reroll variants
             for modifier in &dice.modifiers {
                 match modifier {
                     DiceModifier::Reroll(threshold) => {
@@ -58,6 +58,27 @@ impl DiceCalculator {
                         if let Some(pos) = final_rolls.iter().position(|&r| r <= *threshold) {
                             let new_roll = rand::random::<u32>() % dice.sides as u32 + 1;
                             final_rolls[pos] = new_roll as i32;
+                        }
+                    }
+                    DiceModifier::RerollUntil(threshold) => {
+                        // keep rolling until > threshold (safety cap)
+                        let mut current = *final_rolls.last().unwrap_or(&((roll) as i32));
+                        let mut attempts = 0;
+                        const MAX_ATTEMPTS: usize = 100;
+                        while current <= *threshold && attempts < MAX_ATTEMPTS {
+                            let new_roll = rand::random::<u32>() % dice.sides as u32 + 1;
+                            current = new_roll as i32;
+                            final_rolls = vec![current];
+                            attempts += 1;
+                        }
+                    }
+                    DiceModifier::RerollAndAdd(threshold) => {
+                        // if <= threshold, roll again and add to the last value
+                        if final_rolls.iter().any(|&r| r <= *threshold) {
+                            let new_roll = rand::random::<u32>() % dice.sides as u32 + 1;
+                            let mut sum = final_rolls.iter().sum::<i32>();
+                            sum += new_roll as i32;
+                            final_rolls = vec![sum];
                         }
                     }
                     _ => {}
@@ -246,6 +267,8 @@ impl DiceCalculator {
                 DiceModifier::ExplodeKeepHigh(n) => result.push_str(&format!("K{}", n)),
                 DiceModifier::Reroll(n) => result.push_str(&format!("r{}", n)),
                 DiceModifier::RerollOnce(n) => result.push_str(&format!("ro{}", n)),
+                DiceModifier::RerollUntil(n) => result.push_str(&format!("R{}", n)),
+                DiceModifier::RerollAndAdd(n) => result.push_str(&format!("a{}", n)),
                 DiceModifier::KeepAlias(n) => result.push_str(&format!("k{}", n)),
                 DiceModifier::KeepHigh(n) => result.push_str(&format!("kh{}", n)),
                 DiceModifier::KeepLow(n) => result.push_str(&format!("kl{}", n)),

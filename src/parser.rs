@@ -126,6 +126,16 @@ impl DiceParser {
                             .map_err(|_| DiceError::ParseError("无效的条件重投数值".to_string()))?;
                         Ok(DiceModifier::RerollOnce(num))
                     }
+                    Rule::reroll_until => {
+                        let num = inner.into_inner().next().unwrap().as_str().parse::<i32>()
+                            .map_err(|_| DiceError::ParseError("无效的直到重投数值".to_string()))?;
+                        Ok(DiceModifier::RerollUntil(num))
+                    }
+                    Rule::reroll_add => {
+                        let num = inner.into_inner().next().unwrap().as_str().parse::<i32>()
+                            .map_err(|_| DiceError::ParseError("无效的重投并相加数值".to_string()))?;
+                        Ok(DiceModifier::RerollAndAdd(num))
+                    }
                     Rule::keep_alias => {
                         let num = inner.into_inner().next().unwrap().as_str().parse::<i32>()
                             .map_err(|_| DiceError::ParseError("无效的取高数值".to_string()))?;
