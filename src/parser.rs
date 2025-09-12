@@ -140,6 +140,9 @@ impl DiceParser {
                             .map_err(|_| DiceError::ParseError("无效的丢弃低数值".to_string()))?;
                         Ok(DiceModifier::DropLow(num))
                     }
+                    Rule::unique => {
+                        Ok(DiceModifier::Unique)
+                    }
                     _ => Err(DiceError::ParseError("未知的修饰符".to_string())),
                 }
             }

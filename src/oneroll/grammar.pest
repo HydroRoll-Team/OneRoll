@@ -28,6 +28,7 @@ modifier = {
     | keep_low
     | drop_high
     | drop_low
+    | unique
 }
 
 explode = { "!" }
@@ -37,6 +38,7 @@ keep_high = { "kh" ~ number }
 keep_low = { "kl" ~ number }
 drop_high = { "dh" ~ number }
 drop_low = { "dl" ~ number }
+unique = { "u" }
 
 op = { "+" | "-" | "*" | "/" | "^" }
 

@@ -61,7 +61,7 @@ impl DiceCalculator {
             rolls.push(final_rolls);
         }
         
-        // handle high/low and discard high/low
+        // handle high/low, discard high/low and unique deduplication
         let mut final_rolls = rolls;
         for modifier in &dice.modifiers {
             match modifier {
@@ -88,6 +88,17 @@ impl DiceCalculator {
                     let mut sorted = all_values;
                     sorted.sort();
                     final_rolls = sorted.iter().skip(*n as usize).map(|&v| vec![v]).collect();
+                }
+                DiceModifier::Unique => {
+                    use std::collections::HashSet;
+                    let mut seen = HashSet::new();
+                    let mut uniques: Vec<i32> = Vec::new();
+                    for v in final_rolls.iter().flatten() {
+                        if seen.insert(*v) {
+                            uniques.push(*v);
+                        }
+                    }
+                    final_rolls = uniques.into_iter().map(|v| vec![v]).collect();
                 }
                 _ => {}
             }
@@ -204,6 +215,7 @@ impl DiceCalculator {
                 DiceModifier::KeepLow(n) => result.push_str(&format!("kl{}", n)),
                 DiceModifier::DropHigh(n) => result.push_str(&format!("dh{}", n)),
                 DiceModifier::DropLow(n) => result.push_str(&format!("dl{}", n)),
+                DiceModifier::Unique => result.push('u'),
             }
         }
         result

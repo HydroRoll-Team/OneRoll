@@ -26,6 +26,7 @@ pub enum DiceModifier {
     KeepLow(i32),      // klX
     DropHigh(i32),     // dhX
     DropLow(i32),      // dlX
+    Unique,            // u
 }
 
 
