@@ -1,6 +1,6 @@
 [package]
 name = "oneroll"
-version = "1.0.2"
+version = "1.3.2"
 edition = "2021"
 description = "A Pyo3 Project Template For HydroRoll."
 license = "AGPL-3.0"

@@ -26,6 +26,7 @@ from rich.prompt import Prompt, Confirm
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
 from . import OneRoll, roll, roll_simple, roll_multiple, roll_statistics, CommonRolls
+import oneroll
 
 console = Console()
 
@@ -317,7 +318,7 @@ def main():
     parser.add_argument(
         '--version',
         action='version',
-        version='OneRoll 0.0.1'
+        version=oneroll.__version__
     )
     
     parser.add_argument(

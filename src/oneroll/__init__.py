@@ -32,7 +32,7 @@ from ._core import (
     roll_simple as _roll_simple,
 )
 
-__version__ = "1.0.2"
+__version__ = "1.3.2"
 __author__ = "HsiangNianian"
 __description__ = "高性能骰子表达式解析器"
 
