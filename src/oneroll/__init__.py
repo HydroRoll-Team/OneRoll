@@ -25,7 +25,7 @@ result = roller.roll("4d6kh3")
 total = oneroll.roll_simple(3, 6)
 """
 
-from typing import Dict, List, Any, Union, Optional
+from typing import Dict, List, Any, Union
 from ._core import (
     OneRoll as _OneRoll,
     roll_dice as _roll_dice,
