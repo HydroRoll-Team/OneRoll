@@ -21,16 +21,19 @@ jobs:
       - name: Install dependencies
         run: |
             uv sync --all-groups
+            ls -l
+            source .venv/bin/activate
 
       - name: Build documentation
         run: |
           cd docs
+          ls -l
           make html
-    
       - name: Build LaTeX PDF file
         run: |
           make latex
           cd _build/latex
+          ls -l
           make
           cp *.pdf ../html/_static/
 
