@@ -29,14 +29,13 @@ jobs:
           cd docs
           ls -l
           make html
+          make latex
 
       - name: Build LaTeX PDF file
         uses: xu-cheng/texlive-action@v3
         with:
           run: |
-            cd docs
-            make latexonly
-            cd _build/latex
+            cd ./docs/_build/latex
             ls -l
             make
             cp *.pdf ../html/_static/
