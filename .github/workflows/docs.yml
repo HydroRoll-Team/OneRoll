@@ -18,11 +18,6 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v6
 
-      - name: Install LaTeX dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y texlive-latex-recommended texlive-fonts-recommended texlive-latex-extra latexmk
-
       - name: Install dependencies
         run: |
             uv sync --all-groups
@@ -36,19 +31,21 @@ jobs:
           make html
 
       - name: Build LaTeX PDF file
-        run: |
-          cd docs
-          make latex
-          cd _build/latex
-          ls -l
-          make
-          cp *.pdf ../html/_static/
+        uses: xu-cheng/texlive-action@v3
+        with:
+          run: |
+            cd docs
+            make latex
+            cd _build/latex
+            ls -l
+            make
+            cp *.pdf ../html/_static/
 
       - name: Deploy to GitHub Pages
         if: github.ref == 'refs/heads/main'
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pagesBOT
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.BOT_TOKEN }}
           publish_dir: ./docs/_build/html
           publish_branch: gh-pages
           user_name: "hydroroll-bot"
