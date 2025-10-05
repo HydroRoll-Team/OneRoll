@@ -35,7 +35,7 @@ jobs:
         with:
           run: |
             cd docs
-            make latex
+            make latexonly
             cd _build/latex
             ls -l
             make

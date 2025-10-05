@@ -1,3 +1,6 @@
+# latexonly: only build latex from already generated sources
+latexonly:
+	$(SPHINXBUILD) -b latex "$(SOURCEDIR)" "$(BUILDDIR)/latex" $(SPHINXOPTS) $(O)
 # Minimal makefile for Sphinx documentation
 #
 
