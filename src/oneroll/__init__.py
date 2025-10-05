@@ -11,17 +11,17 @@ Main functions:
 - Bracket support
 - Complete error handling
 
-Example of usage: 
-# Basic use 
-import oneroll 
-result = oneroll.roll("3d6 + 2") 
-print(result.total) # output total points 
+Example of usage:
+# Basic use
+import oneroll
+result = oneroll.roll("3d6 + 2")
+print(result.total) # output total points
 
-# Use the OneRoll class 
-roller = oneroll.OneRoll() 
-result = roller.roll("4d6kh3") 
+# Use the OneRoll class
+roller = oneroll.OneRoll()
+result = roller.roll("4d6kh3")
 
-# Simple throw 
+# Simple throw
 total = oneroll.roll_simple(3, 6)
 """
 
@@ -35,6 +35,7 @@ from ._core import (
 __version__ = "1.3.2"
 __author__ = "HsiangNianian"
 __description__ = "高性能骰子表达式解析器"
+
 
 # 重新导出主要类和函数，提供更友好的接口
 class OneRoll:
