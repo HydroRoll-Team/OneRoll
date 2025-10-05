@@ -28,7 +28,7 @@ AUTHORS = ",".join([f"{aut}" for aut in AUTHOR_TABLE])
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "HydroRoll"  # PROJECT_NAME
+project = "OneRoll"  # PROJECT_NAME
 release = PROJECT_VERSION  # "latest"
 copyright = "2023-PRESENT, HydroRoll-Team."
 author = AUTHORS  # "Hsiang Nianian"
@@ -89,15 +89,15 @@ rst_prolog = """
 rst_epilog = """
 .. |psf| replace:: Python Software Foundation
 """
-locale_dirs = ["../locales/"]  # path is example but recommended.
-gettext_compact = False  # optional.
-gettext_uuid = True  # optional.
+# locale_dirs = ["../locales/"]  # path is example but recommended.
+# gettext_compact = False  # optional.
+# gettext_uuid = True  # optional.
 numfig = True  # Figures, tables and code blocks are automatically numbered if they have a title
 pygments_style = "rrt"  # default sphinx, change the style of code block
 math_number_all = True  # Number all equations, figures, tables and code blocks
-html_additional_pages = {
-    "copy": "copying.html",
-}
+# html_additional_pages = {
+#     "copy": "copying.html",
+# }
 html_split_index = True  # Split the index page by each alphabet
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
