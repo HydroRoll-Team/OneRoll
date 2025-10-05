@@ -1,0 +1,45 @@
+name: Build and Deploy Docs
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Install dependencies
+        run: |
+            uv sync --all-groups
+
+      - name: Build documentation
+        run: |
+          cd docs
+          make html
+    
+      - name: Build LaTeX PDF file
+        run: |
+          make latex
+          cd _build/latex
+          make
+          cp *.pdf ../html/_static/
+
+      - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/build/html
+          publish_branch: gh-pages
+          user_name: "hydroroll-bot"
+          user_email: "bot@hydroroll.team"
