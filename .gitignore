@@ -39,3 +39,6 @@ logs/
 *.lib
 *.a
 *.so.*
+
+# Vscode settings
+.vscode/
