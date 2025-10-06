@@ -29,3 +29,6 @@ translate:
 # build for debug
 dev:
 	@$(ppm) run sphinx-autobuild source _build/html
+
+rinoh:
+	@$(ppm) run $(SPHINXBUILD) -b $(SOURCEDIR) . _build/rinoh $(O)

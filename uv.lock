@@ -46,6 +46,15 @@ wheels = [
 ]
 
 [[package]]
+name = "appdirs"
+version = "1.4.4"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/d7/d8/05696357e0311f5b5c316d7b95f46c669dd9c15aaeecbb48c7d0aeb88c40/appdirs-1.4.4.tar.gz", hash = "sha256:7d5d0167b2b1ba821647616af46a749d1c653740dd0d2415100fe26e27afdf41", size = 13470, upload-time = "2020-05-11T07:59:51.037Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3b/00/2344469e2084fb287c2e0b57b72910309874c3245463acd6cf5e3db69324/appdirs-1.4.4-py2.py3-none-any.whl", hash = "sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128", size = 9566, upload-time = "2020-05-11T07:59:49.499Z" },
+]
+
+[[package]]
 name = "babel"
 version = "2.17.0"
 source = { registry = "https://pypi.org/simple" }
@@ -439,6 +448,21 @@ dev = [
     { name = "sphinxcontrib-httpdomain" },
     { name = "tomli" },
 ]
+docs = [
+    { name = "docutils" },
+    { name = "furo" },
+    { name = "myst-parser", version = "3.0.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "myst-parser", version = "4.0.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "rinohtype" },
+    { name = "sphinx", version = "7.4.7", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "sphinx", version = "8.1.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "sphinx-autobuild" },
+    { name = "sphinx-click", version = "6.0.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "sphinx-click", version = "6.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "sphinx-intl" },
+    { name = "sphinxcontrib-httpdomain" },
+    { name = "tomli" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -454,6 +478,18 @@ dev = [
     { name = "ruff", specifier = ">=0.9.6" },
     { name = "sphinx", specifier = ">=7.4.7" },
     { name = "sphinx-autobuild", specifier = ">=2024.10.3" },
+    { name = "sphinx-intl", specifier = ">=2.3.1" },
+    { name = "sphinxcontrib-httpdomain", specifier = ">=1.8.1" },
+    { name = "tomli", specifier = ">=2.2.1" },
+]
+docs = [
+    { name = "docutils", specifier = ">=0.21.2" },
+    { name = "furo", specifier = ">=2024.8.6" },
+    { name = "myst-parser", specifier = ">=3.0.1" },
+    { name = "rinohtype", specifier = ">=0.5.5" },
+    { name = "sphinx", specifier = ">=7.4.7" },
+    { name = "sphinx-autobuild", specifier = ">=2024.10.3" },
+    { name = "sphinx-click", specifier = ">=6.0.0" },
     { name = "sphinx-intl", specifier = ">=2.3.1" },
     { name = "sphinxcontrib-httpdomain", specifier = ">=1.8.1" },
     { name = "tomli", specifier = ">=2.2.1" },
@@ -565,6 +601,74 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/fe/75/af448d8e52bf1d8fa6a9d089ca6c07ff4453d86c65c145d0a300bb073b9b/rich-14.1.0.tar.gz", hash = "sha256:e497a48b844b0320d45007cdebfeaeed8db2a4f4bcf49f15e455cfc4af11eaa8", size = 224441, upload-time = "2025-07-25T07:32:58.125Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e3/30/3c4d035596d3cf444529e0b2953ad0466f6049528a879d27534700580395/rich-14.1.0-py3-none-any.whl", hash = "sha256:536f5f1785986d6dbdea3c75205c473f970777b4a0d6c6dd1b696aa05a3fa04f", size = 243368, upload-time = "2025-07-25T07:32:56.73Z" },
+]
+
+[[package]]
+name = "rinoh-typeface-dejavuserif"
+version = "0.1.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "rinohtype" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ca/d1/e221568b41d6205356ffa6340dcee02acf86d92dec5e5b04798c141b3472/rinoh-typeface-dejavuserif-0.1.3.tar.gz", hash = "sha256:8be129230ac98ab2ebfbf5b570575052ba7069e4087ce36a2d4c1d85182833ce", size = 1666226, upload-time = "2020-12-07T15:22:02.19Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/75/a7/c3df4e93137f390d28849ee1fd7578adee2b6322dca33082c7173ac2135f/rinoh_typeface_dejavuserif-0.1.3-py3-none-any.whl", hash = "sha256:35ba67bf25e526b4b8180dc31d8fa2ff9b594d924e8790e8074699cd2f0e7da8", size = 1667463, upload-time = "2020-12-07T15:21:58.999Z" },
+]
+
+[[package]]
+name = "rinoh-typeface-texgyrecursor"
+version = "0.1.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "rinohtype" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/68/70/b0a661118e7a93d1abf4375543644b054bb74b258924d62dd898b9860a71/rinoh-typeface-texgyrecursor-0.1.1.tar.gz", hash = "sha256:076f7dbbd0201b0d44f4c77e4f7070474e1365152dc8509b5cded04c1648308a", size = 239925, upload-time = "2016-07-18T13:31:16.791Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/12/21/1b46f0a50dfea435f90f29595d2e0b3d3c15a31b35bdde725942c83f2644/rinoh_typeface_texgyrecursor-0.1.1-py3-none-any.whl", hash = "sha256:98080e6af2271e67cff1d69033cb6c3a6baa58de41a66dce1a1102b4dd41de72", size = 242415, upload-time = "2016-07-18T13:31:20.398Z" },
+]
+
+[[package]]
+name = "rinoh-typeface-texgyreheros"
+version = "0.1.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "rinohtype" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/8e/62/3b28c30558fd53590797c455bb46ab47599c2b9145a09e7ae162dd625426/rinoh-typeface-texgyreheros-0.1.1.tar.gz", hash = "sha256:fd7082e917bccc292894447f11d15a3efce9f1386056118b57b66cc2f5a36bbd", size = 522029, upload-time = "2016-07-18T13:32:49.1Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/98/0d/b428d4cf5ad3bd6848b617570d5dcb061b3f66a68b72e96bf2a7909a2300/rinoh_typeface_texgyreheros-0.1.1-py3-none-any.whl", hash = "sha256:0c921a040a84b0af031e4a36d196d46b65fb18929d88df5ed26533b57100e6c9", size = 523725, upload-time = "2016-07-18T13:32:53.338Z" },
+]
+
+[[package]]
+name = "rinoh-typeface-texgyrepagella"
+version = "0.1.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "rinohtype" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/6a/2a/86db888c244f11bb0f6fed72c75b09dba9dbf8aa72e7b69c27cf7975340f/rinoh-typeface-texgyrepagella-0.1.1.tar.gz", hash = "sha256:53f4dba338c6b1df758888f23ce1ed728e5be45746f161488ad3b944e5e79fd2", size = 319023, upload-time = "2016-07-18T13:33:36.348Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/84/44/c27695119e6ad918358d44a87f8543cab6240f1f768068dd32ba1b65d92e/rinoh_typeface_texgyrepagella-0.1.1-py3-none-any.whl", hash = "sha256:0144e3b828a31b405ab9be1dec67f48be360d9f86d109578924fd1d7e0e1ded6", size = 321426, upload-time = "2016-07-18T13:33:39.855Z" },
+]
+
+[[package]]
+name = "rinohtype"
+version = "0.5.5"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "appdirs" },
+    { name = "docutils" },
+    { name = "myst-parser", version = "3.0.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+    { name = "myst-parser", version = "4.0.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "packaging" },
+    { name = "rinoh-typeface-dejavuserif" },
+    { name = "rinoh-typeface-texgyrecursor" },
+    { name = "rinoh-typeface-texgyreheros" },
+    { name = "rinoh-typeface-texgyrepagella" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/c7/21/7e2e32b16b5625a651b4f6773e1fe6ae10449f8c1f84b6731797a722a6a4/rinohtype-0.5.5.tar.gz", hash = "sha256:2efc38b5f41541693617e5a4bc6826e8932897d3c14b1b0ecd3ae4aaff404224", size = 6452152, upload-time = "2024-07-13T14:58:43.594Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/be/06/b9a641899db78cbd38c2d57d1878a499546336b6b844e79021b5f362fa54/rinohtype-0.5.5-py3-none-any.whl", hash = "sha256:b1c429e69c55b1b2400367ac0fcc17f30ec537ceb22e8f2dd768909282c2e642", size = 611480, upload-time = "2024-07-13T14:58:41.574Z" },
 ]
 
 [[package]]
@@ -729,6 +833,40 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/98/0b/a866924ded68efec7a1759587a4e478aec7559d8165fac8b2ad1c0e774d6/sphinx_basic_ng-1.0.0b2.tar.gz", hash = "sha256:9ec55a47c90c8c002b5960c57492ec3021f5193cb26cebc2dc4ea226848651c9", size = 20736, upload-time = "2023-07-08T18:40:54.166Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/3c/dd/018ce05c532a22007ac58d4f45232514cd9d6dd0ee1dc374e309db830983/sphinx_basic_ng-1.0.0b2-py3-none-any.whl", hash = "sha256:eb09aedbabfb650607e9b4b68c9d240b90b1e1be221d6ad71d61c52e29f7932b", size = 22496, upload-time = "2023-07-08T18:40:52.659Z" },
+]
+
+[[package]]
+name = "sphinx-click"
+version = "6.0.0"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version < '3.10'",
+]
+dependencies = [
+    { name = "click", marker = "python_full_version < '3.10'" },
+    { name = "docutils", marker = "python_full_version < '3.10'" },
+    { name = "sphinx", version = "7.4.7", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/db/0a/5b1e8d0579dbb4ca8114e456ca4a68020bfe8e15c7001f3856be4929ab83/sphinx_click-6.0.0.tar.gz", hash = "sha256:f5d664321dc0c6622ff019f1e1c84e58ce0cecfddeb510e004cf60c2a3ab465b", size = 29574, upload-time = "2024-05-15T14:49:17.044Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d0/d7/8621c4726ad3f788a1db4c0c409044b16edc563f5c9542807b3724037555/sphinx_click-6.0.0-py3-none-any.whl", hash = "sha256:1e0a3c83bcb7c55497751b19d07ebe56b5d7b85eb76dd399cf9061b497adc317", size = 9922, upload-time = "2024-05-15T14:49:15.768Z" },
+]
+
+[[package]]
+name = "sphinx-click"
+version = "6.1.0"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.10'",
+]
+dependencies = [
+    { name = "click", marker = "python_full_version >= '3.10'" },
+    { name = "docutils", marker = "python_full_version >= '3.10'" },
+    { name = "sphinx", version = "8.1.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/de/4b/c433ea57136eac0ccb8d76d33355783f1e6e77f1f13dc7d8f15dba2dc024/sphinx_click-6.1.0.tar.gz", hash = "sha256:c702e0751c1a0b6ad649e4f7faebd0dc09a3cc7ca3b50f959698383772f50eef", size = 26855, upload-time = "2025-09-11T11:05:45.53Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/88/95/a2fa680f02ee9cbe4532169d2e60b102fe415b6cfa25584ac2d112e4c43b/sphinx_click-6.1.0-py3-none-any.whl", hash = "sha256:7dbed856c3d0be75a394da444850d5fc7ecc5694534400aa5ed4f4849a8643f9", size = 8931, upload-time = "2025-09-11T11:05:43.897Z" },
 ]
 
 [[package]]

@@ -4,6 +4,26 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 import os, sys
+from pathlib import Path
+
+# from rinoh.frontend.rst import ReStructuredTextReader
+# from rinoh.template import TemplateConfigurationFile
+
+# the parser builds a rinohtype document tree
+# parser = ReStructuredTextReader()
+# with open('index.rst') as file:
+#     document_tree = parser.parse(file)
+
+# load the article template configuration file
+# script_path = Path(sys.path[0]).resolve()
+# config = TemplateConfigurationFile(script_path / 'oneroll.rtt')
+
+# render the document to 'my_document.pdf'
+# document = config.document(document_tree)
+# document.render('my_document')
+
+# rinoh_documents = [dict(doc='index',        # top-level file (index.rst)
+#                         target='manual')]   # output file (manual.pdf)
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -55,6 +75,7 @@ extensions = [
     "sphinxcontrib.httpdomain",
     "sphinx.ext.ifconfig",
     "myst_parser",
+    "sphinx_click",
 ]
 
 doctest_global_setup = """
@@ -149,3 +170,4 @@ html_theme_options = {
 #    '**': ['globaltoc.html', 'sourcelink.html', 'searchbox.html', 'relations.html'],
 #    'using/windows': ['windowssidebar.html', 'searchbox.html'],
 # }
+latex_documents = {}
