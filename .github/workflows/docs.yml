@@ -37,7 +37,6 @@ jobs:
           run: |
             cd ./docs/_build/latex
             ls -l
-            make
             cp *.pdf ../html/_static/
 
       - name: Deploy to GitHub Pages
