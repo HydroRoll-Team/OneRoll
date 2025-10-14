@@ -33,12 +33,8 @@ jobs:
         uses: xu-cheng/texlive-action@v3
         with:
           run: |
-            pwd
-            ls -l
-            cd ./docs
-            make latexpdf
-            cd ./_build/latex
-            # make
+            cd ./docs/_build/latex
+            make
             cp *.pdf ../html/_static/
 
       - name: Deploy to GitHub Pages
