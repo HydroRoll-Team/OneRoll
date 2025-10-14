@@ -21,21 +21,22 @@ jobs:
       - name: Install dependencies
         run: |
             uv sync --all-groups
-            ls -l
             source .venv/bin/activate
+
+      - name: Build documentation
+        run: |
+          cd docs
+          make html
+          make latex
+
       - name: Build LaTeX PDF file
         uses: xu-cheng/texlive-action@v3
         with:
           run: |
-            cd docs
-            ls -l
-            make html
-            make latex
+            pwd
             make latexpdf
-
             cd ./docs/_build/latex
             # make
-            ls -l
             cp *.pdf ../html/_static/
 
       - name: Deploy to GitHub Pages
