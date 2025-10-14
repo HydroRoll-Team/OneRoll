@@ -34,8 +34,10 @@ jobs:
         with:
           run: |
             pwd
+            ls -l
+            cd ./docs
             make latexpdf
-            cd ./docs/_build/latex
+            cd ./_build/latex
             # make
             cp *.pdf ../html/_static/
 
