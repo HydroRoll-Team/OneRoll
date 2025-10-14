@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.3.4] - 2025-10-14
+### New Features
+- [`02c240c`](https://github.com/HydroRoll-Team/OneRoll/commit/02c240c3be438feddd43a1f8597b9d64c19ef72e) - add new CI workflow for build and release process *(commit by [@HsiangNianian](https://github.com/HsiangNianian))*
+
+### Bug Fixes
+- [`7736a99`](https://github.com/HydroRoll-Team/OneRoll/commit/7736a992b51e4b2fcb59444b00d6a019bacb0d45) - update CI workflow name and Python version for wheel building *(commit by [@HsiangNianian](https://github.com/HsiangNianian))*
+- [`5af2ef4`](https://github.com/HydroRoll-Team/OneRoll/commit/5af2ef42404b81ebd8a9110a48a7c5377e974340) - update package version to 1.3.4 in Cargo.toml *(commit by [@HsiangNianian](https://github.com/HsiangNianian))*
+
+
 ## [v1.3.3] - 2025-10-14
 ### New Features
 - [`9064943`](https://github.com/HydroRoll-Team/OneRoll/commit/9064943ad8519585df0e1d8502b43bdea42bd767) - remove FEATURE_DEVELOPMENT_EXAMPLE.md as part of project cleanup *(commit by [@HsiangNianian](https://github.com/HsiangNianian))*
@@ -50,3 +59,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [v1.3.2]: https://github.com/HydroRoll-Team/OneRoll/compare/v1.0.2...v1.3.2
 [v1.3.3]: https://github.com/HydroRoll-Team/OneRoll/compare/v1.3.2...v1.3.3
+[v1.3.4]: https://github.com/HydroRoll-Team/OneRoll/compare/v1.3.3...v1.3.4
