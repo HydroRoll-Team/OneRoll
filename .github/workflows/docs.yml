@@ -36,6 +36,7 @@ jobs:
         with:
           run: |
             cd ./docs/_build/latex
+            make
             ls -l
             cp *.pdf ../html/_static/
 
