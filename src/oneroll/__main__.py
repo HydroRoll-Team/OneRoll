@@ -17,7 +17,7 @@ python -m oneroll --stats "3d6" --times 100
 
 import sys
 import argparse
-from typing import List, Dict, Any
+from typing import Any, Dict, List, Optional
 from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
@@ -34,11 +34,13 @@ console = Console()
 class OneRollCLI:
     """OneRoll command line interface"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.roller = OneRoll()
         self.history: List[Dict[str, Any]] = []
 
-    def print_result(self, result: Dict[str, Any], expression: str = None):
+    def print_result(
+        self, result: Dict[str, Any], expression: Optional[str] = None
+    ) -> None:
         """Pretty print the dice roll result"""
         if expression is None:
             expression = result.get("expression", "Unknown")
@@ -76,7 +78,7 @@ class OneRollCLI:
         panel = Panel(text, title="Dice Roll Result", border_style=color)
         console.print(panel)
 
-    def print_program_result(self, result: Dict[str, Any]):
+    def print_program_result(self, result: Dict[str, Any]) -> None:
         """Render every instruction result from a program execution."""
         instructions = result["results"]
         for instruction in instructions:
@@ -86,7 +88,7 @@ class OneRollCLI:
         if comment:
             console.print(f"程序注释: {comment}", style="italic blue")
 
-    def print_statistics(self, stats: Dict[str, Any], expression: str):
+    def print_statistics(self, stats: Dict[str, Any], expression: str) -> None:
         """Print statistics information"""
         table = Table(title=f"统计结果: {expression} (投掷 {stats['count']} 次)")
         table.add_column("统计项", style="cyan")
@@ -100,7 +102,7 @@ class OneRollCLI:
 
         console.print(table)
 
-    def print_history(self):
+    def print_history(self) -> None:
         """Print dice roll history"""
         if not self.history:
             console.print("暂无投掷历史", style="yellow")
@@ -124,7 +126,7 @@ class OneRollCLI:
 
         console.print(table)
 
-    def show_help(self):
+    def show_help(self) -> None:
         """show help information"""
         help_text = """
 🎲 OneRoll 骰子表达式解析器
@@ -158,7 +160,7 @@ class OneRollCLI:
 
         console.print(Panel(help_text, title="帮助信息", border_style="blue"))
 
-    def interactive_mode(self):
+    def interactive_mode(self) -> None:
         """Interactive Mode"""
         console.print(Panel.fit("🎲 OneRoll 交互式掷骰程序", style="bold blue"))
         console.print("输入 'help' 查看帮助，输入 'quit' 退出程序\n")
@@ -248,7 +250,7 @@ class OneRollCLI:
 
         return aliases.get(user_input.lower(), user_input)
 
-    def run(self, args):
+    def run(self, args: argparse.Namespace) -> None:
         """run tui mode"""
         if args.tui:
             # start tui
@@ -301,7 +303,7 @@ class OneRollCLI:
             self.interactive_mode()
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description="OneRoll 骰子表达式解析器",
         formatter_class=argparse.RawDescriptionHelpFormatter,

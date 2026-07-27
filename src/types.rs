@@ -31,23 +31,22 @@ pub struct DiceRoll {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum DiceModifier {
-    Explode,           // !
-    ExplodeAlias,      // e (alias of !)
+    Explode,              // !
+    ExplodeAlias,         // e (alias of !)
     ExplodeKeepHigh(i32), // KX == explode then keep high X
-    Reroll(i32),       // rX
-    RerollOnce(i32),   // roX
-    RerollUntil(i32),  // RX (until > X; evaluation-budget bounded)
-    RerollAndAdd(i32), // aX (reroll if <= X and add)
-    KeepAlias(i32),    // kX == khX
-    KeepHigh(i32),     // khX
-    KeepLow(i32),      // klX
-    DropHigh(i32),     // dhX
-    DropLow(i32),      // dlX
-    Unique,            // u
-    Sort,              // s (sort results)
-    Count(i32),        // cV (count value V)
+    Reroll(i32),          // rX
+    RerollOnce(i32),      // roX
+    RerollUntil(i32),     // RX (until > X; evaluation-budget bounded)
+    RerollAndAdd(i32),    // aX (reroll if <= X and add)
+    KeepAlias(i32),       // kX == khX
+    KeepHigh(i32),        // khX
+    KeepLow(i32),         // klX
+    DropHigh(i32),        // dhX
+    DropLow(i32),         // dlX
+    Unique,               // u
+    Sort,                 // s (sort results)
+    Count(i32),           // cV (count value V)
 }
-
 
 #[derive(Debug, Clone)]
 pub enum Expression {
@@ -74,11 +73,11 @@ impl VariableStore {
             variables: HashMap::new(),
         }
     }
-    
+
     pub fn set(&mut self, name: &str, value: i32) {
         self.variables.insert(name.to_string(), value);
     }
-    
+
     pub fn get(&self, name: &str) -> Option<i32> {
         self.variables.get(name).copied()
     }

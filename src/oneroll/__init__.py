@@ -57,7 +57,7 @@ class OneRoll:
         modifier_result = roller.roll_with_modifiers(4, 6, ["kh3"])
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """初始化 OneRoll 实例"""
         self._roller = _OneRoll()
 

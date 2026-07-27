@@ -8,34 +8,27 @@ on:
   workflow_dispatch:
 
 jobs:
+  quality:
+    uses: ./.github/workflows/quality.yml
+
   build:
+    needs: quality
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.11.32"
 
       - name: Install dependencies
-        run: |
-            uv sync --all-groups
-            source .venv/bin/activate
+        run: uv sync --all-groups --frozen
 
       - name: Build documentation
-        run: |
-          cd docs
-          make html
-          make latex
-
-      - name: Build LaTeX PDF file
-        uses: xu-cheng/texlive-action@v3
-        with:
-          run: |
-            cd ./docs/_build/latex
-            make
-            cp *.pdf ../html/_static/
+        run: uv run --frozen sphinx-build -W --keep-going -b html docs/source docs/_build/html
 
       - name: Deploy to GitHub Pages
         if: github.ref == 'refs/heads/main'

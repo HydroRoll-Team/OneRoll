@@ -5,11 +5,12 @@ OneRoll Terminal User Interface (TUI)
 An interactive dice roll interface created using textual.
 """
 
+from textual import events
 from textual.app import App, ComposeResult
 from textual.containers import Container, Horizontal
 from textual.widgets import Header, Footer, Input, Button, Static, DataTable, Tabs, Tab
 from textual.message import Message
-from typing import Dict, Any
+from typing import Any, Dict, Optional
 from datetime import datetime
 
 from . import CommonRolls, roll, roll_statistics
@@ -32,7 +33,7 @@ class ExpressionInput(Input):
             placeholder="输入骰子表达式，如 3d6 + 2", id="expression_input"
         )
 
-    def on_key(self, event) -> None:
+    def on_key(self, event: events.Key) -> None:
         if event.key == "enter":
             self.post_message(RollResult(roll(self.value), self.value))
             self.value = ""
@@ -49,11 +50,11 @@ class QuickRollButton(Button):
         self.post_message(RollResult(roll(self.expression), self.expression))
 
 
-class RollHistory(DataTable):
+class RollHistory(DataTable[str]):
     """Throw History Table"""
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, *, id: Optional[str] = None) -> None:
+        super().__init__(id=id)
         self.add_columns("时间", "表达式", "总点数", "详情")
 
     def add_roll(self, result: Dict[str, Any], expression: str) -> None:
@@ -124,7 +125,7 @@ class RollDisplay(Static):
         self.update(display_text)
 
 
-class OneRollTUI(App):
+class OneRollTUI(App[None]):
     """OneRoll 终端用户界面"""
 
     CSS = """
@@ -208,7 +209,7 @@ class OneRollTUI(App):
         history_table = self.query_one(RollHistory)
         history_table.add_roll(message.result, message.expression)
 
-    def on_key(self, event) -> None:
+    def on_key(self, event: events.Key) -> None:
         if event.key == "ctrl+q":
             self.exit()
         elif event.key == "ctrl+h":
@@ -245,7 +246,7 @@ OneRoll 骰子投掷器
         self.notify("统计功能开发中...", title="统计")
 
 
-def run_tui():
+def run_tui() -> None:
     app = OneRollTUI()
     app.run()
 

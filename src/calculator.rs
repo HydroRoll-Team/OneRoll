@@ -57,11 +57,11 @@ impl DiceCalculator {
         }
 
         let mut rolls = Vec::new();
-        
+
         for _ in 0..dice.count {
             let mut roll = self.roll_face(dice.sides)?;
             let mut final_rolls = vec![roll as i32];
-            
+
             // handle exploded throwing
             for modifier in &dice.modifiers {
                 match modifier {
@@ -80,7 +80,7 @@ impl DiceCalculator {
                     _ => {}
                 }
             }
-            
+
             // handle reroll variants
             for modifier in &dice.modifiers {
                 match modifier {
@@ -118,10 +118,10 @@ impl DiceCalculator {
                     _ => {}
                 }
             }
-            
+
             rolls.push(final_rolls);
         }
-        
+
         // handle keep alias before global aggregation
         let mut final_rolls = rolls;
         for modifier in &dice.modifiers {
@@ -191,7 +191,7 @@ impl DiceCalculator {
                 _ => {}
             }
         }
-        
+
         Ok(final_rolls)
     }
 
@@ -249,10 +249,18 @@ impl DiceCalculator {
                 let left_result = self.evaluate_expression_with_budget(left)?;
                 let right_result = self.evaluate_expression_with_budget(right)?;
                 Ok(DiceResult {
-                    expression: format!("({}) + ({})", left_result.expression, right_result.expression),
+                    expression: format!(
+                        "({}) + ({})",
+                        left_result.expression, right_result.expression
+                    ),
                     total: left_result.total + right_result.total,
                     rolls: [left_result.rolls, right_result.rolls].concat(),
-                    details: format!("{} + {} = {}", left_result.total, right_result.total, left_result.total + right_result.total),
+                    details: format!(
+                        "{} + {} = {}",
+                        left_result.total,
+                        right_result.total,
+                        left_result.total + right_result.total
+                    ),
                     comment: None,
                 })
             }
@@ -260,10 +268,18 @@ impl DiceCalculator {
                 let left_result = self.evaluate_expression_with_budget(left)?;
                 let right_result = self.evaluate_expression_with_budget(right)?;
                 Ok(DiceResult {
-                    expression: format!("({}) - ({})", left_result.expression, right_result.expression),
+                    expression: format!(
+                        "({}) - ({})",
+                        left_result.expression, right_result.expression
+                    ),
                     total: left_result.total - right_result.total,
                     rolls: [left_result.rolls, right_result.rolls].concat(),
-                    details: format!("{} - {} = {}", left_result.total, right_result.total, left_result.total - right_result.total),
+                    details: format!(
+                        "{} - {} = {}",
+                        left_result.total,
+                        right_result.total,
+                        left_result.total - right_result.total
+                    ),
                     comment: None,
                 })
             }
@@ -271,10 +287,18 @@ impl DiceCalculator {
                 let left_result = self.evaluate_expression_with_budget(left)?;
                 let right_result = self.evaluate_expression_with_budget(right)?;
                 Ok(DiceResult {
-                    expression: format!("({}) * ({})", left_result.expression, right_result.expression),
+                    expression: format!(
+                        "({}) * ({})",
+                        left_result.expression, right_result.expression
+                    ),
                     total: left_result.total * right_result.total,
                     rolls: [left_result.rolls, right_result.rolls].concat(),
-                    details: format!("{} * {} = {}", left_result.total, right_result.total, left_result.total * right_result.total),
+                    details: format!(
+                        "{} * {} = {}",
+                        left_result.total,
+                        right_result.total,
+                        left_result.total * right_result.total
+                    ),
                     comment: None,
                 })
             }
@@ -285,10 +309,18 @@ impl DiceCalculator {
                     return Err(DiceError::CalculationError("除零错误".to_string()));
                 }
                 Ok(DiceResult {
-                    expression: format!("({}) / ({})", left_result.expression, right_result.expression),
+                    expression: format!(
+                        "({}) / ({})",
+                        left_result.expression, right_result.expression
+                    ),
                     total: left_result.total / right_result.total,
                     rolls: [left_result.rolls, right_result.rolls].concat(),
-                    details: format!("{} / {} = {}", left_result.total, right_result.total, left_result.total / right_result.total),
+                    details: format!(
+                        "{} / {} = {}",
+                        left_result.total,
+                        right_result.total,
+                        left_result.total / right_result.total
+                    ),
                     comment: None,
                 })
             }
@@ -297,10 +329,16 @@ impl DiceCalculator {
                 let right_result = self.evaluate_expression_with_budget(right)?;
                 let result = left_result.total.pow(right_result.total as u32);
                 Ok(DiceResult {
-                    expression: format!("({}) ^ ({})", left_result.expression, right_result.expression),
+                    expression: format!(
+                        "({}) ^ ({})",
+                        left_result.expression, right_result.expression
+                    ),
                     total: result,
                     rolls: [left_result.rolls, right_result.rolls].concat(),
-                    details: format!("{} ^ {} = {}", left_result.total, right_result.total, result),
+                    details: format!(
+                        "{} ^ {} = {}",
+                        left_result.total, right_result.total, result
+                    ),
                     comment: None,
                 })
             }
@@ -312,7 +350,6 @@ impl DiceCalculator {
             }
         }
     }
-
 
     pub fn modifiers_to_string(&self, modifiers: &[DiceModifier]) -> String {
         let mut result = String::new();
@@ -337,7 +374,6 @@ impl DiceCalculator {
         }
         result
     }
-
 }
 
 impl Default for DiceCalculator {
@@ -358,7 +394,10 @@ mod tests {
         }
     }
 
-    fn assert_budget_exceeded<T: std::fmt::Debug>(result: Result<T, DiceError>, expected_limit: usize) {
+    fn assert_budget_exceeded<T: std::fmt::Debug>(
+        result: Result<T, DiceError>,
+        expected_limit: usize,
+    ) {
         match result {
             Err(DiceError::BudgetExceeded { limit }) => assert_eq!(limit, expected_limit),
             other => panic!("expected budget exhaustion, got {other:?}"),

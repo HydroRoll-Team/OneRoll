@@ -36,6 +36,7 @@ Documentation
 
    language
    conformance
+   quality
    roadmap
    rfc-0001
 

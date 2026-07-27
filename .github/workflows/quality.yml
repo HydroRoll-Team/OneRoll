@@ -1,0 +1,65 @@
+name: Quality
+
+on:
+  workflow_call:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+      - dev
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - name: Install Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: true
+          version: "0.11.32"
+
+      - name: Install project and quality dependencies
+        run: uv sync --all-groups --frozen
+
+      - name: Check Rust formatting
+        run: cargo fmt --all -- --check
+
+      - name: Test Rust
+        run: cargo test --all-targets --all-features
+
+      - name: Lint Rust
+        run: cargo clippy --all-targets --all-features -- -D warnings -A non-local-definitions
+
+      - name: Lint Python
+        run: uv run --frozen ruff check .
+
+      - name: Check Python formatting
+        run: uv run --frozen ruff format --check .
+
+      - name: Check Python types
+        run: uv run --frozen mypy --strict src/oneroll
+
+      - name: Test installed Python package
+        run: uv run --frozen python -m unittest discover -s tests -v
+
+      - name: Build strict HTML documentation
+        run: uv run --frozen sphinx-build -W --keep-going -b html docs/source docs/_build/html
