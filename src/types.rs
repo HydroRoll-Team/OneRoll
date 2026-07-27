@@ -10,6 +10,18 @@ pub struct DiceResult {
     pub comment: Option<String>,
 }
 
+#[derive(Debug, Clone)]
+pub struct Program {
+    pub instructions: Vec<Expression>,
+    pub comment: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ProgramResult {
+    pub results: Vec<DiceResult>,
+    pub comment: Option<String>,
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct DiceRoll {
     pub count: i32,
@@ -24,7 +36,7 @@ pub enum DiceModifier {
     ExplodeKeepHigh(i32), // KX == explode then keep high X
     Reroll(i32),       // rX
     RerollOnce(i32),   // roX
-    RerollUntil(i32),  // RX (until > X; with cap)
+    RerollUntil(i32),  // RX (until > X; evaluation-budget bounded)
     RerollAndAdd(i32), // aX (reroll if <= X and add)
     KeepAlias(i32),    // kX == khX
     KeepHigh(i32),     // khX

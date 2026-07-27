@@ -8,6 +8,10 @@ pub enum DiceError {
     CalculationError(String),
     #[error("无效的骰子表达式: {0}")]
     InvalidExpression(String),
+    #[error("计算预算已耗尽: 最多生成 {limit} 个骰子结果")]
+    BudgetExceeded { limit: usize },
+    #[error("程序指令数量超过限制: 最多 {limit} 条")]
+    ProgramInstructionLimitExceeded { limit: usize },
 }
 
 impl std::convert::From<DiceError> for pyo3::PyErr {
