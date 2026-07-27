@@ -35,6 +35,7 @@ Documentation
    :maxdepth: 2
 
    language
+   conformance
    roadmap
    rfc-0001
 
