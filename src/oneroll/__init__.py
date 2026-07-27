@@ -33,12 +33,12 @@ total = oneroll.roll_simple(3, 6)
 from typing import Dict, List, Any, Union
 from ._core import (
     OneRoll as _OneRoll,
+    __version__,
     roll_dice as _roll_dice,
     roll_simple as _roll_simple,
     run_program as _run_program,
 )
 
-__version__ = "1.3.2"
 __author__ = "HsiangNianian"
 __description__ = "高性能骰子表达式解析器"
 

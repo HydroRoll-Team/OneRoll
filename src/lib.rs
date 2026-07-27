@@ -22,6 +22,7 @@ pub use types::{DiceModifier, DiceResult, DiceRoll, Expression, Program, Program
 
 #[pymodule]
 fn _core(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
+    m.add("__version__", env!("CARGO_PKG_VERSION"))?;
     m.add_function(wrap_pyfunction!(roll_dice, m)?)?;
     m.add_function(wrap_pyfunction!(run_program, m)?)?;
     m.add_function(wrap_pyfunction!(roll_simple, m)?)?;

@@ -1,5 +1,7 @@
 from typing import Any, Dict, List
 
+__version__: str
+
 DiceResult = Dict[str, Any]
 ProgramResult = Dict[str, Any]
 RollHistory = List[DiceResult]
