@@ -54,8 +54,5 @@ jobs:
       - name: Verify Rust corpus
         run: cargo test rust_engine_matches_v1_conformance_corpus
 
-      - name: Rebuild installed Python extension
-        run: uv run --frozen maturin develop
-
       - name: Verify Python corpus
         run: uv run --frozen python -m unittest tests.test_v1_conformance -v
