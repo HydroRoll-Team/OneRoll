@@ -6,15 +6,13 @@ An interactive dice roll interface created using textual.
 """
 
 from textual.app import App, ComposeResult
-from textual.containers import Container, Horizontal, Vertical
+from textual.containers import Container, Horizontal
 from textual.widgets import Header, Footer, Input, Button, Static, DataTable, Tabs, Tab
-from textual.reactive import reactive
 from textual.message import Message
-from typing import List, Dict, Any
-import json
+from typing import Dict, Any
 from datetime import datetime
 
-from . import OneRoll, roll, roll_statistics, CommonRolls
+from . import CommonRolls, roll, roll_statistics
 
 
 class RollResult(Message):
