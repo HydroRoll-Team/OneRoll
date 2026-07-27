@@ -1,9 +1,31 @@
 use pyo3::prelude::*;
-use pyo3::types::PyDict;
+use pyo3::types::{PyDict, PyList};
 
 use crate::calculator::DiceCalculator;
 use crate::parser::DiceParser;
-use crate::types::{DiceModifier, DiceRoll};
+use crate::types::{DiceModifier, DiceResult, DiceRoll, ProgramResult};
+
+fn dice_result_to_dict<'py>(py: Python<'py>, result: &DiceResult) -> PyResult<&'py PyDict> {
+    let dict = PyDict::new(py);
+    dict.set_item("expression", &result.expression)?;
+    dict.set_item("total", result.total)?;
+    dict.set_item("rolls", &result.rolls)?;
+    dict.set_item("details", &result.details)?;
+    dict.set_item("comment", result.comment.as_deref().unwrap_or(""))?;
+    Ok(dict)
+}
+
+fn program_result_to_object(py: Python<'_>, result: &ProgramResult) -> PyResult<PyObject> {
+    let instructions = PyList::empty(py);
+    for instruction in &result.results {
+        instructions.append(dice_result_to_dict(py, instruction)?)?;
+    }
+
+    let dict = PyDict::new(py);
+    dict.set_item("results", instructions)?;
+    dict.set_item("comment", result.comment.as_deref().unwrap_or(""))?;
+    Ok(dict.into())
+}
 
 #[pyclass]
 pub struct OneRoll;
@@ -32,6 +54,19 @@ impl OneRoll {
             dict.set_item("comment", result.comment.as_deref().unwrap_or(""))?;
             
             Ok(dict.into())
+        })
+    }
+
+    fn run(&mut self, program: &str) -> PyResult<PyObject> {
+        Python::with_gil(|py| {
+            let mut calculator = DiceCalculator::new();
+            let program = DiceParser::parse_program(program)
+                .map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(e.to_string()))?;
+            let result = calculator
+                .evaluate_program(&program)
+                .map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(e.to_string()))?;
+
+            program_result_to_object(py, &result)
         })
     }
 
@@ -135,6 +170,20 @@ pub fn roll_dice(expression: &str) -> PyResult<PyObject> {
         dict.set_item("comment", result.comment.as_deref().unwrap_or(""))?;
         
         Ok(dict.into())
+    })
+}
+
+#[pyfunction]
+pub fn run_program(program: &str) -> PyResult<PyObject> {
+    Python::with_gil(|py| {
+        let mut calculator = DiceCalculator::new();
+        let program = DiceParser::parse_program(program)
+            .map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(e.to_string()))?;
+        let result = calculator
+            .evaluate_program(&program)
+            .map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(e.to_string()))?;
+
+        program_result_to_object(py, &result)
     })
 }
 

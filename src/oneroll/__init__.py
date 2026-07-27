@@ -6,6 +6,7 @@ Supports complex dice expression parsing, various modifiers and mathematical ope
 
 Main functions:
 - Basic Dice Rolling (XdY)
+- Ordered Programs separated by semicolons
 - Mathematical operations (+, -, *, /, ^)
 - Modifiers support (!, kh, kl, dh, dl, r, ro)
 - Bracket support
@@ -16,6 +17,10 @@ Example of usage:
 import oneroll
 result = oneroll.roll("3d6 + 2")
 print(result.total) # output total points
+
+# Execute a Program
+program = oneroll.run("1d20 + 5; 2d6 # encounter")
+print([item["total"] for item in program["results"]])
 
 # Use the OneRoll class
 roller = oneroll.OneRoll()
@@ -30,6 +35,7 @@ from ._core import (
     OneRoll as _OneRoll,
     roll_dice as _roll_dice,
     roll_simple as _roll_simple,
+    run_program as _run_program,
 )
 
 __version__ = "1.3.2"
@@ -79,6 +85,10 @@ class OneRoll:
             print(f"详情: {result['details']}")
         """
         return self._roller.roll(expression)
+
+    def run(self, program: str) -> Dict[str, Any]:
+        """Execute a semicolon-separated program in order."""
+        return self._roller.run(program)
 
     def roll_simple(self, dice_count: int, dice_sides: int) -> int:
         """
@@ -138,6 +148,11 @@ def roll(expression: str) -> Dict[str, Any]:
         print(result["comment"])  # 输出: "攻击投掷"
     """
     return _roll_dice(expression)
+
+
+def run(program: str) -> Dict[str, Any]:
+    """Execute one or more semicolon-separated instructions."""
+    return _run_program(program)
 
 
 def roll_simple(dice_count: int, dice_sides: int) -> int:
@@ -232,6 +247,7 @@ class CommonRolls:
 __all__ = [
     "OneRoll",
     "roll",
+    "run",
     "roll_simple",
     "roll_multiple",
     "roll_statistics",

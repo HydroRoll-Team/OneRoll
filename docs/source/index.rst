@@ -1,74 +1,46 @@
 OneRoll
 =======
 
+OneRoll is a Rust dice-language engine with Python bindings, a command-line
+interface, and a Textual interface.  The current ``1.x`` line is an
+expression roller; the ``2.0`` design evolves it into a bounded, typed program
+language for dice and weighted-list evaluation.
+
+Project status
+--------------
+
+The package is under active hardening.  Basic numeric dice, arithmetic,
+parentheses, comments, and a subset of modifiers work today.  The v2 language,
+deterministic randomness, structured errors, and production release gates are
+planned work and must not be treated as current behavior.
+
+The first forward-compatible v2 slice is available through ``run``:
+
+.. code-block:: python
+
+   import oneroll
+
+   program = oneroll.run("1d20 + 5; 2d6 # encounter")
+   totals = [result["total"] for result in program["results"]]
+   assert program["comment"] == "encounter"
+
+Use ``roll`` for a single legacy-compatible expression and ``run`` for one or
+more semicolon-separated instructions.  One program execution shares a single
+evaluation budget.
+
+Documentation
+-------------
+
 .. toctree::
    :maxdepth: 2
-   :caption: Contents
 
+   language
+   roadmap
+   rfc-0001
 
-====
+Source and planning
+-------------------
 
- - Basic dice rolling (XdY)
- - Mathematical operations: +, -, *, /, ^
- - Modifiers: !, kh, kl, dh, dl, r, ro
- - Bracket support
- - User comments (e.g., 3d6 + 2 # Attack roll)
- - Complete error 
- - Statistical rolling and analysis
- - Rich terminal UI (TUI) via textual
- - Python SDK and CLI
-
-
-.. code-block:: peg
-   :caption: Dice Expression Grammar
-
-   WHITESPACE = _{ " " | "\t" | "\n" | "\r" }
-   number = @{ "-"? ~ ("0" | ('1'..'9' ~ ('0'..'9')*)) }
-   comment = { "#" ~ (!"\n" ~ ANY)* }
-   dice_expr = { dice_term ~ (op ~ dice_term)* ~ comment? }
-   dice_term = { 
-      dice_roll 
-      | paren_expr 
-      | number 
-   }
-   paren_expr = { "(" ~ dice_expr ~ ")" }
-   dice_roll = { 
-      number ~ "d" ~ dice_sides ~ modifiers?
-   }
-   dice_sides = @{ number }
-   modifiers = { modifier+ }
-   modifier = { 
-      explode
-      | explode_alias
-      | explode_keep_high
-      | reroll
-      | reroll_once
-      | reroll_until
-      | reroll_add
-      | keep_alias
-      | keep_high
-      | keep_low
-      | drop_high
-      | drop_low
-      | unique
-      | sort
-      | count
-   }
-   explode = { "!" }
-   explode_alias = { "e" }
-   explode_keep_high = { "K" ~ number }
-   reroll = { "r" ~ number }
-   reroll_once = { "ro" ~ number }
-   reroll_until = { "R" ~ number }
-   reroll_add = { "a" ~ number }
-   keep_alias = { "k" ~ number }
-   keep_high = { "kh" ~ number }
-   keep_low = { "kl" ~ number }
-   drop_high = { "dh" ~ number }
-   drop_low = { "dl" ~ number }
-   unique = { "u" }
-   sort = { "s" }
-   count = { "c" ~ number }
-   op = { "+" | "-" | "*" | "/" | "^" }
-   main = { SOI ~ dice_expr ~ EOI }
-
+* `Repository <https://github.com/HydroRoll-Team/OneRoll>`_
+* `Milestones <https://github.com/HydroRoll-Team/OneRoll/milestones>`_
+* `Issues <https://github.com/HydroRoll-Team/OneRoll/issues>`_

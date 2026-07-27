@@ -25,7 +25,7 @@ from rich.text import Text
 from rich.prompt import Prompt, Confirm
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-from . import OneRoll, roll, roll_simple, roll_multiple, roll_statistics, CommonRolls
+from . import CommonRolls, OneRoll, roll_statistics, run
 import oneroll
 
 console = Console()
@@ -59,22 +59,32 @@ class OneRollCLI:
         # Build display text
         text = Text()
         text.append(f"🎲 {expression}\n", style="bold blue")
-        text.append(f"总点数: ", style="bold")
+        text.append("总点数: ", style="bold")
         text.append(f"{total}", style=f"bold {color}")
         text.append(f"\n详情: {details}", style="white")
 
         if rolls:
-            text.append(f"\n投掷结果: ", style="bold")
+            text.append("\n投掷结果: ", style="bold")
             text.append(f"{rolls}", style="cyan")
 
         # Display comment
         comment = result.get("comment", "")
         if comment:
-            text.append(f"\n注释: ", style="bold")
+            text.append("\n注释: ", style="bold")
             text.append(f"{comment}", style="italic blue")
 
         panel = Panel(text, title="Dice Roll Result", border_style=color)
         console.print(panel)
+
+    def print_program_result(self, result: Dict[str, Any]):
+        """Render every instruction result from a program execution."""
+        instructions = result["results"]
+        for instruction in instructions:
+            self.print_result(instruction)
+
+        comment = result.get("comment", "")
+        if comment:
+            console.print(f"程序注释: {comment}", style="italic blue")
 
     def print_statistics(self, stats: Dict[str, Any], expression: str):
         """Print statistics information"""
@@ -194,7 +204,7 @@ class OneRollCLI:
                                 TextColumn("[progress.description]{task.description}"),
                                 console=console,
                             ) as progress:
-                                task = progress.add_task(
+                                progress.add_task(
                                     f"正在统计 {expression}...", total=None
                                 )
                                 stats = roll_statistics(expression, times)
@@ -214,9 +224,9 @@ class OneRollCLI:
 
                 # execute roll
                 try:
-                    result = roll(expression)
-                    self.history.append(result)
-                    self.print_result(result, user_input)
+                    result = run(expression)
+                    self.history.extend(result["results"])
+                    self.print_program_result(result)
                 except Exception as e:
                     console.print(f"错误: {e}", style="red")
 
@@ -258,8 +268,8 @@ class OneRollCLI:
         elif args.expression:
             # single roll mode
             try:
-                result = roll(args.expression)
-                self.print_result(result)
+                result = run(args.expression)
+                self.print_program_result(result)
             except Exception as e:
                 console.print(f"错误: {e}", style="red")
                 sys.exit(1)
@@ -277,7 +287,7 @@ class OneRollCLI:
                     TextColumn("[progress.description]{task.description}"),
                     console=console,
                 ) as progress:
-                    task = progress.add_task(f"正在统计 {args.stats}...", total=None)
+                    progress.add_task(f"正在统计 {args.stats}...", total=None)
                     stats = roll_statistics(args.stats, times)
                     progress.stop()
 

@@ -5,21 +5,22 @@
 
 use pyo3::prelude::*;
 
-mod errors;
-mod types;
 mod calculator;
+mod errors;
 mod parser;
 mod python_bindings;
+mod types;
 
-pub use errors::DiceError;
-pub use types::{DiceResult, DiceRoll, DiceModifier, Expression};
 pub use calculator::DiceCalculator;
+pub use errors::DiceError;
 pub use parser::DiceParser;
-pub use python_bindings::{OneRoll, roll_dice, roll_simple};
+pub use python_bindings::{roll_dice, roll_simple, run_program, OneRoll};
+pub use types::{DiceModifier, DiceResult, DiceRoll, Expression, Program, ProgramResult};
 
 #[pymodule]
 fn _core(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(roll_dice, m)?)?;
+    m.add_function(wrap_pyfunction!(run_program, m)?)?;
     m.add_function(wrap_pyfunction!(roll_simple, m)?)?;
     m.add_class::<OneRoll>()?;
     Ok(())

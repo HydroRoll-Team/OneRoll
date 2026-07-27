@@ -3,8 +3,8 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
-import os, sys
-from pathlib import Path
+import os
+import sys
 
 # from rinoh.frontend.rst import ReStructuredTextReader
 # from rinoh.template import TemplateConfigurationFile
@@ -86,13 +86,13 @@ except ImportError:
     hr = None
     hrc = None
 """
-todo_include_todos = True
-todo_emit_warnings = True
+todo_include_todos = False
+todo_emit_warnings = False
 intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 extlinks = {
-    "issue": ("https://github.com/HydroRoll-Team/HydroRoll/issues/%s", "[issue %s]"),
+    "issue": ("https://github.com/HydroRoll-Team/OneRoll/issues/%s", "[issue %s]"),
 }
 source_suffix = {
     ".rst": "restructuredtext",
@@ -124,7 +124,7 @@ html_split_index = True  # Split the index page by each alphabet
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "furo"
-html_static_path = ["../_static"]
+html_static_path = []
 _html_logo = (
     "https://cdn.jsdelivr.net/gh/HydroRoll-Team/HydroRoll@main/docs/_static/logo.png"
 )
@@ -141,7 +141,7 @@ html_show_sourcelink = True
 
 html_theme_options = {
     "announcement": "<em><a href='#'>documentation</a> is still under construction now, welcome any <a href='contributing.html'>contribution</a>!</em>",
-    "source_repository": "https://github.com/HydroRoll-Team/HydroRoll/",
+    "source_repository": "https://github.com/HydroRoll-Team/OneRoll/",
     "source_branch": "main",
     "source_directory": "docs/source/",
     # Toc options
@@ -153,13 +153,13 @@ html_theme_options = {
     "footer_icons": [
         {
             "name": "GitHub",
-            "url": "https://github.com/HydroRoll-Team/HydroRoll/",
+            "url": "https://github.com/HydroRoll-Team/OneRoll/",
             "html": "",
             "class": "fa-brands fa-github",
         },
         {
             "name": "Pypi",
-            "url": "https://pypi.org/project/hydro_roll/",
+            "url": "https://pypi.org/project/oneroll/",
             "html": "",
             "class": "fa-brands fa-python",
         },
@@ -170,4 +170,4 @@ html_theme_options = {
 #    '**': ['globaltoc.html', 'sourcelink.html', 'searchbox.html', 'relations.html'],
 #    'using/windows': ['windowssidebar.html', 'searchbox.html'],
 # }
-latex_documents = {}
+latex_documents = []

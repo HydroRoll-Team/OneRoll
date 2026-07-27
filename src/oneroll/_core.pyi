@@ -1,6 +1,7 @@
-from typing import Dict, List, Any, Union
+from typing import Any, Dict, List
 
 DiceResult = Dict[str, Any]
+ProgramResult = Dict[str, Any]
 RollHistory = List[DiceResult]
 ModifierList = List[str]
 
@@ -29,6 +30,10 @@ def roll_dice(expression: str) -> DiceResult:
         result = roll_dice("3d6 + 2")
         print(result["total"]) # output total points
     """
+    ...
+
+def run_program(program: str) -> ProgramResult:
+    """Execute one or more semicolon-separated instructions."""
     ...
 
 def roll_simple(dice_count: int, dice_sides: int) -> int:
@@ -92,6 +97,10 @@ class OneRoll:
             result = roller.roll("3d6 + 2")
             print(f"Total points: {result['total']}")
         """
+        ...
+
+    def run(self, program: str) -> ProgramResult:
+        """Execute one or more semicolon-separated instructions."""
         ...
 
     def roll_simple(self, dice_count: int, dice_sides: int) -> int:

@@ -1,5 +1,5 @@
 use crate::errors::DiceError;
-use crate::types::{DiceModifier, DiceRoll, Expression};
+use crate::types::{DiceModifier, DiceRoll, Expression, Program};
 
 mod oneroll {
     include!(concat!(env!("OUT_DIR"), "/oneroll_grammar.rs"));
@@ -10,22 +10,71 @@ use pest::Parser;
 
 pub struct DiceParser;
 
+pub const DEFAULT_MAX_PROGRAM_INSTRUCTIONS: usize = 1_000;
+
 impl DiceParser {
     pub fn parse_expression(input: &str) -> Result<Expression, DiceError> {
-        let pairs = Grammar::parse(Rule::main, input)
+        let program = Self::parse_program(input)?;
+        if program.instructions.len() != 1 {
+            return Err(DiceError::ParseError(
+                "roll() 只接受一条指令；多条指令请使用 run()".to_string(),
+            ));
+        }
+
+        let mut expr = program.instructions.into_iter().next().unwrap();
+        if let Some(comment) = program.comment {
+            expr = Expression::WithComment(Box::new(expr), Some(comment));
+        }
+        Ok(expr)
+    }
+
+    pub fn parse_program(input: &str) -> Result<Program, DiceError> {
+        let mut pairs = Grammar::parse(Rule::program, input)
             .map_err(|e| DiceError::ParseError(e.to_string()))?;
-        
-        let pair = pairs.peek().unwrap();
-        Self::parse_dice_expr(pair)
+
+        let pair = pairs
+            .next()
+            .ok_or_else(|| DiceError::ParseError("程序不能为空".to_string()))?;
+        let mut instructions = Vec::new();
+        let mut comment = None;
+
+        for inner in pair.into_inner() {
+            match inner.as_rule() {
+                Rule::instruction => {
+                    if instructions.len() >= DEFAULT_MAX_PROGRAM_INSTRUCTIONS {
+                        return Err(DiceError::ProgramInstructionLimitExceeded {
+                            limit: DEFAULT_MAX_PROGRAM_INSTRUCTIONS,
+                        });
+                    }
+                    let expression = inner
+                        .into_inner()
+                        .next()
+                        .ok_or_else(|| DiceError::ParseError("指令不能为空".to_string()))?;
+                    instructions.push(Self::parse_dice_expr(expression)?);
+                }
+                Rule::comment => comment = Self::parse_comment(inner)?,
+                Rule::EOI => {}
+                _ => {
+                    return Err(DiceError::ParseError(format!(
+                        "未知的程序节点: {:?}",
+                        inner.as_rule()
+                    )))
+                }
+            }
+        }
+
+        if instructions.is_empty() {
+            return Err(DiceError::ParseError("程序至少需要一条指令".to_string()));
+        }
+
+        Ok(Program {
+            instructions,
+            comment,
+        })
     }
 
     fn parse_dice_expr(pair: pest::iterators::Pair<Rule>) -> Result<Expression, DiceError> {
         match pair.as_rule() {
-            Rule::main => {
-                // main 规则包含 dice_expr
-                let inner = pair.into_inner().next().unwrap();
-                Self::parse_dice_expr(inner)
-            }
             Rule::dice_expr => {
                 let mut pairs = pair.into_inner();
                 let mut expr = Self::parse_dice_term(pairs.next().unwrap())?;
