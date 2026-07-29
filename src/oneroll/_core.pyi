@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 __version__: str
 
@@ -6,6 +6,12 @@ DiceResult = Dict[str, Any]
 ProgramResult = Dict[str, Any]
 RollHistory = List[DiceResult]
 ModifierList = List[str]
+
+class ResourcePolicy:
+    def __init__(self) -> None: ...
+    def with_limit(self, name: str, limit: int) -> "ResourcePolicy": ...
+    def limits(self) -> Dict[str, int]: ...
+    def hard_limits(self) -> Dict[str, int]: ...
 
 def roll_dice(expression: str) -> DiceResult:
     """
@@ -64,7 +70,7 @@ class OneRoll:
     Provides an object-oriented dice throwing interface, supporting complex expressions and various modifiers.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, policy: Optional[ResourcePolicy] = None) -> None:
         """
         Initialize OneRoll Object
 
@@ -105,6 +111,7 @@ class OneRoll:
         """Execute one or more semicolon-separated instructions."""
         ...
 
+    def roll_multiple(self, expression: str, times: int) -> RollHistory: ...
     def roll_simple(self, dice_count: int, dice_sides: int) -> int:
         """
         Simple dice throw

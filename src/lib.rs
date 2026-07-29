@@ -9,6 +9,7 @@ mod calculator;
 mod errors;
 mod parser;
 mod python_bindings;
+mod resource;
 mod types;
 
 #[cfg(test)]
@@ -17,7 +18,8 @@ mod conformance_tests;
 pub use calculator::DiceCalculator;
 pub use errors::DiceError;
 pub use parser::DiceParser;
-pub use python_bindings::{roll_dice, roll_simple, run_program, OneRoll};
+pub use python_bindings::{roll_dice, roll_simple, run_program, OneRoll, PyResourcePolicy};
+pub use resource::ResourcePolicy;
 pub use types::{DiceModifier, DiceResult, DiceRoll, Expression, Program, ProgramResult};
 
 #[pymodule]
@@ -26,6 +28,7 @@ fn _core(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(roll_dice, m)?)?;
     m.add_function(wrap_pyfunction!(run_program, m)?)?;
     m.add_function(wrap_pyfunction!(roll_simple, m)?)?;
+    m.add_class::<PyResourcePolicy>()?;
     m.add_class::<OneRoll>()?;
     Ok(())
 }

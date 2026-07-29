@@ -46,9 +46,18 @@ print([result["total"] for result in program["results"]])
 print(program["comment"])
 ```
 
-Every instruction in one program shares the same evaluation budget. Invalid or
-exhausted evaluations raise `ValueError` instead of hanging or panicking. The
-current safe default rejects Programs with more than 1,000 instructions.
+Every instruction in one program shares the same request budget. Invalid or
+exhausted evaluations raise `ValueError` instead of hanging or panicking.
+Parsing, recursion, generated values, collections, output, work, and batches
+all have safe defaults and non-disableable hard ceilings.
+
+Create an immutable policy when an embedding needs lower limits:
+
+```python
+policy = oneroll.ResourcePolicy().with_limit("generated_values", 2_000)
+roller = oneroll.OneRoll(policy)
+print(policy.limits())
+```
 
 ## CLI
 
@@ -56,6 +65,8 @@ current safe default rejects Programs with more than 1,000 instructions.
 python -m oneroll "3d6 + 2"
 python -m oneroll "1d20 + 5; 2d6 # encounter"
 python -m oneroll --stats "3d6" --times 100
+python -m oneroll --show-limits
+python -m oneroll --limit generated_values=2000 "20d6"
 ```
 
 ## Current syntax
@@ -73,6 +84,7 @@ the language guide instead of treating the parsed-token list as final semantics.
 ## Roadmap and specification
 
 - [Language guide](docs/source/language.rst)
+- [Resource limits](docs/source/limits.rst)
 - [Production roadmap](docs/source/roadmap.rst)
 - [RFC-0001: OneRoll Program Language v2](docs/rfcs/0001-dice-program-language-v2.rst)
 - [GitHub milestones](https://github.com/HydroRoll-Team/OneRoll/milestones)

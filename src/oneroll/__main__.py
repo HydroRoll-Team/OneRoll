@@ -17,6 +17,7 @@ python -m oneroll --stats "3d6" --times 100
 
 import sys
 import argparse
+import json
 from typing import Any, Dict, List, Optional
 from rich.console import Console
 from rich.table import Table
@@ -25,7 +26,7 @@ from rich.text import Text
 from rich.prompt import Prompt, Confirm
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-from . import CommonRolls, OneRoll, roll_statistics, run
+from . import CommonRolls, OneRoll, ResourcePolicy
 import oneroll
 
 console = Console()
@@ -34,8 +35,9 @@ console = Console()
 class OneRollCLI:
     """OneRoll command line interface"""
 
-    def __init__(self) -> None:
-        self.roller = OneRoll()
+    def __init__(self, policy: Optional[ResourcePolicy] = None) -> None:
+        self.policy = policy or ResourcePolicy()
+        self.roller = OneRoll(self.policy)
         self.history: List[Dict[str, Any]] = []
 
     def print_result(
@@ -197,10 +199,11 @@ class OneRollCLI:
                         expression = parts[1]
                         try:
                             times = int(parts[2])
-                            if times > 1000:
-                                console.print("统计次数不能超过1000次", style="red")
-                                continue
+                        except ValueError:
+                            console.print("统计次数必须是数字", style="red")
+                            continue
 
+                        try:
                             with Progress(
                                 SpinnerColumn(),
                                 TextColumn("[progress.description]{task.description}"),
@@ -209,14 +212,12 @@ class OneRollCLI:
                                 progress.add_task(
                                     f"正在统计 {expression}...", total=None
                                 )
-                                stats = roll_statistics(expression, times)
+                                stats = self.roller.roll_statistics(expression, times)
                                 progress.stop()
 
                             self.print_statistics(stats, expression)
-                        except ValueError:
-                            console.print("统计次数必须是数字", style="red")
                         except Exception as e:
-                            console.print(f"统计错误: {e}", style="red")
+                            console.print(f"统计错误: {e}", style="red", markup=False)
                     else:
                         console.print("用法: stats <表达式> <次数>", style="red")
                     continue
@@ -226,11 +227,11 @@ class OneRollCLI:
 
                 # execute roll
                 try:
-                    result = run(expression)
+                    result = self.roller.run(expression)
                     self.history.extend(result["results"])
                     self.print_program_result(result)
                 except Exception as e:
-                    console.print(f"错误: {e}", style="red")
+                    console.print(f"错误: {e}", style="red", markup=False)
 
             except KeyboardInterrupt:
                 if Confirm.ask("\n确定要退出吗？"):
@@ -257,7 +258,7 @@ class OneRollCLI:
             try:
                 from .tui import run_tui
 
-                run_tui()
+                run_tui(self.policy)
             except ImportError:
                 console.print(
                     "TUI 模式需要安装 textual: pip install textual", style="red"
@@ -270,19 +271,16 @@ class OneRollCLI:
         elif args.expression:
             # single roll mode
             try:
-                result = run(args.expression)
+                result = self.roller.run(args.expression)
                 self.print_program_result(result)
             except Exception as e:
-                console.print(f"错误: {e}", style="red")
+                console.print(f"错误: {e}", style="red", markup=False)
                 sys.exit(1)
 
         elif args.stats:
             # stats mode
             try:
-                times = args.times or 100
-                if times > 10000:
-                    console.print("统计次数不能超过10000次", style="red")
-                    sys.exit(1)
+                times = args.times
 
                 with Progress(
                     SpinnerColumn(),
@@ -290,12 +288,12 @@ class OneRollCLI:
                     console=console,
                 ) as progress:
                     progress.add_task(f"正在统计 {args.stats}...", total=None)
-                    stats = roll_statistics(args.stats, times)
+                    stats = self.roller.roll_statistics(args.stats, times)
                     progress.stop()
 
                 self.print_statistics(stats, args.stats)
             except Exception as e:
-                console.print(f"错误: {e}", style="red")
+                console.print(f"错误: {e}", style="red", markup=False)
                 sys.exit(1)
 
         else:
@@ -322,13 +320,44 @@ def main() -> None:
 
     parser.add_argument("--times", type=int, default=100, help="统计次数，默认100次")
 
+    parser.add_argument(
+        "--limit",
+        action="append",
+        default=[],
+        metavar="NAME=VALUE",
+        help="降低本次进程的资源限制；可重复指定",
+    )
+
+    parser.add_argument(
+        "--show-limits",
+        action="store_true",
+        help="以 JSON 输出当前资源限制并退出",
+    )
+
     parser.add_argument("--version", action="version", version=oneroll.__version__)
 
     parser.add_argument("--tui", action="store_true", help="启动终端用户界面 (TUI)")
 
     args = parser.parse_args()
 
-    cli = OneRollCLI()
+    policy = ResourcePolicy()
+    for setting in args.limit:
+        try:
+            name, raw_value = setting.split("=", 1)
+            if not name or not raw_value:
+                raise ValueError("limit must use NAME=VALUE")
+            value = int(raw_value)
+            if value < 0:
+                raise ValueError("limit value must be non-negative")
+            policy = policy.with_limit(name, value)
+        except ValueError as error:
+            parser.error(str(error))
+
+    if args.show_limits:
+        print(json.dumps(policy.limits(), sort_keys=True))
+        return
+
+    cli = OneRollCLI(policy)
     cli.run(args)
 
 

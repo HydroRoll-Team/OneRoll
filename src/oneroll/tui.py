@@ -13,7 +13,7 @@ from textual.message import Message
 from typing import Any, Dict, Optional
 from datetime import datetime
 
-from . import CommonRolls, roll, roll_statistics
+from . import CommonRolls, OneRoll, ResourcePolicy
 
 
 class RollResult(Message):
@@ -28,26 +28,38 @@ class RollResult(Message):
 class ExpressionInput(Input):
     """Expression input box"""
 
-    def __init__(self) -> None:
+    def __init__(self, roller: Optional[OneRoll] = None) -> None:
+        self.roller = roller or OneRoll()
         super().__init__(
             placeholder="输入骰子表达式，如 3d6 + 2", id="expression_input"
         )
 
     def on_key(self, event: events.Key) -> None:
         if event.key == "enter":
-            self.post_message(RollResult(roll(self.value), self.value))
-            self.value = ""
+            try:
+                self.post_message(RollResult(self.roller.roll(self.value), self.value))
+                self.value = ""
+            except ValueError as error:
+                self.notify(str(error), title="错误", severity="error", markup=False)
 
 
 class QuickRollButton(Button):
     """Quick Throw Button"""
 
-    def __init__(self, label: str, expression: str) -> None:
+    def __init__(
+        self, label: str, expression: str, roller: Optional[OneRoll] = None
+    ) -> None:
         self.expression = expression
+        self.roller = roller or OneRoll()
         super().__init__(label, id=f"quick_{expression}")
 
     def on_button_pressed(self) -> None:
-        self.post_message(RollResult(roll(self.expression), self.expression))
+        try:
+            self.post_message(
+                RollResult(self.roller.roll(self.expression), self.expression)
+            )
+        except ValueError as error:
+            self.notify(str(error), title="错误", severity="error", markup=False)
 
 
 class RollHistory(DataTable[str]):
@@ -68,13 +80,14 @@ class RollHistory(DataTable[str]):
 class StatisticsPanel(Static):
     """Statistics Panel"""
 
-    def __init__(self) -> None:
-        super().__init__("统计功能", id="stats_panel")
+    def __init__(self, roller: Optional[OneRoll] = None) -> None:
+        self.roller = roller or OneRoll()
+        super().__init__("统计功能", id="stats_panel", markup=False)
 
     def show_statistics(self, expression: str, times: int = 100) -> None:
         """Show statistics information"""
         try:
-            stats = roll_statistics(expression, times)
+            stats = self.roller.roll_statistics(expression, times)
             stats_text = f"""
 统计结果: {expression} (投掷 {stats["count"]} 次)
 
@@ -166,20 +179,24 @@ class OneRollTUI(App[None]):
     }
     """
 
+    def __init__(self, policy: Optional[ResourcePolicy] = None) -> None:
+        super().__init__()
+        self.roller = OneRoll(policy)
+
     def compose(self) -> ComposeResult:
         """UI components"""
         yield Header()
 
         with Container():
-            yield ExpressionInput()
+            yield ExpressionInput(self.roller)
 
             with Horizontal(classes="quick_buttons"):
-                yield QuickRollButton("D20", CommonRolls.D20)
-                yield QuickRollButton("优势", CommonRolls.D20_ADVANTAGE)
-                yield QuickRollButton("劣势", CommonRolls.D20_DISADVANTAGE)
-                yield QuickRollButton("属性", CommonRolls.ATTRIBUTE_ROLL)
-                yield QuickRollButton("3D6", "3d6")
-                yield QuickRollButton("2D6", "2d6")
+                yield QuickRollButton("D20", CommonRolls.D20, self.roller)
+                yield QuickRollButton("优势", CommonRolls.D20_ADVANTAGE, self.roller)
+                yield QuickRollButton("劣势", CommonRolls.D20_DISADVANTAGE, self.roller)
+                yield QuickRollButton("属性", CommonRolls.ATTRIBUTE_ROLL, self.roller)
+                yield QuickRollButton("3D6", "3d6", self.roller)
+                yield QuickRollButton("2D6", "2d6", self.roller)
 
             yield RollDisplay()
 
@@ -188,7 +205,7 @@ class OneRollTUI(App[None]):
                     yield RollHistory(id="history_table")
 
                 with Tab("统计", id="stats_tab"):
-                    yield StatisticsPanel()
+                    yield StatisticsPanel(self.roller)
 
         yield Footer()
 
@@ -246,8 +263,8 @@ OneRoll 骰子投掷器
         self.notify("统计功能开发中...", title="统计")
 
 
-def run_tui() -> None:
-    app = OneRollTUI()
+def run_tui(policy: Optional[ResourcePolicy] = None) -> None:
+    app = OneRollTUI(policy)
     app.run()
 
 

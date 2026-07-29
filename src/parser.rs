@@ -1,4 +1,5 @@
 use crate::errors::DiceError;
+use crate::resource::ResourcePolicy;
 use crate::types::{DiceModifier, DiceRoll, Expression, Program};
 
 mod oneroll {
@@ -10,11 +11,16 @@ use pest::Parser;
 
 pub struct DiceParser;
 
-pub const DEFAULT_MAX_PROGRAM_INSTRUCTIONS: usize = 1_000;
-
 impl DiceParser {
     pub fn parse_expression(input: &str) -> Result<Expression, DiceError> {
-        let program = Self::parse_program(input)?;
+        Self::parse_expression_with_policy(input, &ResourcePolicy::default())
+    }
+
+    pub fn parse_expression_with_policy(
+        input: &str,
+        policy: &ResourcePolicy,
+    ) -> Result<Expression, DiceError> {
+        let program = Self::parse_program_with_policy(input, policy)?;
         if program.instructions.len() != 1 {
             return Err(DiceError::ParseError(
                 "roll() 只接受一条指令；多条指令请使用 run()".to_string(),
@@ -25,10 +31,38 @@ impl DiceParser {
         if let Some(comment) = program.comment {
             expr = Expression::WithComment(Box::new(expr), Some(comment));
         }
+        let nodes = 2usize.saturating_add(Self::expression_ast_nodes(&expr));
+        let limit = policy.require("ast_nodes");
+        if nodes > limit {
+            return Err(DiceError::ResourceLimitExceeded {
+                resource: "ast_nodes",
+                used: 0,
+                requested: nodes,
+                limit,
+            });
+        }
         Ok(expr)
     }
 
     pub fn parse_program(input: &str) -> Result<Program, DiceError> {
+        Self::parse_program_with_policy(input, &ResourcePolicy::default())
+    }
+
+    pub fn parse_program_with_policy(
+        input: &str,
+        policy: &ResourcePolicy,
+    ) -> Result<Program, DiceError> {
+        let source_bytes = policy.require("source_bytes");
+        if input.len() > source_bytes {
+            return Err(DiceError::ResourceLimitExceeded {
+                resource: "source_bytes",
+                used: 0,
+                requested: input.len(),
+                limit: source_bytes,
+            });
+        }
+        Self::validate_parse_depth(input, policy.require("parse_depth"))?;
+
         let mut pairs = Grammar::parse(Rule::program, input)
             .map_err(|e| DiceError::ParseError(e.to_string()))?;
 
@@ -41,9 +75,10 @@ impl DiceParser {
         for inner in pair.into_inner() {
             match inner.as_rule() {
                 Rule::instruction => {
-                    if instructions.len() >= DEFAULT_MAX_PROGRAM_INSTRUCTIONS {
+                    let instruction_limit = policy.require("parsed_instructions");
+                    if instructions.len() >= instruction_limit {
                         return Err(DiceError::ProgramInstructionLimitExceeded {
-                            limit: DEFAULT_MAX_PROGRAM_INSTRUCTIONS,
+                            limit: instruction_limit,
                         });
                     }
                     let expression = inner
@@ -67,10 +102,102 @@ impl DiceParser {
             return Err(DiceError::ParseError("程序至少需要一条指令".to_string()));
         }
 
-        Ok(Program {
+        let program = Program {
             instructions,
             comment,
-        })
+        };
+        Self::validate_ast_nodes(&program, policy.require("ast_nodes"))?;
+        Ok(program)
+    }
+
+    fn validate_ast_nodes(program: &Program, limit: usize) -> Result<(), DiceError> {
+        let mut nodes = 1usize;
+        for instruction in &program.instructions {
+            nodes = nodes
+                .checked_add(1)
+                .and_then(|value| value.checked_add(Self::expression_ast_nodes(instruction)))
+                .unwrap_or(usize::MAX);
+            if nodes > limit {
+                return Err(DiceError::ResourceLimitExceeded {
+                    resource: "ast_nodes",
+                    used: 0,
+                    requested: nodes,
+                    limit,
+                });
+            }
+        }
+        Ok(())
+    }
+
+    fn expression_ast_nodes(expression: &Expression) -> usize {
+        let child_nodes = match expression {
+            Expression::Number(_) => 0,
+            Expression::DiceRoll(dice) => dice.modifiers.len(),
+            Expression::Add(left, right)
+            | Expression::Subtract(left, right)
+            | Expression::Multiply(left, right)
+            | Expression::Divide(left, right)
+            | Expression::Power(left, right) => {
+                Self::expression_ast_nodes(left).saturating_add(Self::expression_ast_nodes(right))
+            }
+            Expression::Paren(inner) | Expression::WithComment(inner, _) => {
+                Self::expression_ast_nodes(inner)
+            }
+        };
+        1usize.saturating_add(child_nodes)
+    }
+
+    fn validate_parse_depth(input: &str, limit: usize) -> Result<(), DiceError> {
+        let mut depth = 0usize;
+        let mut quote = None;
+        let mut escaped = false;
+        let mut comment = false;
+
+        for character in input.chars() {
+            if comment {
+                if character == '\n' || character == '\r' {
+                    comment = false;
+                }
+                continue;
+            }
+            if let Some(delimiter) = quote {
+                if escaped {
+                    escaped = false;
+                } else if character == '\\' {
+                    escaped = true;
+                } else if character == delimiter {
+                    quote = None;
+                }
+                continue;
+            }
+
+            match character {
+                '#' => comment = true,
+                '\'' | '"' => quote = Some(character),
+                '(' | '[' | '{' => {
+                    depth = depth
+                        .checked_add(1)
+                        .ok_or(DiceError::ResourceLimitExceeded {
+                            resource: "parse_depth",
+                            used: depth,
+                            requested: 1,
+                            limit,
+                        })?;
+                    if depth > limit {
+                        return Err(DiceError::ResourceLimitExceeded {
+                            resource: "parse_depth",
+                            used: depth - 1,
+                            requested: 1,
+                            limit,
+                        });
+                    }
+                }
+                ')' | ']' | '}' => depth = depth.saturating_sub(1),
+                _ => {}
+            }
+        }
+
+        Ok(())
     }
 
     fn parse_dice_expr(pair: pest::iterators::Pair<Rule>) -> Result<Expression, DiceError> {

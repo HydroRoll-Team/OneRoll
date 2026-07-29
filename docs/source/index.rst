@@ -2,8 +2,8 @@ OneRoll
 =======
 
 OneRoll is a Rust dice-language engine with Python bindings, a command-line
-interface, and a Textual interface.  The current ``1.x`` line is an
-expression roller; the ``2.0`` design evolves it into a bounded, typed program
+interface, and a Textual interface.  The current ``1.x`` line is a bounded
+expression roller; the ``2.0`` design evolves it into a typed program
 language for dice and weighted-list evaluation.
 
 Project status
@@ -11,8 +11,8 @@ Project status
 
 The package is under active hardening.  Basic numeric dice, arithmetic,
 parentheses, comments, and a subset of modifiers work today.  The v2 language,
-deterministic randomness, structured errors, and production release gates are
-planned work and must not be treated as current behavior.
+deterministic randomness, structured error objects, and production release
+gates are planned work and must not be treated as current behavior.
 
 The first forward-compatible v2 slice is available through ``run``:
 
@@ -35,6 +35,7 @@ Documentation
    :maxdepth: 2
 
    language
+   limits
    conformance
    quality
    releasing

@@ -30,9 +30,10 @@ result = roller.roll("4d6kh3")
 total = oneroll.roll_simple(3, 6)
 """
 
-from typing import Dict, List, Any, Union
+from typing import Any, Dict, List, Optional, Union
 from ._core import (
     OneRoll as _OneRoll,
+    ResourcePolicy,
     __version__,
     roll_dice as _roll_dice,
     roll_simple as _roll_simple,
@@ -57,9 +58,9 @@ class OneRoll:
         modifier_result = roller.roll_with_modifiers(4, 6, ["kh3"])
     """
 
-    def __init__(self) -> None:
+    def __init__(self, policy: Optional[ResourcePolicy] = None) -> None:
         """初始化 OneRoll 实例"""
-        self._roller = _OneRoll()
+        self._roller = _OneRoll(policy)
 
     def roll(self, expression: str) -> Dict[str, Any]:
         """
@@ -108,6 +109,29 @@ class OneRoll:
             total = roller.roll_simple(3, 6)  # 投掷 3d6
         """
         return self._roller.roll_simple(dice_count, dice_sides)
+
+    def roll_multiple(self, expression: str, times: int) -> List[Dict[str, Any]]:
+        """Roll an expression repeatedly under one shared request budget."""
+        if times <= 0:
+            raise ValueError(
+                "[input.invalid_batch_samples] times must be greater than zero"
+            )
+        return self._roller.roll_multiple(expression, times)
+
+    def roll_statistics(
+        self, expression: str, times: int
+    ) -> Dict[str, Union[int, float, List[int]]]:
+        """Calculate statistics under one shared request budget."""
+        results = self.roll_multiple(expression, times)
+        totals = [result["total"] for result in results]
+        return {
+            "min": min(totals),
+            "max": max(totals),
+            "mean": sum(totals) / len(totals),
+            "total": sum(totals),
+            "count": len(totals),
+            "results": totals,
+        }
 
     def roll_with_modifiers(
         self, dice_count: int, dice_sides: int, modifiers: List[str]
@@ -187,10 +211,12 @@ def roll_multiple(expression: str, times: int) -> List[Dict[str, Any]]:
         results = oneroll.roll_multiple("3d6", 10)
         totals = [r['total'] for r in results]
     """
-    return [_roll_dice(expression) for _ in range(times)]
+    return OneRoll().roll_multiple(expression, times)
 
 
-def roll_statistics(expression: str, times: int) -> Dict[str, Union[int, float]]:
+def roll_statistics(
+    expression: str, times: int
+) -> Dict[str, Union[int, float, List[int]]]:
     """
     统计多次投掷的结果
 
@@ -205,17 +231,7 @@ def roll_statistics(expression: str, times: int) -> Dict[str, Union[int, float]]
         stats = oneroll.roll_statistics("3d6", 100)
         print(f"平均值: {stats['mean']:.2f}")
     """
-    results = roll_multiple(expression, times)
-    totals = [r["total"] for r in results]
-
-    return {
-        "min": min(totals),
-        "max": max(totals),
-        "mean": sum(totals) / len(totals),
-        "total": sum(totals),
-        "count": len(totals),
-        "results": totals,
-    }
+    return OneRoll().roll_statistics(expression, times)
 
 
 # 常用骰子表达式
@@ -246,6 +262,7 @@ class CommonRolls:
 # 导出公共接口
 __all__ = [
     "OneRoll",
+    "ResourcePolicy",
     "roll",
     "run",
     "roll_simple",
