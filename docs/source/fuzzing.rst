@@ -60,11 +60,12 @@ libc++ headers may need the SDK include paths for the build command:
 Scheduled campaign and regressions
 ----------------------------------
 
-The ``Fuzz`` GitHub Actions workflow runs both targets every Monday at 02:17
-UTC and on manual dispatch.  Each target runs for 120 seconds, each generated
-case has a five-second timeout, RSS is capped at 2 GiB, and the complete job is
-limited to ten minutes.  Failure artifacts are uploaded from
-``fuzz/artifacts/<target>``.
+The ``Fuzz`` GitHub Actions workflow runs both targets when parser, evaluator,
+fuzz harness, or Rust manifest changes reach ``dev``/``main`` or a pull request.
+It also runs every Monday at 02:17 UTC and on manual dispatch.  Each target runs
+for 120 seconds, each generated case has a five-second timeout, RSS is capped at
+2 GiB, and the complete job is limited to ten minutes.  Failure artifacts are
+uploaded from ``fuzz/artifacts/<target>``.
 
 Every distinct crash, timeout, or invariant failure must be minimized and
 copied into ``fuzz/corpus/<target>/`` with a descriptive name in the fixing

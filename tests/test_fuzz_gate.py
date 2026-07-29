@@ -10,6 +10,8 @@ class FuzzGateContractTests(unittest.TestCase):
         workflow = (ROOT / ".github/workflows/fuzz.yml").read_text(encoding="utf-8")
 
         self.assertIn("workflow_dispatch:", workflow)
+        self.assertIn("pull_request:", workflow)
+        self.assertIn("push:", workflow)
         self.assertIn("schedule:", workflow)
         self.assertIn("parse_program", workflow)
         self.assertIn("evaluate_program", workflow)
