@@ -16,6 +16,9 @@ mod types;
 #[cfg(test)]
 mod conformance_tests;
 
+#[cfg(test)]
+mod property_tests;
+
 pub use calculator::DiceCalculator;
 pub use errors::DiceError;
 pub use parser::DiceParser;

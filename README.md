@@ -92,6 +92,7 @@ compatibility-sensitive behavior and known defects.
 - [Language guide](docs/source/language.rst)
 - [Resource limits](docs/source/limits.rst)
 - [Deterministic randomness](docs/source/randomness.rst)
+- [Fuzzing and property gates](docs/source/fuzzing.rst)
 - [Production roadmap](docs/source/roadmap.rst)
 - [RFC-0001: OneRoll Program Language v2](docs/rfcs/0001-dice-program-language-v2.rst)
 - [RFC-0002: Execution Safety, Budgets, and Randomness](docs/rfcs/0002-execution-safety-budgets-randomness.rst)
@@ -109,6 +110,7 @@ until bounded jump semantics are accepted.
 
 ```shell
 cargo test
+cargo test --release property_
 uv run --frozen maturin develop
 uv run --frozen python -m unittest discover -s tests -v
 uv run --frozen sphinx-build -W --keep-going -b html docs/source docs/_build/html

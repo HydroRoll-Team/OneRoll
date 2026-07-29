@@ -18,12 +18,19 @@ from the repository root:
    cargo fmt --all -- --check
    cargo test --all-targets --all-features
    cargo test --release checked_i64_
+   cargo test --release rfc_0002_
+   cargo test --release property_
    cargo clippy --all-targets --all-features -- -D warnings -A non-local-definitions
    uv run --frozen ruff check .
    uv run --frozen ruff format --check .
    uv run --frozen mypy --strict src/oneroll docs/rfcs/0004-target-api.pyi
    uv run --frozen python -m unittest discover -s tests -v
    uv run --frozen sphinx-build -W --keep-going -b html docs/source docs/_build/html
+
+The release-mode focused gates freeze checked arithmetic, the deterministic
+random protocol, and engine properties independently from the complete debug
+suite.  Longer parser/evaluator campaigns run through :doc:`fuzzing` on a
+weekly schedule.
 
 The single Rust lint allowance is limited to ``non-local-definitions`` emitted
 by the PyO3 0.19 attribute macro.  All other Clippy and compiler warnings fail

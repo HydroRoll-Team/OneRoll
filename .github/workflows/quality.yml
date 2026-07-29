@@ -52,6 +52,9 @@ jobs:
       - name: Test deterministic randomness in release mode
         run: cargo test --release rfc_0002_
 
+      - name: Test engine properties in release mode
+        run: cargo test --release property_
+
       - name: Lint Rust
         run: cargo clippy --all-targets --all-features -- -D warnings -A non-local-definitions
 

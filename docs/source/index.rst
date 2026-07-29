@@ -39,6 +39,7 @@ Documentation
    language
    limits
    randomness
+   fuzzing
    conformance
    quality
    releasing
