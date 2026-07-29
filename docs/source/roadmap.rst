@@ -35,8 +35,12 @@ M5 — v2.0 General Availability
    from a clean checkout.
 
 M6 — v2.1 Probability Analysis
-   Add exact analysis only for an explicit support matrix; use deterministic
-   sampling everywhere else.
+   Add explicit ``Engine.sample`` and ``Engine.analyze_exact`` operations.
+   Exact analysis is limited to the RFC-0006 capability matrix and never falls
+   back to sampling; deterministic sampling remains available for complete
+   Programs and unsupported exact constructs.  The matrix and resource limits
+   remain provisional until the issue 32 prototype and issue 33 review provide
+   evidence.
 
 Delivery rule
 -------------

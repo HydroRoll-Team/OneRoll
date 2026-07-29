@@ -1,0 +1,214 @@
+{
+  "schema_version": 1,
+  "analysis_schema_version": "1.0",
+  "decision_status": "provisional",
+  "exact_fallback": "never",
+  "constructs": [
+    {
+      "id": "program.single_instruction",
+      "status": "supported",
+      "reason": "One finite Instruction has an unambiguous typed outcome distribution.",
+      "tracking_issue": "#33"
+    },
+    {
+      "id": "program.multiple_instructions",
+      "status": "unsupported",
+      "reason": "Per-instruction marginals lose correlation and a stable joint history model is not part of v2.1.",
+      "tracking_issue": "#33",
+      "error_code": "analysis.unsupported.program_arity"
+    },
+    {
+      "id": "value.scalar",
+      "status": "supported",
+      "reason": "A checked signed 64-bit scalar is a finite canonical outcome.",
+      "tracking_issue": "#39"
+    },
+    {
+      "id": "value.text",
+      "status": "supported",
+      "reason": "Text has canonical RFC-0003 serialization and finite equality.",
+      "tracking_issue": "#39"
+    },
+    {
+      "id": "value.boolean",
+      "status": "supported",
+      "reason": "Boolean Values form a finite two-element outcome domain.",
+      "tracking_issue": "#39"
+    },
+    {
+      "id": "value.values",
+      "status": "supported",
+      "reason": "Finite nested Values are canonical outcomes while collection and byte limits hold.",
+      "tracking_issue": "#39"
+    },
+    {
+      "id": "value.roll_set",
+      "status": "supported",
+      "reason": "Finite RollSet values can be represented by their typed source values and deterministic annotations.",
+      "tracking_issue": "#39"
+    },
+    {
+      "id": "variable.deterministic",
+      "status": "supported",
+      "reason": "A validated immutable host Value is a constant in the analysis plan.",
+      "tracking_issue": "#39"
+    },
+    {
+      "id": "variable.probabilistic",
+      "status": "unsupported",
+      "reason": "RFC-0001 variables contain Values, not caller-defined probability distributions or lazy sources.",
+      "tracking_issue": "#33",
+      "error_code": "analysis.unsupported_construct"
+    },
+    {
+      "id": "dice.numeric",
+      "status": "supported",
+      "reason": "Positive finite numeric sides define a uniform rational distribution.",
+      "tracking_issue": "#40"
+    },
+    {
+      "id": "dice.range",
+      "status": "supported",
+      "reason": "A checked finite inclusive integer range defines a uniform rational distribution.",
+      "tracking_issue": "#40"
+    },
+    {
+      "id": "dice.list_weighted",
+      "status": "supported",
+      "reason": "RFC-0001 uniform, integer, and percentage weights normalize to exact integers.",
+      "tracking_issue": "#40"
+    },
+    {
+      "id": "dice.unique_numeric",
+      "status": "bounded",
+      "reason": "Sequential draws without replacement are finite but ordered support grows factorially.",
+      "tracking_issue": "#32",
+      "limits": ["source_items", "analysis_states", "analysis_support", "analysis_operations"]
+    },
+    {
+      "id": "dice.unique_list",
+      "status": "bounded",
+      "reason": "Probability-proportional-to-remaining-weight draws are exact but ordered support can grow factorially.",
+      "tracking_issue": "#32",
+      "limits": ["source_items", "analysis_states", "analysis_support", "analysis_operations", "analysis_rational_bits"]
+    },
+    {
+      "id": "validator.pure",
+      "status": "supported",
+      "reason": "A pure validator partitions a finite input distribution without generating randomness.",
+      "tracking_issue": "#41"
+    },
+    {
+      "id": "arithmetic.add_subtract_multiply",
+      "status": "supported",
+      "reason": "Finite scalar convolution is exact when every reachable checked operation succeeds.",
+      "tracking_issue": "#16"
+    },
+    {
+      "id": "arithmetic.divide",
+      "status": "bounded",
+      "reason": "Division is exact only when every reachable divisor is non-zero and checked i64 division succeeds.",
+      "tracking_issue": "#32",
+      "limits": ["analysis_states", "analysis_operations", "analysis_rational_bits"]
+    },
+    {
+      "id": "arithmetic.exponent",
+      "status": "bounded",
+      "reason": "Exponentiation requires finite non-negative exponents and proof that every checked i64 result succeeds.",
+      "tracking_issue": "#32",
+      "limits": ["analysis_states", "analysis_operations", "analysis_rational_bits"]
+    },
+    {
+      "id": "option.keep_drop",
+      "status": "supported",
+      "reason": "Keep and drop are deterministic finite transformations of a RollSet.",
+      "tracking_issue": "#15"
+    },
+    {
+      "id": "option.filter_sort_count",
+      "status": "supported",
+      "reason": "Filter, sort, and count deterministically transform each finite outcome.",
+      "tracking_issue": "#15"
+    },
+    {
+      "id": "option.occurrences",
+      "status": "supported",
+      "reason": "Occurrences deterministically projects one finite collection outcome.",
+      "tracking_issue": "#42"
+    },
+    {
+      "id": "option.unique",
+      "status": "supported",
+      "reason": "Postfix unique is deterministic deduplication and does not refill the source.",
+      "tracking_issue": "#42"
+    },
+    {
+      "id": "option.paint_split_group",
+      "status": "supported",
+      "reason": "Paint, split, and fixed-width group are deterministic transformations under collection/output limits.",
+      "tracking_issue": "#42"
+    },
+    {
+      "id": "option.reroll_once",
+      "status": "bounded",
+      "reason": "One replacement draw is finite but multiplies the source state space.",
+      "tracking_issue": "#32",
+      "limits": ["generated_values", "analysis_states", "analysis_support", "analysis_operations"]
+    },
+    {
+      "id": "option.source_generating",
+      "status": "unsupported",
+      "reason": "Explode, keep-and-explode, reroll-until, and reroll-and-add have unbounded support or budget-dependent failure probability.",
+      "tracking_issue": "#33",
+      "error_code": "analysis.unsupported_construct"
+    },
+    {
+      "id": "option.merge",
+      "status": "bounded",
+      "reason": "Merge introduces another exact expression and a Cartesian state product.",
+      "tracking_issue": "#32",
+      "limits": ["nesting_depth", "analysis_states", "analysis_support", "analysis_operations"]
+    },
+    {
+      "id": "option.bind",
+      "status": "unsupported",
+      "reason": "Instruction-history dependence requires a joint Program state model excluded from v2.1.",
+      "tracking_issue": "#33",
+      "error_code": "analysis.unsupported_construct"
+    },
+    {
+      "id": "function.repeat",
+      "status": "bounded",
+      "reason": "A literal finite repeat count over an exact body has a bounded but potentially exponential state product.",
+      "tracking_issue": "#32",
+      "limits": ["function_activations", "analysis_states", "analysis_support", "analysis_operations"]
+    },
+    {
+      "id": "control.conditional",
+      "status": "bounded",
+      "reason": "An exact predicate and exact reachable branches can be combined while branch/state limits hold.",
+      "tracking_issue": "#32",
+      "limits": ["function_activations", "nesting_depth", "analysis_states", "analysis_support", "analysis_operations"]
+    },
+    {
+      "id": "node.backward_jump",
+      "status": "unsupported",
+      "reason": "Backward jump is reserved by RFC-0001 and has no bounded execution semantics.",
+      "tracking_issue": "#33",
+      "error_code": "analysis.unsupported_construct"
+    },
+    {
+      "id": "command.cli_only",
+      "status": "unsupported",
+      "reason": "CLI commands do not produce reproducible language Values.",
+      "tracking_issue": "#33",
+      "error_code": "analysis.unsupported_construct"
+    },
+    {
+      "id": "comment",
+      "status": "supported",
+      "reason": "A trailing comment is metadata and does not change the outcome distribution.",
+      "tracking_issue": "#33"
+    }
+  ]
+}

@@ -52,3 +52,10 @@ success/error coverage, and milestone release mapping.  Planned cases validate
 their contract shape without claiming implementation; an implementation issue
 must activate them as required Rust and installed-Python cases in the same
 vertical change.  See :ref:`rfc-0005`.
+
+The RFC-0006 contract tests validate the provisional sampling/exact API split,
+complete capability classification, self-contained AnalysisValue schema, and
+exact rational example tables.  Passing these checks freezes a reviewable
+design surface; it does not claim that sampling or exact analysis is implemented.
+Prototype issue 32 must reproduce the tables and justify limits before the RFC
+can leave Draft.  See :ref:`rfc-0006`.
