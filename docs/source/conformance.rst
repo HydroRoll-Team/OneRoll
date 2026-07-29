@@ -6,10 +6,11 @@ OneRoll records the observable ``1.x`` language contract in
 Rust engine and the installed Python package; a behavior change cannot silently
 pass in one binding while failing in the other.
 
-The corpus covers every syntax family listed in :doc:`language`, including
-literals, numeric dice, arithmetic, parentheses, comments, every v1 modifier,
-modifier composition, semicolon-separated programs, resource-limit failures,
-and representative parse and evaluation errors.
+The corpus covers every syntax family in the grammar embedded by
+:doc:`language`, including literals, numeric dice, arithmetic, parentheses,
+comments, every v1 modifier, modifier composition, semicolon-separated
+programs, resource-limit failures, and representative parse and evaluation
+errors.
 
 Behavior classifications
 ------------------------

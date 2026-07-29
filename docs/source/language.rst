@@ -1,22 +1,21 @@
 Language guide
 ==============
 
-Current ``1.x`` syntax
-----------------------
+Current ``1.x`` grammar
+-----------------------
 
-The installed engine currently accepts numeric literals, ``XdY`` numeric dice,
-parentheses, the arithmetic operators ``+``, ``-``, ``*``, ``/``, and ``^``, a
-trailing ``#`` comment, and these parsed modifier forms:
+The parser and this guide use the same pest grammar.  The file embedded below
+is the normative source for accepted ``1.x`` syntax; it is not a copy that can
+drift away from the engine.
 
-.. code-block:: text
+.. literalinclude:: ../../src/oneroll/grammar.pest
+   :language: text
+   :caption: src/oneroll/grammar.pest
 
-   !  e  K<number>  r<number>  ro<number>  R<number>  a<number>
-   k<number>  kh<number>  kl<number>  dh<number>  dl<number>
-   u  s  c<number>
-
-This list describes accepted syntax, not a promise that every modifier already
-has its final v2 semantics.  In particular, arithmetic currently has flat
-precedence and some modifier combinations remain compatibility-sensitive.
+Syntax acceptance is only one part of the language contract.  The executable
+examples and behavior classifications in :doc:`conformance` define current
+semantics, including compatibility-sensitive modifier behavior and the known
+flat arithmetic precedence defect.
 
 Programs
 --------
@@ -42,8 +41,8 @@ stable:
 instructions such as ``1d6;`` or ``1d6;;2d6`` are invalid.  All instructions
 share one generated-face budget, so splitting an expensive calculation across
 ``;`` does not bypass resource limits.  The current safe default also rejects
-Programs containing more than 1,000 instructions; configurable workload limits
-are part of the production Engine work.
+programs containing more than 1,000 instructions; configurable workload limits
+are part of the production engine work.
 
 Target ``2.0`` language
 -----------------------

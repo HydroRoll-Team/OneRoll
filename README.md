@@ -71,15 +71,11 @@ python -m oneroll --limit generated_values=2000 "20d6"
 
 ## Current syntax
 
-- Numeric dice: `XdY`
-- Arithmetic: `+`, `-`, `*`, `/`, `^` (the current parser has flat precedence)
-- Parentheses and one trailing `# comment`
-- Parsed modifiers: `!`, `e`, `K`, `r`, `ro`, `R`, `a`, `k`, `kh`, `kl`,
-  `dh`, `dl`, `u`, `s`, and `c`
-- Programs: `instruction; instruction; ...`
-
-Some modifier combinations still have compatibility-sensitive behavior. See
-the language guide instead of treating the parsed-token list as final semantics.
+The parser's authoritative accepted syntax lives in
+[`src/oneroll/grammar.pest`](src/oneroll/grammar.pest) and is embedded directly
+in the [language guide](docs/source/language.rst). Observable `1.x` semantics
+are recorded in the [conformance corpus](tests/conformance/v1.json), including
+compatibility-sensitive behavior and known defects.
 
 ## Roadmap and specification
 
