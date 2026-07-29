@@ -78,6 +78,8 @@ extensions = [
     "sphinx_click",
 ]
 
+autosectionlabel_prefix_document = True
+
 doctest_global_setup = """
 try:
     import hydro_roll as hr
