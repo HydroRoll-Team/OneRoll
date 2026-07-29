@@ -1,0 +1,117 @@
+WHITESPACE = _{ " " | "\t" | NEWLINE }
+
+program = { SOI ~ instruction ~ (instruction_separator ~ instruction)* ~ comment? ~ EOI }
+instruction_separator = _{ ";" }
+instruction = { expression }
+comment = @{ "#" ~ (!NEWLINE ~ ANY)* }
+
+expression = { prefix_operator* ~ pipeline ~ (scalar_operator ~ prefix_operator* ~ pipeline)* }
+pipeline = { primary ~ option* }
+primary = _{
+    parenthesized
+  | function_call
+  | dice
+  | range
+  | values_list
+  | dynamic_variable
+  | boolean
+  | number
+  | string
+}
+parenthesized = { "(" ~ expression ~ ")" }
+
+scalar_operator = { exponent | multiply | divide | add | subtract }
+exponent = { "**" }
+multiply = { "*" }
+divide = { "/" }
+add = { "+" }
+subtract = { "-" }
+prefix_operator = { "+" | "-" }
+
+number = @{ ASCII_DIGIT+ }
+signed_number = @{ ("+" | "-")? ~ ASCII_DIGIT+ }
+boolean = { ^"true" | ^"false" }
+string = @{ "\"" ~ string_character* ~ "\"" }
+string_character = _{
+    "\\" ~ ("\"" | "\\" | "n" | "r" | "t")
+  | !("\"" | NEWLINE) ~ ANY
+}
+identifier = @{ (ASCII_ALPHA_LOWER | "_") ~ (ASCII_ALPHANUMERIC | "_")* }
+dynamic_variable = @{ "${" ~ (identifier | ASCII_DIGIT+) ~ "}" }
+
+range = { "[" ~ range_bounds ~ "]" }
+range_bounds = { signed_number ~ ".." ~ signed_number }
+values_list = { "[" ~ (scalar_operand ~ ("," ~ scalar_operand)*)? ~ "]" }
+scalar_operand = _{ dynamic_variable | signed_number }
+
+dice = _{ numeric_dice | list_dice }
+numeric_dice = { scalar_operand? ~ ^"d" ~ unique_value? ~ (number | range) }
+list_dice = { scalar_operand? ~ ^"l" ~ unique_value? ~ list_parameter }
+unique_value = { "u" }
+list_parameter = { "[" ~ weighted_item ~ ("," ~ weighted_item)* ~ "]" }
+weighted_item = { string ~ weight_annotation? }
+weight_annotation = { "[" ~ number ~ percent_mark? ~ "]" }
+percent_mark = { "%" }
+
+function_call = _{ repeat_call }
+repeat_call = {
+    ^"repeat" ~ "(" ~ expression ~ ";" ~ instruction ~ (";" ~ instruction)* ~ ")"
+}
+
+option = _{
+    keep_and_explode
+  | reroll_until
+  | reroll_and_add
+  | keep
+  | drop
+  | filter
+  | sort
+  | count
+  | reroll
+  | explode
+  | merge
+  | bind
+  | occurrences
+  | unique
+  | paint
+  | conditional
+  | split
+  | group
+}
+
+low = { "l" }
+keep = { "k" ~ low? ~ number }
+drop = { "d" ~ low? ~ number }
+keep_and_explode = { "K" ~ low? ~ number }
+filter = { "f" ~ scoped_validator }
+sort = { "s" ~ low? }
+count = { "c" ~ scoped_validator }
+reroll = { "r" ~ scoped_validator }
+reroll_until = { "R" ~ scoped_validator }
+reroll_and_add = { "a" ~ scoped_validator }
+explode = { "e" ~ scoped_validator }
+merge = { "m" ~ "(" ~ expression ~ ")" }
+bind = { "b" }
+occurrences = { "o" ~ ("(" ~ number ~ ("," ~ occurrence_selector)? ~ ")")? }
+occurrence_selector = _{ signed_number | scoped_validator }
+unique = { "u" }
+paint = { "p" ~ "[" ~ color_count ~ ("," ~ color_count)* ~ "]" }
+color_count = { color ~ ":" ~ number }
+color = @{ hex_color | identifier }
+hex_color = { "#" ~ ASCII_HEX_DIGIT{6} }
+conditional = { "i" ~ scoped_validator ~ block ~ block? }
+block = { "{" ~ instruction ~ "}" }
+split = { "y" }
+group = { "g" ~ number }
+
+scoped_validator = { compare_scope? ~ validator_list }
+validator_list = { "[" ~ predicate ~ (logic_operator ~ predicate)* ~ "]" }
+compare_scope = { "*" | ":" | "." }
+logic_operator = { "&" | "^" | "|" }
+predicate = _{ modulo_predicate | range_predicate | comparison }
+range_predicate = { range_bounds }
+modulo_predicate = { "%" ~ scalar_operand ~ comparison }
+comparison = { compare_operator? ~ operand }
+compare_operator = { ">=" | "<=" | "!=" | "=" | ">" | "<" }
+operand = _{ dynamic_variable | signed_number | string | source_bound }
+source_bound = { ^"min" | ^"max" }

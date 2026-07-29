@@ -5,6 +5,9 @@ from pathlib import Path
 REPOSITORY_ROOT = Path(__file__).parents[1]
 LANGUAGE_GUIDE = REPOSITORY_ROOT / "docs" / "source" / "language.rst"
 GRAMMAR = REPOSITORY_ROOT / "src" / "oneroll" / "grammar.pest"
+V2_RFC = REPOSITORY_ROOT / "docs" / "rfcs" / "0001-dice-program-language-v2.rst"
+V2_TARGET_GRAMMAR = REPOSITORY_ROOT / "docs" / "rfcs" / "0001-v2-target.pest"
+SPHINX_SOURCE = REPOSITORY_ROOT / "docs" / "source"
 PUBLIC_TEXT_FILES = (
     REPOSITORY_ROOT / "README.md",
     REPOSITORY_ROOT / "Cargo.toml",
@@ -27,6 +30,15 @@ class DocumentationContractTests(unittest.TestCase):
         self.assertEqual(included_path, GRAMMAR.resolve())
         self.assertTrue(included_path.is_file())
         self.assertIn(":doc:`conformance`", guide)
+
+    def test_v2_rfc_embeds_a_machine_checked_pest_grammar(self):
+        rfc = V2_RFC.read_text(encoding="utf-8")
+        directive = ".. literalinclude:: ../rfcs/0001-v2-target.pest"
+
+        self.assertIn(directive, rfc)
+        included_path = (SPHINX_SOURCE / directive.split("::", 1)[1].strip()).resolve()
+        self.assertEqual(included_path, V2_TARGET_GRAMMAR.resolve())
+        self.assertTrue(included_path.is_file())
 
     def test_public_project_references_do_not_use_legacy_names(self):
         forbidden = (

@@ -2,6 +2,66 @@ use serde::Deserialize;
 
 use crate::{DiceCalculator, DiceParser};
 
+#[derive(pest_derive::Parser)]
+#[grammar = "docs/rfcs/0001-v2-target.pest"]
+struct V2TargetParser;
+
+#[test]
+fn v2_target_grammar_parses_normative_syntax_shapes() {
+    use pest::Parser;
+
+    let valid_sources = [
+        "1d6; 2d6 # encounter",
+        r#""say \"yes\"\nnow""#,
+        "true",
+        "${bonus} + 2",
+        "[-1..1]",
+        "[]",
+        "2du[1..6]",
+        r#"1L["common"[80%], "rare"[20%]]"#,
+        "4d6e[=max]k3",
+        "(1 + 2)i:[>2]{10}",
+        "4d6d1f[>=2]sl",
+        "4d6c[%2=0]",
+        "4d6r[=1]R[<=2]a[=1]e[=max]",
+        "[1,2]m([3,4])",
+        "1d6; 1d8b",
+        "10d10o",
+        "10d10o(2,7)",
+        "10d10o(2,[<6])",
+        "[1,1,2]u",
+        "4d6p[red:2,#00ff00:1]",
+        "4d6i[<3]{${0}+1}",
+        r#"4d6i.[=max]{"critical"}{"ordinary"}"#,
+        "4d6yg2",
+        r#"repeat(3; 1d6; 1L["yes", "no"])"#,
+    ];
+    let invalid_sources = [
+        "",
+        "1d6;",
+        "1d6;;2d6",
+        r#""unfinished"#,
+        "1L[]",
+        "4d6c[]",
+        "1d6m",
+        "@",
+        "help",
+    ];
+
+    for source in valid_sources {
+        assert!(
+            V2TargetParser::parse(Rule::program, source).is_ok(),
+            "RFC-0001 target grammar rejected normative source {source:?}"
+        );
+    }
+    for source in invalid_sources {
+        assert!(
+            V2TargetParser::parse(Rule::program, source).is_err(),
+            "RFC-0001 target grammar accepted invalid source {source:?}"
+        );
+    }
+}
+
 #[derive(Deserialize)]
 struct Corpus {
     cases: Vec<Case>,

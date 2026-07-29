@@ -49,8 +49,9 @@ Target ``2.0`` language
 
 The target language adds typed values, ranges, weighted-list dice, variables,
 validators, transformation options, functions, and conditional blocks.  Its
-normative draft and migration decisions live in :doc:`rfc-0001`.  Syntax shown
-there is a target contract unless its status table marks a feature implemented.
+normative review contract and migration decisions live in :doc:`rfc-0001`.
+Syntax shown there is a target contract unless its implementation-status table
+marks a feature implemented.
 
 Important compatibility decisions are:
 
