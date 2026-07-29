@@ -48,6 +48,7 @@ Documentation
    rfc-0002
    rfc-0003
    rfc-0004
+   rfc-0005
 
 Source and planning
 -------------------

@@ -45,3 +45,9 @@ Each implementation issue must be a vertical, executable slice through grammar,
 AST, validation, evaluation, Rust/Python results, CLI behavior where applicable,
 tests, and user documentation.  Parser-only or documentation-only claims do not
 make a language feature complete.
+
+Each completed milestone also produces an immutable GitHub Release.  The
+version train is ``v1.3.5``, ``v2.0.0-alpha.0``, ``v2.0.0-alpha.1``,
+``v2.0.0-beta.1``, ``v2.0.0-rc.1``, ``v2.0.0``, and ``v2.1.0`` for M0 through
+M6 respectively.  M1 is a GitHub-only specification pre-release; registry
+publication and cumulative evidence follow :ref:`rfc-0005`.

@@ -1,0 +1,231 @@
+{
+  "schema_version": 1,
+  "version_source": "Cargo.toml:package.version",
+  "python_version_derivation": {
+    "stable": "identity",
+    "prerelease": {
+      "alpha": "X.Y.Z-alpha.N -> X.Y.ZaN",
+      "beta": "X.Y.Z-beta.N -> X.Y.ZbN",
+      "rc": "X.Y.Z-rc.N -> X.Y.ZrcN"
+    }
+  },
+  "tag_template": "v{cargo_version}",
+  "tag_type": "signed-annotated",
+  "release_branch": "main",
+  "publication_approval": {
+    "explicit": true,
+    "event": "workflow_dispatch",
+    "environment": "pypi",
+    "required_reviewers": true,
+    "credential": "pypi-trusted-publisher-oidc",
+    "source_identity": "immutable-candidate-sha-or-signed-tag",
+    "publish_prebuilt_artifacts_only": true
+  },
+  "required_evidence": [
+    {
+      "id": "source",
+      "required_from": "M0",
+      "proves": "Protected main SHA, Cargo version, Python version, and signed tag agree."
+    },
+    {
+      "id": "quality",
+      "required_from": "M0",
+      "proves": "Rust/Python tests, formatting, lint, typing, and repository contracts pass."
+    },
+    {
+      "id": "conformance",
+      "required_from": "M0",
+      "proves": "Every active shared corpus case passes through Rust and installed Python."
+    },
+    {
+      "id": "fuzz_property",
+      "required_from": "M2",
+      "proves": "Deterministic properties and bounded parser/evaluator fuzz campaigns pass."
+    },
+    {
+      "id": "docs",
+      "required_from": "M0",
+      "proves": "Strict public documentation and executable examples match implemented status."
+    },
+    {
+      "id": "wheel_smoke",
+      "required_from": "M4",
+      "proves": "Every advertised wheel and the sdist install and pass their isolated smoke suites."
+    },
+    {
+      "id": "provenance",
+      "required_from": "M4",
+      "proves": "Artifact digests and build provenance resolve to the release source SHA."
+    },
+    {
+      "id": "sbom_audit",
+      "required_from": "M4",
+      "proves": "The SPDX SBOM is attached and dependency/license/security audits pass policy."
+    },
+    {
+      "id": "release_notes",
+      "required_from": "M0",
+      "proves": "The changelog names behavior, compatibility, security, and migration impact."
+    }
+  ],
+  "milestone_releases": [
+    {
+      "milestone": "M0",
+      "name": "Safety Baseline",
+      "cargo_version": "1.3.5",
+      "python_version": "1.3.5",
+      "channel": "final",
+      "github_release": true,
+      "publish_pypi": true,
+      "required_evidence": ["source", "quality", "conformance", "docs", "release_notes"]
+    },
+    {
+      "milestone": "M1",
+      "name": "Specification Freeze",
+      "cargo_version": "2.0.0-alpha.0",
+      "python_version": "2.0.0a0",
+      "channel": "prerelease",
+      "github_release": true,
+      "publish_pypi": false,
+      "required_evidence": ["source", "quality", "conformance", "docs", "release_notes"]
+    },
+    {
+      "milestone": "M2",
+      "name": "Core Alpha",
+      "cargo_version": "2.0.0-alpha.1",
+      "python_version": "2.0.0a1",
+      "channel": "prerelease",
+      "github_release": true,
+      "publish_pypi": true,
+      "required_evidence": [
+        "source",
+        "quality",
+        "conformance",
+        "fuzz_property",
+        "docs",
+        "release_notes"
+      ]
+    },
+    {
+      "milestone": "M3",
+      "name": "Python Beta",
+      "cargo_version": "2.0.0-beta.1",
+      "python_version": "2.0.0b1",
+      "channel": "prerelease",
+      "github_release": true,
+      "publish_pypi": true,
+      "required_evidence": [
+        "source",
+        "quality",
+        "conformance",
+        "fuzz_property",
+        "docs",
+        "release_notes"
+      ]
+    },
+    {
+      "milestone": "M4",
+      "name": "Release Candidate",
+      "cargo_version": "2.0.0-rc.1",
+      "python_version": "2.0.0rc1",
+      "channel": "prerelease",
+      "github_release": true,
+      "publish_pypi": true,
+      "required_evidence": [
+        "source",
+        "quality",
+        "conformance",
+        "fuzz_property",
+        "docs",
+        "wheel_smoke",
+        "provenance",
+        "sbom_audit",
+        "release_notes"
+      ]
+    },
+    {
+      "milestone": "M5",
+      "name": "General Availability",
+      "cargo_version": "2.0.0",
+      "python_version": "2.0.0",
+      "channel": "final",
+      "github_release": true,
+      "publish_pypi": true,
+      "required_evidence": [
+        "source",
+        "quality",
+        "conformance",
+        "fuzz_property",
+        "docs",
+        "wheel_smoke",
+        "provenance",
+        "sbom_audit",
+        "release_notes"
+      ]
+    },
+    {
+      "milestone": "M6",
+      "name": "Probability Analysis",
+      "cargo_version": "2.1.0",
+      "python_version": "2.1.0",
+      "channel": "final",
+      "github_release": true,
+      "publish_pypi": true,
+      "required_evidence": [
+        "source",
+        "quality",
+        "conformance",
+        "fuzz_property",
+        "docs",
+        "wheel_smoke",
+        "provenance",
+        "sbom_audit",
+        "release_notes"
+      ]
+    }
+  ],
+  "supported_matrix": {
+    "python": ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"],
+    "required": [
+      "manylinux-x86_64",
+      "manylinux-aarch64",
+      "musllinux-x86_64",
+      "musllinux-aarch64",
+      "macos-x86_64",
+      "macos-arm64",
+      "windows-x86_64"
+    ],
+    "build_only_until_installed": [
+      "manylinux-x86",
+      "manylinux-armv7",
+      "manylinux-s390x",
+      "manylinux-ppc64le",
+      "musllinux-x86",
+      "musllinux-armv7",
+      "windows-x86"
+    ],
+    "free_threaded": {
+      "published": false,
+      "minimum_pyo3": "0.23",
+      "requires": ["free-threaded-runtime-smoke", "concurrency", "cancellation"]
+    }
+  },
+  "publication_order": [
+    "freeze-milestone",
+    "release-commit-on-main",
+    "candidate-evidence-and-digests",
+    "explicit-environment-approval",
+    "signed-annotated-tag",
+    "github-release",
+    "trusted-pypi-publication-when-enabled",
+    "public-endpoint-verification",
+    "observation-and-rollback-owner"
+  ],
+  "incident_response": [
+    "yank-defective-files-when-appropriate",
+    "retain-and-warn-on-github-release",
+    "publish-a-new-version-never-overwrite",
+    "notify-users-and-record-impact",
+    "rotate-or-remove-compromised-publisher-configuration"
+  ]
+}

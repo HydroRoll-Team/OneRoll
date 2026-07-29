@@ -34,3 +34,21 @@ Version update path
 The version-contract test compares Cargo metadata, installed distribution
 metadata, Python runtime metadata, and CLI output.  This prevents a wheel from
 passing the release gate when any of those public surfaces drift.
+
+Current publication boundary
+----------------------------
+
+In the current 1.x workflow, pushing a version tag is an irreversible public
+action: it starts the GitHub Release workflow and the PyPI upload job after the
+quality gate.  Do not push a release tag without an explicit version, push, and
+publication confirmation.  Confirm the target commit, package version,
+changelog, and applicable milestone evidence first.
+
+RFC-0005 target
+---------------
+
+:ref:`rfc-0005` replaces tag-as-approval for the v2 release train.  Candidate
+artifacts are built and verified once, then a separate ``workflow_dispatch``
+job publishes those exact digests through a reviewer-protected ``pypi``
+environment and Trusted Publishing.  The current workflow remains accurately
+documented above until issue 34 implements that protected boundary.

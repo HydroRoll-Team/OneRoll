@@ -46,3 +46,9 @@ dependency.  Documentation deployment and changelog-based GitHub releases use
 the same reusable workflow.  The focused :doc:`conformance` workflow remains a
 separate, fast semantic-drift signal, while the quality gate runs the complete
 Rust and installed-Python suites.
+
+The RFC-0005 contract tests also validate the v2 corpus format, representative
+success/error coverage, and milestone release mapping.  Planned cases validate
+their contract shape without claiming implementation; an implementation issue
+must activate them as required Rust and installed-Python cases in the same
+vertical change.  See :ref:`rfc-0005`.
