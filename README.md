@@ -14,6 +14,12 @@ Current scalar literals and totals use checked signed 64-bit arithmetic.
 Overflow, division by zero, and invalid exponents raise `ValueError` with a
 stable `arithmetic.*` code instead of panicking or wrapping.
 
+Numeric dice use the request-scoped `oneroll-chacha12-v1` protocol and unbiased
+rejection sampling. Rust embedders can supply a canonical `RandomSeed` through
+`DiceCalculator::with_seed` and inspect the replay descriptor. The frozen
+Python `Engine(..., seed=...)` and CLI replay surface remain tracked v2 work;
+the compatibility helpers do not expose a temporary seed signature.
+
 > OneRoll is being hardened for production. Features listed in the v2 RFC are
 > targets unless the implementation status explicitly says otherwise.
 
@@ -85,6 +91,7 @@ compatibility-sensitive behavior and known defects.
 
 - [Language guide](docs/source/language.rst)
 - [Resource limits](docs/source/limits.rst)
+- [Deterministic randomness](docs/source/randomness.rst)
 - [Production roadmap](docs/source/roadmap.rst)
 - [RFC-0001: OneRoll Program Language v2](docs/rfcs/0001-dice-program-language-v2.rst)
 - [RFC-0002: Execution Safety, Budgets, and Randomness](docs/rfcs/0002-execution-safety-budgets-randomness.rst)

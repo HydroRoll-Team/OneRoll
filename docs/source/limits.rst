@@ -105,7 +105,7 @@ serializer.
    * - ``rng_words``
      - 20,000
      - 2,000,000
-     - Every current raw random draw
+     - Every raw ChaCha12 word, including rejected sampling attempts
    * - ``collection_items``
      - 10,000
      - 100,000

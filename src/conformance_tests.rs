@@ -1,10 +1,165 @@
 use serde::Deserialize;
 
-use crate::{DiceCalculator, DiceError, DiceParser};
+use crate::resource::ExecutionBudget;
+use crate::{DiceCalculator, DiceError, DiceParser, RandomSeed, ResourcePolicy};
 
 #[derive(pest_derive::Parser)]
 #[grammar = "docs/rfcs/0001-v2-target.pest"]
 struct V2TargetParser;
+
+#[test]
+fn rfc_0002_chacha12_all_zero_seed_matches_raw_words() {
+    let mut budget = ExecutionBudget::new(ResourcePolicy::default());
+    let mut random = crate::random::RequestRandom::from_seed(RandomSeed::from_bytes([0; 32]));
+
+    let observed = (0..4)
+        .map(|_| random.next_u64(&mut budget).unwrap())
+        .collect::<Vec<_>>();
+
+    assert_eq!(
+        observed,
+        [
+            0x53f9_5507_6a9a_f49b,
+            0xd583_265f_12ce_1f81,
+            0x1474_e049_bbc3_2904,
+            0x5f15_ae2e_a589_007e,
+        ]
+    );
+}
+
+#[test]
+fn rfc_0002_chacha12_bounded_sampling_matches_vectors() {
+    use std::num::NonZeroU64;
+
+    fn sample(bound: u64) -> Vec<u64> {
+        let mut budget = ExecutionBudget::new(ResourcePolicy::default());
+        let mut random = crate::random::RequestRandom::from_seed(RandomSeed::from_bytes([0; 32]));
+        let bound = NonZeroU64::new(bound).unwrap();
+        (0..4)
+            .map(|_| random.uniform_below(bound, &mut budget).unwrap() + 1)
+            .collect()
+    }
+
+    assert_eq!(sample(6), [4, 4, 3, 3]);
+    assert_eq!(sample(20), [4, 2, 1, 15]);
+
+    let mut budget = ExecutionBudget::new(ResourcePolicy::default());
+    let mut weighted = crate::random::RequestRandom::from_seed(RandomSeed::from_bytes([0; 32]));
+    let weighted_index = weighted
+        .uniform_below(NonZeroU64::new(100).unwrap(), &mut budget)
+        .unwrap();
+    assert!(
+        weighted_index < 80,
+        "all-zero weighted vector must select common"
+    );
+}
+
+#[test]
+fn rfc_0002_seed_forms_normalize_to_canonical_bytes_and_hex() {
+    let integer = RandomSeed::from_u64(0x0807_0605_0403_0201);
+    assert_eq!(
+        integer.to_hex(),
+        "0102030405060708000000000000000000000000000000000000000000000000"
+    );
+
+    let uppercase =
+        RandomSeed::from_hex("0x000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F")
+            .unwrap();
+    assert_eq!(
+        uppercase.to_hex(),
+        "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
+    );
+
+    for invalid in [
+        "",
+        "0x",
+        "00",
+        "g000000000000000000000000000000000000000000000000000000000000000",
+        "00000000000000000000000000000000000000000000000000000000000000000",
+    ] {
+        assert!(matches!(
+            RandomSeed::from_hex(invalid),
+            Err(DiceError::RandomInvalidSeed)
+        ));
+    }
+}
+
+#[test]
+fn rfc_0002_seeded_calculator_uses_one_metered_request_stream() {
+    let expression = DiceParser::parse_expression("4d6").unwrap();
+    let seed = RandomSeed::from_bytes([0; 32]);
+
+    let mut first = DiceCalculator::with_seed(seed);
+    let first_result = first.evaluate_expression(&expression).unwrap();
+    let first_random = first.random_descriptor().unwrap();
+
+    let mut second = DiceCalculator::with_seed(seed);
+    let second_result = second.evaluate_expression(&expression).unwrap();
+    let second_random = second.random_descriptor().unwrap();
+
+    assert_eq!(first_result.rolls, vec![vec![4], vec![4], vec![3], vec![3]]);
+    assert_eq!(second_result.rolls, first_result.rolls);
+    assert_eq!(first_random, second_random);
+    assert_eq!(first_random.algorithm, "oneroll-chacha12-v1");
+    assert_eq!(first_random.seed, "0".repeat(64));
+    assert_eq!(first_random.rng_words, 4);
+
+    let replayed = first.evaluate_expression(&expression).unwrap();
+    assert_eq!(replayed.rolls, first_result.rolls);
+    assert_eq!(first.random_descriptor().unwrap().rng_words, 4);
+}
+
+#[test]
+fn rfc_0002_rejected_words_are_charged_before_retrying() {
+    use std::num::NonZeroU64;
+
+    let policy = ResourcePolicy::default()
+        .with_limit("rng_words", 2)
+        .unwrap();
+    let mut budget = ExecutionBudget::new(policy);
+    let mut random = crate::random::RequestRandom::from_seed(RandomSeed::from_bytes([0; 32]));
+    let bound = NonZeroU64::new((1u64 << 63) + 1).unwrap();
+
+    assert!(random.uniform_below(bound, &mut budget).is_ok());
+    assert!(matches!(
+        random.uniform_below(bound, &mut budget),
+        Err(DiceError::ResourceLimitExceeded {
+            resource: "rng_words",
+            used: 2,
+            requested: 1,
+            limit: 2,
+        })
+    ));
+    assert_eq!(random.descriptor().rng_words, 2);
+}
+
+#[test]
+fn rfc_0002_random_descriptor_appears_only_after_initialization() {
+    let seed = RandomSeed::from_bytes([0; 32]);
+
+    let mut static_failure = DiceCalculator::with_seed(seed);
+    let expression = DiceParser::parse_expression("1 / 0").unwrap();
+    assert!(matches!(
+        static_failure.evaluate_expression(&expression),
+        Err(DiceError::ArithmeticDivideByZero)
+    ));
+    assert_eq!(static_failure.random_descriptor(), None);
+
+    let scalar = DiceParser::parse_expression("42").unwrap();
+    assert_eq!(
+        static_failure.evaluate_expression(&scalar).unwrap().total,
+        42
+    );
+    assert_eq!(static_failure.random_descriptor().unwrap().rng_words, 0);
+
+    let mut failure_after_draw = DiceCalculator::with_seed(seed);
+    let expression = DiceParser::parse_expression("1d6 / 0").unwrap();
+    assert!(matches!(
+        failure_after_draw.evaluate_expression(&expression),
+        Err(DiceError::ArithmeticDivideByZero)
+    ));
+    assert_eq!(failure_after_draw.random_descriptor().unwrap().rng_words, 1);
+}
 
 #[test]
 fn v2_target_grammar_parses_normative_syntax_shapes() {

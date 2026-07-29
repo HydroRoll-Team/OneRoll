@@ -1,14 +1,18 @@
 use crate::errors::DiceError;
+use crate::random::{RandomDescriptor, RandomSeed, RequestRandom};
 use crate::resource::{ExecutionBudget, ResourcePolicy};
 use crate::types::{
     DiceModifier, DiceResult, DiceRoll, Expression, Program, ProgramResult, VariableStore,
 };
 use serde::Serialize;
+use std::num::NonZeroU64;
 
 pub struct DiceCalculator {
     pub variables: VariableStore,
     policy: ResourcePolicy,
     budget: ExecutionBudget,
+    configured_seed: Option<RandomSeed>,
+    random: Option<RequestRandom>,
     legacy_roll_limit: Option<usize>,
     legacy_generated_rolls: usize,
 }
@@ -23,6 +27,24 @@ impl DiceCalculator {
             variables: VariableStore::new(),
             budget: ExecutionBudget::new(policy.clone()),
             policy,
+            configured_seed: None,
+            random: None,
+            legacy_roll_limit: None,
+            legacy_generated_rolls: 0,
+        }
+    }
+
+    pub fn with_seed(seed: RandomSeed) -> Self {
+        Self::with_policy_and_seed(ResourcePolicy::default(), seed)
+    }
+
+    pub fn with_policy_and_seed(policy: ResourcePolicy, seed: RandomSeed) -> Self {
+        Self {
+            variables: VariableStore::new(),
+            budget: ExecutionBudget::new(policy.clone()),
+            policy,
+            configured_seed: Some(seed),
+            random: None,
             legacy_roll_limit: None,
             legacy_generated_rolls: 0,
         }
@@ -34,6 +56,8 @@ impl DiceCalculator {
             variables: VariableStore::new(),
             budget: ExecutionBudget::new(policy.clone()),
             policy,
+            configured_seed: None,
+            random: None,
             legacy_roll_limit: Some(max_generated_rolls),
             legacy_generated_rolls: 0,
         }
@@ -42,6 +66,23 @@ impl DiceCalculator {
     fn reset_request_budget(&mut self) {
         self.budget = ExecutionBudget::new(self.policy.clone());
         self.legacy_generated_rolls = 0;
+        self.random = None;
+    }
+
+    fn ensure_random(&mut self) -> Result<&mut RequestRandom, DiceError> {
+        if self.random.is_none() {
+            self.random = Some(match self.configured_seed {
+                Some(seed) => RequestRandom::from_seed(seed),
+                None => RequestRandom::from_os_entropy()?,
+            });
+        }
+        self.random
+            .as_mut()
+            .ok_or_else(|| DiceError::CalculationError("random source not initialized".into()))
+    }
+
+    pub fn random_descriptor(&self) -> Option<RandomDescriptor> {
+        self.random.as_ref().map(RequestRandom::descriptor)
     }
 
     fn charge_instruction_activation(&mut self) -> Result<(), DiceError> {
@@ -54,13 +95,27 @@ impl DiceCalculator {
             if self.legacy_generated_rolls >= limit {
                 return Err(DiceError::BudgetExceeded { limit });
             }
+        }
+
+        let bound = u64::try_from(sides)
+            .ok()
+            .and_then(NonZeroU64::new)
+            .ok_or_else(|| DiceError::InvalidExpression("骰子面数必须大于0".to_string()))?;
+        self.ensure_random()?;
+        let roll = self
+            .random
+            .as_mut()
+            .ok_or_else(|| DiceError::CalculationError("random source not initialized".into()))?
+            .uniform_below(bound, &mut self.budget)?
+            + 1;
+
+        if self.legacy_roll_limit.is_some() {
             self.legacy_generated_rolls += 1;
         } else {
             self.budget.charge("generated_values", 1)?;
-            self.budget.charge("rng_words", 1)?;
         }
         self.budget.charge("work_units", 1)?;
-        Ok(rand::random::<u32>() % sides as u32 + 1)
+        Ok(roll as u32)
     }
 
     pub fn roll_dice(&mut self, dice: &DiceRoll) -> Result<Vec<Vec<i64>>, DiceError> {
@@ -307,6 +362,7 @@ impl DiceCalculator {
         self.reset_request_budget();
         self.charge_instruction_activation()?;
         let result = self.evaluate_expression_with_budget(expr)?;
+        self.ensure_random()?;
         self.charge_output_items_for_result(&result)?;
         self.charge_serialized_output(&result)?;
         Ok(result)
@@ -328,6 +384,7 @@ impl DiceCalculator {
             results,
             comment: program.comment.clone(),
         };
+        self.ensure_random()?;
         self.charge_serialized_output(&result)?;
         Ok(result)
     }
@@ -347,6 +404,7 @@ impl DiceCalculator {
             self.charge_output_items_for_result(&result)?;
             results.push(result);
         }
+        self.ensure_random()?;
         self.charge_serialized_output(&results)?;
         Ok(results)
     }

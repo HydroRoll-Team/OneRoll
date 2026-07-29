@@ -49,6 +49,9 @@ jobs:
       - name: Test checked arithmetic in release mode
         run: cargo test --release checked_i64_
 
+      - name: Test deterministic randomness in release mode
+        run: cargo test --release rfc_0002_
+
       - name: Lint Rust
         run: cargo clippy --all-targets --all-features -- -D warnings -A non-local-definitions
 

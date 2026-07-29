@@ -9,6 +9,7 @@ mod calculator;
 mod errors;
 mod parser;
 mod python_bindings;
+pub mod random;
 mod resource;
 mod types;
 
@@ -19,6 +20,7 @@ pub use calculator::DiceCalculator;
 pub use errors::DiceError;
 pub use parser::DiceParser;
 pub use python_bindings::{roll_dice, roll_simple, run_program, OneRoll, PyResourcePolicy};
+pub use random::{RandomDescriptor, RandomSeed, RANDOM_PROTOCOL_ID};
 pub use resource::ResourcePolicy;
 pub use types::{DiceModifier, DiceResult, DiceRoll, Expression, Program, ProgramResult};
 

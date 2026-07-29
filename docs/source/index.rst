@@ -10,9 +10,11 @@ Project status
 --------------
 
 The package is under active hardening.  Basic numeric dice, arithmetic,
-parentheses, comments, and a subset of modifiers work today.  The v2 language,
-deterministic randomness, structured error objects, and production release
-gates are planned work and must not be treated as current behavior.
+parentheses, comments, a subset of modifiers, checked signed 64-bit arithmetic,
+and the request-scoped ChaCha12 random core work today.  The complete v2
+language, Python ``Engine`` seed surface, structured error objects, and final
+production release gates are planned work and must not be treated as current
+behavior.
 
 The first forward-compatible v2 slice is available through ``run``:
 
@@ -36,6 +38,7 @@ Documentation
 
    language
    limits
+   randomness
    conformance
    quality
    releasing

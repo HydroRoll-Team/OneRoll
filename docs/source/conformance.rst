@@ -41,6 +41,7 @@ From the repository root:
 
    cargo test rust_engine_matches_v1_conformance_corpus
    cargo test --release checked_i64_
+   cargo test --release rfc_0002_
    uv run --frozen maturin develop
    uv run --frozen python -m unittest tests.test_v1_conformance -v
 

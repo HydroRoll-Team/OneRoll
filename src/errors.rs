@@ -12,6 +12,10 @@ pub enum DiceError {
     ArithmeticDivideByZero,
     #[error("[arithmetic.invalid_exponent] exponent {exponent} must fit unsigned 32-bit range")]
     ArithmeticInvalidExponent { exponent: i64 },
+    #[error("[random.invalid_seed] seed must be an unsigned 64-bit integer or exactly 64 hexadecimal digits")]
+    RandomInvalidSeed,
+    #[error("[random.entropy_unavailable] operating-system entropy is unavailable: {reason}")]
+    RandomEntropyUnavailable { reason: String },
     #[error("无效的骰子表达式: {0}")]
     InvalidExpression(String),
     #[error("计算预算已耗尽: 最多生成 {limit} 个骰子结果")]
