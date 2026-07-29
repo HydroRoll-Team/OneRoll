@@ -1,4 +1,5 @@
 import copy
+import hashlib
 import json
 import unittest
 from pathlib import Path
@@ -152,6 +153,22 @@ class DocumentationContractTests(unittest.TestCase):
                     payload["roll_nodes"][parent_index]["source"]["generation"] + 1,
                 )
 
+    def _assert_batch_result(self, payload):
+        descriptor = payload["random"]
+        self.assertEqual(len(payload["results"]), descriptor["samples"])
+        root_seed = bytes.fromhex(descriptor["seed"])
+
+        for index, result in enumerate(payload["results"]):
+            self.assertEqual(result["source"], payload["source"])
+            self.assertEqual(result["canonical"], payload["canonical"])
+            derived_seed = hashlib.sha256(
+                b"OneRoll batch seed v1\0"
+                + root_seed
+                + index.to_bytes(8, byteorder="little")
+            ).hexdigest()
+            self.assertEqual(result["metadata"]["random"]["seed"], derived_seed)
+            self._assert_result_graph(result)
+
     def test_language_guide_embeds_the_engine_grammar(self):
         guide = LANGUAGE_GUIDE.read_text(encoding="utf-8")
         directive = ".. literalinclude:: ../../src/oneroll/grammar.pest"
@@ -203,6 +220,10 @@ class DocumentationContractTests(unittest.TestCase):
             "result.nested_program",
             {case["id"] for case in examples["result_cases"]},
         )
+        for case in examples["batch_cases"]:
+            with self.subTest(case=case["id"]):
+                validator.validate(case["payload"])
+                self._assert_batch_result(case["payload"])
         for case in examples["error_cases"]:
             with self.subTest(case=case["id"]):
                 validator.validate(case["payload"])
@@ -231,6 +252,18 @@ class DocumentationContractTests(unittest.TestCase):
         validator.validate(dangling)
         with self.assertRaises(AssertionError):
             self._assert_result_graph(dangling)
+
+        batch = copy.deepcopy(examples["batch_cases"][0]["payload"])
+        batch["random"]["samples"] = 3
+        validator.validate(batch)
+        with self.assertRaises(AssertionError):
+            self._assert_batch_result(batch)
+
+        batch = copy.deepcopy(examples["batch_cases"][0]["payload"])
+        batch["results"][1]["metadata"]["random"]["seed"] = "f" * 64
+        validator.validate(batch)
+        with self.assertRaises(AssertionError):
+            self._assert_batch_result(batch)
 
     def test_public_project_references_do_not_use_legacy_names(self):
         forbidden = (

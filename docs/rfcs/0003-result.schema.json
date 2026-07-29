@@ -4,6 +4,7 @@
   "title": "OneRoll 2.0 result and error envelope",
   "oneOf": [
     { "$ref": "#/$defs/ProgramResult" },
+    { "$ref": "#/$defs/BatchResult" },
     { "$ref": "#/$defs/ErrorEnvelope" }
   ],
   "$defs": {
@@ -317,6 +318,30 @@
         "rng_words": { "type": "integer", "minimum": 0 }
       }
     },
+    "BatchRandomDescriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "seed", "samples"],
+      "properties": {
+        "algorithm": { "const": "oneroll-sha256-batch-v1" },
+        "seed": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "samples": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "BatchFailureDescriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "seed", "samples", "sample_index"],
+      "properties": {
+        "algorithm": { "const": "oneroll-sha256-batch-v1" },
+        "seed": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "samples": { "type": "integer", "minimum": 1 },
+        "sample_index": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        }
+      }
+    },
     "Diagnostic": {
       "type": "object",
       "additionalProperties": false,
@@ -382,6 +407,30 @@
         "metadata": { "$ref": "#/$defs/ResultMetadata" }
       }
     },
+    "BatchResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "kind",
+        "source",
+        "canonical",
+        "results",
+        "random"
+      ],
+      "properties": {
+        "schema_version": { "const": "2.0" },
+        "kind": { "const": "batch_result" },
+        "source": { "type": "string", "minLength": 1 },
+        "canonical": { "type": "string", "minLength": 1 },
+        "results": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/ProgramResult" }
+        },
+        "random": { "$ref": "#/$defs/BatchRandomDescriptor" }
+      }
+    },
     "ExecutionError": {
       "type": "object",
       "additionalProperties": false,
@@ -399,6 +448,7 @@
         "requested": { "type": "integer", "minimum": 0 },
         "limit": { "type": "integer", "minimum": 0 },
         "random": { "$ref": "#/$defs/RandomDescriptor" },
+        "batch": { "$ref": "#/$defs/BatchFailureDescriptor" },
         "expected": {
           "type": "array",
           "items": { "type": "string", "minLength": 1 },

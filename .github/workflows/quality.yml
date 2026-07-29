@@ -56,7 +56,7 @@ jobs:
         run: uv run --frozen ruff format --check .
 
       - name: Check Python types
-        run: uv run --frozen mypy --strict src/oneroll
+        run: uv run --frozen mypy --strict src/oneroll docs/rfcs/0004-target-api.pyi
 
       - name: Test installed Python package
         run: uv run --frozen python -m unittest discover -s tests -v

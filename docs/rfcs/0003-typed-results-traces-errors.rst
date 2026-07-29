@@ -11,9 +11,9 @@ RFC-0003: Typed Program Results, Roll Traces, and Errors
 Summary
 -------
 
-OneRoll 2.0 returns a versioned, typed ``ProgramResult`` rather than treating
-every evaluation as one integer plus display text.  A successful result is a
-normalized graph with three responsibilities:
+OneRoll 2.0 returns a versioned, typed ``ProgramResult`` or ``BatchResult``
+rather than treating every evaluation as one integer plus display text.  A
+successful Program result is a normalized graph with three responsibilities:
 
 * ``InstructionResult`` records ordered public values and scalar projections;
 * ``RollNode`` records every immutable numeric or list draw; and
@@ -330,6 +330,41 @@ compatibility notices.  Warning codes, phases, spans, and replacements have the
 same meaning as errors.  A warning cannot stand in for a failed validation or
 budget check.
 
+Batch result envelope
+---------------------
+
+RFC-0004's ``Engine.run_batch`` returns one atomic ``BatchResult`` rather than
+a bare list:
+
+.. code-block:: text
+
+   BatchResult {
+       schema_version: "2.0",
+       kind: "batch_result",
+       source,
+       canonical,
+       results: [ProgramResult],
+       random: {
+           algorithm: "oneroll-sha256-batch-v1",
+           seed,
+           samples,
+       },
+   }
+
+``seed`` is the canonical root seed.  The engine derives the seed of sample
+``i`` as ``SHA-256(b"OneRoll batch seed v1\0" || root_seed || uint64_le(i))``.
+The resulting 32 bytes are the sample's RFC-0002 ChaCha12 seed.  Results are
+stored in increasing sample-index order, and every child retains the same
+source and canonical Program as the outer envelope.  ``samples`` must equal
+the length of ``results``.
+
+The batch is one request: parsing and validation happen once, all samples
+share request budgets and cancellation state, and one failed sample discards
+every completed result.  The error envelope then includes ``batch`` with the
+root seed, requested sample count, derivation algorithm, and failing
+zero-based ``sample_index``.  ``sample_index`` is null when failure occurred
+before sample execution began.
+
 Error envelope
 --------------
 
@@ -350,6 +385,7 @@ A public failure serializes as:
            "requested"?: integer,
            "limit"?: integer,
            "random"?: replay_descriptor,
+           "batch"?: batch_failure_descriptor,
            "expected"?: [construct_name],
            "replacement"?: canonical_source,
        },
@@ -384,6 +420,9 @@ present and retain RFC-0002 meanings.  ``expected`` is an ordered list of
 parser-level construct names.  ``replacement`` is used by compatibility
 diagnostics.  ``random`` appears after the random stream has been initialized
 and records its state at failure; it contains no generated values.
+``batch`` appears only for a batch request and provides enough root context to
+derive the failing sample seed; when sample execution started, ``random`` also
+records that sample's stream state.
 
 Rust's public error type, Python exception attributes and ``to_dict()``, and
 CLI ``--json`` use this vocabulary.  RFC-0004 may define an exception class
@@ -393,9 +432,10 @@ Atomic failure and partial traces
 ---------------------------------
 
 The success and error envelopes are disjoint.  Schema 2.0 has no representation
-for a partial ``ProgramResult``.  Any parse, validation, evaluation, budget,
-entropy, cancellation, or deadline failure discards all instruction results,
-RollNodes, and TraceNodes before returning the error envelope.
+for a partial ``ProgramResult`` or ``BatchResult``.  Any parse, validation,
+evaluation, budget, entropy, cancellation, or deadline failure discards all
+instruction results, completed batch samples, RollNodes, and TraceNodes before
+returning the error envelope.
 
 Debuggers may consume an explicitly unstable in-process observer stream, but
 that stream is not serializable as this schema, is disabled by default, and is
@@ -438,9 +478,9 @@ Normative examples
 ------------------
 
 The example corpus covers Scalar, Text, mixed Values, RollSet selection,
-Boolean, nested repeat Programs, parse errors, and budget failure after random
-work.  Every payload must validate against the schema and the graph invariants
-in this RFC:
+Boolean, nested repeat Programs, deterministic batches, parse errors, and
+budget failure after random work.  Every payload must validate against the
+schema and the graph invariants in this RFC:
 
 .. literalinclude:: ../rfcs/0003-examples.json
    :language: json
@@ -468,6 +508,10 @@ also reject a payload unless all of these hold:
 #. Nested execution indices are consecutive within their parent activation;
    instruction indices are consecutive within each Program frame.
 #. Error envelopes contain none of the success-only graph fields.
+#. A BatchResult contains exactly ``random.samples`` children in sample-index
+   order; every child source and canonical Program equals the outer fields.
+#. Each batch child seed is the specified derivation of the root seed and its
+   zero-based position; a batch failure identifies the same root context.
 
 The schema conformance test includes valid examples and deliberately mutated
 invalid payloads.  Later engine implementation tests must serialize real Rust
@@ -527,6 +571,7 @@ This RFC unlocks focused vertical issues:
 #. Issue 35 moves ``details`` generation entirely behind trace renderers.
 #. RFC-0004 and issues 19 and 26 expose the same contract through the final
    Engine and Python exception APIs.
+#. Issue 22 implements the atomic batch envelope and exact seed derivation.
 
 Every slice adds Rust serialization, installed-Python equality, schema
 validation, graph invariants, resource charging, and documentation in the same

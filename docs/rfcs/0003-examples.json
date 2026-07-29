@@ -481,6 +481,104 @@
       }
     }
   ],
+  "batch_cases": [
+    {
+      "id": "batch.literal",
+      "payload": {
+        "schema_version": "2.0",
+        "kind": "batch_result",
+        "source": "1",
+        "canonical": "1",
+        "results": [
+          {
+            "schema_version": "2.0",
+            "kind": "program_result",
+            "source": "1",
+            "canonical": "1",
+            "comment": null,
+            "instructions": [
+              {
+                "id": "i0",
+                "index": 0,
+                "span": { "start_byte": 0, "end_byte": 1 },
+                "canonical": "1",
+                "value": { "kind": "scalar", "value": 1 },
+                "scalar": 1,
+                "trace_root": "t0",
+                "executions": []
+              }
+            ],
+            "roll_nodes": [],
+            "trace_nodes": [
+              {
+                "id": "t0",
+                "kind": "literal",
+                "span": { "start_byte": 0, "end_byte": 1 },
+                "inputs": [],
+                "value": { "kind": "scalar", "value": 1 },
+                "related_roll_ids": [],
+                "data": { "operation": "1" }
+              }
+            ],
+            "metadata": {
+              "compatibility_mode": "strict_v2",
+              "random": {
+                "algorithm": "oneroll-chacha12-v1",
+                "seed": "1f6bac00ab7392f2573c212d426bae43bd25654c58c2473a7b264d7d085dfa8d",
+                "rng_words": 0
+              },
+              "warnings": []
+            }
+          },
+          {
+            "schema_version": "2.0",
+            "kind": "program_result",
+            "source": "1",
+            "canonical": "1",
+            "comment": null,
+            "instructions": [
+              {
+                "id": "i0",
+                "index": 0,
+                "span": { "start_byte": 0, "end_byte": 1 },
+                "canonical": "1",
+                "value": { "kind": "scalar", "value": 1 },
+                "scalar": 1,
+                "trace_root": "t0",
+                "executions": []
+              }
+            ],
+            "roll_nodes": [],
+            "trace_nodes": [
+              {
+                "id": "t0",
+                "kind": "literal",
+                "span": { "start_byte": 0, "end_byte": 1 },
+                "inputs": [],
+                "value": { "kind": "scalar", "value": 1 },
+                "related_roll_ids": [],
+                "data": { "operation": "1" }
+              }
+            ],
+            "metadata": {
+              "compatibility_mode": "strict_v2",
+              "random": {
+                "algorithm": "oneroll-chacha12-v1",
+                "seed": "8edeea3ef906166ba806febfe5db1936e623009947ef040e0ef5cfd860465b2c",
+                "rng_words": 0
+              },
+              "warnings": []
+            }
+          }
+        ],
+        "random": {
+          "algorithm": "oneroll-sha256-batch-v1",
+          "seed": "0000000000000000000000000000000000000000000000000000000000000000",
+          "samples": 2
+        }
+      }
+    }
+  ],
   "error_cases": [
     {
       "id": "error.parse",
@@ -513,6 +611,33 @@
             "algorithm": "oneroll-chacha12-v1",
             "seed": "0000000000000000000000000000000000000000000000000000000000000000",
             "rng_words": 10000
+          }
+        }
+      }
+    },
+    {
+      "id": "error.batch_budget",
+      "payload": {
+        "schema_version": "2.0",
+        "kind": "error",
+        "error": {
+          "phase": "evaluate",
+          "code": "limit.generated_values",
+          "message": "generated value budget exceeded",
+          "resource": "generated_values",
+          "used": 10000,
+          "requested": 1,
+          "limit": 10000,
+          "random": {
+            "algorithm": "oneroll-chacha12-v1",
+            "seed": "8edeea3ef906166ba806febfe5db1936e623009947ef040e0ef5cfd860465b2c",
+            "rng_words": 0
+          },
+          "batch": {
+            "algorithm": "oneroll-sha256-batch-v1",
+            "seed": "0000000000000000000000000000000000000000000000000000000000000000",
+            "samples": 2,
+            "sample_index": 1
           }
         }
       }

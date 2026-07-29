@@ -1,0 +1,66 @@
+{
+  "contract_version": "2.0",
+  "module": "oneroll",
+  "primary_class": "Engine",
+  "engine_methods": ["parse", "validate", "roll", "run", "run_batch"],
+  "result_classes": [
+    "Span",
+    "RandomDescriptor",
+    "BatchRandomDescriptor",
+    "BatchFailureDescriptor",
+    "Diagnostic",
+    "ScalarValue",
+    "TextValue",
+    "BooleanValue",
+    "ValuesValue",
+    "RollReference",
+    "RollSetValue",
+    "NestedExecution",
+    "InstructionResult",
+    "RollSource",
+    "RollNode",
+    "TraceAnnotation",
+    "TraceData",
+    "TraceNode",
+    "ResultMetadata",
+    "ProgramResult",
+    "BatchResult",
+    "ParsedProgram",
+    "ValidatedProgram"
+  ],
+  "support_classes": ["ResourcePolicy", "CancellationToken"],
+  "exception_bases": {
+    "OneRollError": "ValueError",
+    "ParseError": "OneRollError",
+    "ValidationError": "OneRollError",
+    "EvaluationError": "OneRollError",
+    "ResourceLimitError": "EvaluationError",
+    "RandomError": "EvaluationError",
+    "ArithmeticEvaluationError": "EvaluationError",
+    "CancellationError": "OneRollError",
+    "DeadlineExceededError": "CancellationError"
+  },
+  "compatibility_classes": ["OneRoll", "CommonRolls"],
+  "compatibility_functions": [
+    "roll",
+    "run",
+    "roll_simple",
+    "roll_multiple",
+    "roll_statistics"
+  ],
+  "batch": {
+    "algorithm": "oneroll-sha256-batch-v1",
+    "domain_separator": "OneRoll batch seed v1\\0",
+    "index_encoding": "uint64_le",
+    "execution_order": "sequential",
+    "atomic": true
+  },
+  "package": {
+    "core_dependencies": [],
+    "extras": {
+      "cli": ["rich>=14.1.0"],
+      "tui": ["rich>=14.1.0", "textual>=6.1.0"]
+    },
+    "scripts": ["oneroll", "1roll"]
+  }
+}

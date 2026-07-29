@@ -43,6 +43,7 @@ Documentation
    rfc-0001
    rfc-0002
    rfc-0003
+   rfc-0004
 
 Source and planning
 -------------------

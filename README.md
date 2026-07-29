@@ -83,6 +83,9 @@ compatibility-sensitive behavior and known defects.
 - [Resource limits](docs/source/limits.rst)
 - [Production roadmap](docs/source/roadmap.rst)
 - [RFC-0001: OneRoll Program Language v2](docs/rfcs/0001-dice-program-language-v2.rst)
+- [RFC-0002: Execution Safety, Budgets, and Randomness](docs/rfcs/0002-execution-safety-budgets-randomness.rst)
+- [RFC-0003: Typed Program Results, Roll Traces, and Errors](docs/rfcs/0003-typed-results-traces-errors.rst)
+- [RFC-0004: Python Engine API and Package Boundary](docs/rfcs/0004-python-engine-api-package-boundary.rst)
 - [GitHub milestones](https://github.com/HydroRoll-Team/OneRoll/milestones)
 - [GitHub issues](https://github.com/HydroRoll-Team/OneRoll/issues)
 

@@ -35,7 +35,7 @@ class QualityGateContractTests(unittest.TestCase):
             "cargo clippy --all-targets --all-features -- -D warnings",
             "ruff check .",
             "ruff format --check .",
-            "mypy --strict src/oneroll",
+            "mypy --strict src/oneroll docs/rfcs/0004-target-api.pyi",
             "python -m unittest discover -s tests -v",
             "sphinx-build -W --keep-going -b html",
         ):
