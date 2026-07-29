@@ -32,6 +32,7 @@ class QualityGateContractTests(unittest.TestCase):
         for command in (
             "cargo fmt --all -- --check",
             "cargo test --all-targets --all-features",
+            "cargo test --release checked_i64_",
             "cargo clippy --all-targets --all-features -- -D warnings",
             "ruff check .",
             "ruff format --check .",

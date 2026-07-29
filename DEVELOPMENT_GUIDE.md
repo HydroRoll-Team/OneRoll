@@ -23,8 +23,8 @@ pub enum Expression {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DiceResult {
     pub expression: String,
-    pub total: i32,
-    pub rolls: Vec<Vec<i32>>,
+    pub total: i64,
+    pub rolls: Vec<Vec<i64>>,
     pub details: String,
     pub comment: Option<String>,  // 新增字段
 }
@@ -155,7 +155,7 @@ RUST_LOG=debug maturin develop
 ```rust
 // 在相应的模块中修复问题
 impl DiceCalculator {
-    pub fn roll_dice(&mut self, dice: &DiceRoll) -> Result<Vec<Vec<i32>>, DiceError> {
+    pub fn roll_dice(&mut self, dice: &DiceRoll) -> Result<Vec<Vec<i64>>, DiceError> {
         // 修复逻辑
         if dice.count <= 0 || dice.sides <= 0 {
             return Err(DiceError::InvalidExpression(
@@ -242,7 +242,7 @@ impl DiceCalculator {
         Self { config }
     }
     
-    pub fn roll_dice(&mut self, dice: &DiceRoll) -> Result<Vec<Vec<i32>>, DiceError> {
+    pub fn roll_dice(&mut self, dice: &DiceRoll) -> Result<Vec<Vec<i64>>, DiceError> {
         if dice.count > self.config.max_dice_count {
             return Err(DiceError::InvalidExpression(
                 format!("骰子数量不能超过{}", self.config.max_dice_count),

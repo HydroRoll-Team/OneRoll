@@ -17,6 +17,20 @@ examples and behavior classifications in :doc:`conformance` define current
 semantics, including compatibility-sensitive modifier behavior and the known
 flat arithmetic precedence defect.
 
+Current arithmetic
+------------------
+
+Scalar literals, dice values, intermediate totals, and collection sums use
+signed 64-bit integers.  Addition, subtraction, multiplication, division,
+exponentiation, and aggregation are checked: they never wrap and never expose
+a Rust panic through Python.  Integer division truncates toward zero.
+
+The current v1 exponent token remains ``^``.  A negative exponent or one above
+``u32::MAX`` fails with ``arithmetic.invalid_exponent``; division by zero uses
+``arithmetic.divide_by_zero``; every checked overflow uses
+``arithmetic.overflow``.  ``0 ^ 0`` is defined as ``1``.  RFC-0001 changes the
+strict-v2 exponent token to ``**`` without changing these numeric boundaries.
+
 Programs
 --------
 

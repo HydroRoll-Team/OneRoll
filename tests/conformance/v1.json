@@ -27,6 +27,100 @@
       }
     },
     {
+      "id": "i64_max_literal",
+      "expression": "9223372036854775807",
+      "classification": "intended",
+      "note": "Scalar literals use the complete signed 64-bit range.",
+      "expect": {
+        "status": "success",
+        "total": 9223372036854775807,
+        "flattened_rolls": 0,
+        "comment": ""
+      }
+    },
+    {
+      "id": "i64_min_literal",
+      "expression": "-9223372036854775808",
+      "classification": "intended",
+      "note": "Scalar literals use the complete signed 64-bit range.",
+      "expect": {
+        "status": "success",
+        "total": -9223372036854775808,
+        "flattened_rolls": 0,
+        "comment": ""
+      }
+    },
+    {
+      "id": "addition_overflow",
+      "expression": "9223372036854775807 + 1",
+      "classification": "intended",
+      "note": "Checked addition returns a stable error instead of panicking or wrapping.",
+      "expect": {
+        "status": "error",
+        "message_contains": "[arithmetic.overflow]"
+      }
+    },
+    {
+      "id": "subtraction_overflow",
+      "expression": "-9223372036854775808 - 1",
+      "classification": "intended",
+      "note": "Checked subtraction returns a stable error instead of panicking or wrapping.",
+      "expect": {
+        "status": "error",
+        "message_contains": "[arithmetic.overflow]"
+      }
+    },
+    {
+      "id": "multiplication_overflow",
+      "expression": "3037000500 * 3037000500",
+      "classification": "intended",
+      "note": "Checked multiplication returns a stable error instead of panicking or wrapping.",
+      "expect": {
+        "status": "error",
+        "message_contains": "[arithmetic.overflow]"
+      }
+    },
+    {
+      "id": "division_overflow",
+      "expression": "-9223372036854775808 / -1",
+      "classification": "intended",
+      "note": "The signed division overflow edge returns a stable error.",
+      "expect": {
+        "status": "error",
+        "message_contains": "[arithmetic.overflow]"
+      }
+    },
+    {
+      "id": "negative_exponent",
+      "expression": "2 ^ -1",
+      "classification": "intended",
+      "note": "Negative integer exponents are invalid.",
+      "expect": {
+        "status": "error",
+        "message_contains": "[arithmetic.invalid_exponent]"
+      }
+    },
+    {
+      "id": "exponent_above_u32",
+      "expression": "2 ^ 4294967296",
+      "classification": "intended",
+      "note": "An exponent above the accepted unsigned 32-bit range is invalid.",
+      "expect": {
+        "status": "error",
+        "message_contains": "[arithmetic.invalid_exponent]"
+      }
+    },
+    {
+      "id": "exponentiation_overflow",
+      "expression": "2 ^ 63",
+      "classification": "intended",
+      "note": "Checked exponentiation returns a stable overflow error.",
+      "expect": {
+        "status": "error",
+        "message_contains": "[arithmetic.overflow]"
+      }
+    },
+    {
       "id": "deterministic_dice",
       "expression": "3d1",
       "classification": "intended",

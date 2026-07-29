@@ -63,7 +63,7 @@ impl DiceCalculator {
         Ok(rand::random::<u32>() % sides as u32 + 1)
     }
 
-    pub fn roll_dice(&mut self, dice: &DiceRoll) -> Result<Vec<Vec<i32>>, DiceError> {
+    pub fn roll_dice(&mut self, dice: &DiceRoll) -> Result<Vec<Vec<i64>>, DiceError> {
         self.reset_request_budget();
         self.charge_instruction_activation()?;
         let rolls = self.roll_dice_with_budget(dice)?;
@@ -72,17 +72,17 @@ impl DiceCalculator {
         Ok(rolls)
     }
 
-    pub fn roll_simple(&mut self, dice: &DiceRoll) -> Result<i32, DiceError> {
+    pub fn roll_simple(&mut self, dice: &DiceRoll) -> Result<i64, DiceError> {
         self.reset_request_budget();
         self.charge_instruction_activation()?;
         let rolls = self.roll_dice_with_budget(dice)?;
-        let total = rolls.iter().flatten().sum();
+        let total = Self::checked_sum(rolls.iter().flatten().copied(), "simple roll aggregation")?;
         self.budget.charge("output_items", 1)?;
         self.charge_serialized_output(&total)?;
         Ok(total)
     }
 
-    fn roll_dice_with_budget(&mut self, dice: &DiceRoll) -> Result<Vec<Vec<i32>>, DiceError> {
+    fn roll_dice_with_budget(&mut self, dice: &DiceRoll) -> Result<Vec<Vec<i64>>, DiceError> {
         if dice.count <= 0 || dice.sides <= 0 {
             return Err(DiceError::InvalidExpression(
                 "骰子数量和面数必须大于0".to_string(),
@@ -102,7 +102,7 @@ impl DiceCalculator {
             let mut roll = self.roll_face(dice.sides)?;
             collected_values = collected_values.saturating_add(1);
             self.budget.ensure("collection_items", collected_values)?;
-            let mut final_rolls = vec![roll as i32];
+            let mut final_rolls = vec![i64::from(roll)];
 
             // handle exploded throwing
             for modifier in &dice.modifiers {
@@ -112,7 +112,7 @@ impl DiceCalculator {
                             roll = self.roll_face(dice.sides)?;
                             collected_values = collected_values.saturating_add(1);
                             self.budget.ensure("collection_items", collected_values)?;
-                            final_rolls.push(roll as i32);
+                            final_rolls.push(i64::from(roll));
                         }
                     }
                     DiceModifier::ExplodeAlias => {
@@ -120,7 +120,7 @@ impl DiceCalculator {
                             roll = self.roll_face(dice.sides)?;
                             collected_values = collected_values.saturating_add(1);
                             self.budget.ensure("collection_items", collected_values)?;
-                            final_rolls.push(roll as i32);
+                            final_rolls.push(i64::from(roll));
                         }
                     }
                     _ => {}
@@ -131,34 +131,41 @@ impl DiceCalculator {
             for modifier in &dice.modifiers {
                 match modifier {
                     DiceModifier::Reroll(threshold)
-                        if final_rolls.iter().any(|&r| r <= *threshold) =>
+                        if final_rolls.iter().any(|&r| r <= i64::from(*threshold)) =>
                     {
                         let new_roll = self.roll_face(dice.sides)?;
-                        final_rolls = vec![new_roll as i32];
+                        final_rolls = vec![i64::from(new_roll)];
                     }
                     DiceModifier::RerollOnce(threshold) => {
-                        if let Some(pos) = final_rolls.iter().position(|&r| r <= *threshold) {
+                        if let Some(pos) =
+                            final_rolls.iter().position(|&r| r <= i64::from(*threshold))
+                        {
                             let new_roll = self.roll_face(dice.sides)?;
-                            final_rolls[pos] = new_roll as i32;
+                            final_rolls[pos] = i64::from(new_roll);
                         }
                     }
                     DiceModifier::RerollUntil(threshold) => {
                         // keep rolling until > threshold; the shared roll budget
                         // bounds expressions that can never satisfy the condition.
-                        let mut current = *final_rolls.last().unwrap_or(&((roll) as i32));
-                        while current <= *threshold {
+                        let mut current = *final_rolls.last().unwrap_or(&i64::from(roll));
+                        while current <= i64::from(*threshold) {
                             let new_roll = self.roll_face(dice.sides)?;
-                            current = new_roll as i32;
+                            current = i64::from(new_roll);
                             final_rolls = vec![current];
                         }
                     }
                     // if <= threshold, roll again and add to the last value
                     DiceModifier::RerollAndAdd(threshold)
-                        if final_rolls.iter().any(|&r| r <= *threshold) =>
+                        if final_rolls.iter().any(|&r| r <= i64::from(*threshold)) =>
                     {
                         let new_roll = self.roll_face(dice.sides)?;
-                        let mut sum = final_rolls.iter().sum::<i32>();
-                        sum += new_roll as i32;
+                        let sum = Self::checked_sum(
+                            final_rolls
+                                .iter()
+                                .copied()
+                                .chain(std::iter::once(i64::from(new_roll))),
+                            "reroll-and-add aggregation",
+                        )?;
                         final_rolls = vec![sum];
                     }
                     _ => {}
@@ -173,7 +180,7 @@ impl DiceCalculator {
         for modifier in &dice.modifiers {
             if let DiceModifier::KeepAlias(n) = modifier {
                 self.charge_modifier_work(&final_rolls)?;
-                let all_values: Vec<i32> = final_rolls.iter().flatten().cloned().collect();
+                let all_values: Vec<i64> = final_rolls.iter().flatten().copied().collect();
                 let mut sorted = all_values;
                 sorted.sort_by(|a, b| b.cmp(a));
                 final_rolls = sorted.iter().take(*n as usize).map(|&v| vec![v]).collect();
@@ -187,32 +194,32 @@ impl DiceCalculator {
             }
             match modifier {
                 DiceModifier::KeepHigh(n) => {
-                    let all_values: Vec<i32> = final_rolls.iter().flatten().cloned().collect();
+                    let all_values: Vec<i64> = final_rolls.iter().flatten().copied().collect();
                     let mut sorted = all_values;
                     sorted.sort_by(|a, b| b.cmp(a));
                     final_rolls = sorted.iter().take(*n as usize).map(|&v| vec![v]).collect();
                 }
                 DiceModifier::KeepLow(n) => {
-                    let all_values: Vec<i32> = final_rolls.iter().flatten().cloned().collect();
+                    let all_values: Vec<i64> = final_rolls.iter().flatten().copied().collect();
                     let mut sorted = all_values;
                     sorted.sort();
                     final_rolls = sorted.iter().take(*n as usize).map(|&v| vec![v]).collect();
                 }
                 DiceModifier::DropHigh(n) => {
-                    let all_values: Vec<i32> = final_rolls.iter().flatten().cloned().collect();
+                    let all_values: Vec<i64> = final_rolls.iter().flatten().copied().collect();
                     let mut sorted = all_values;
                     sorted.sort_by(|a, b| b.cmp(a));
                     final_rolls = sorted.iter().skip(*n as usize).map(|&v| vec![v]).collect();
                 }
                 DiceModifier::DropLow(n) => {
-                    let all_values: Vec<i32> = final_rolls.iter().flatten().cloned().collect();
+                    let all_values: Vec<i64> = final_rolls.iter().flatten().copied().collect();
                     let mut sorted = all_values;
                     sorted.sort();
                     final_rolls = sorted.iter().skip(*n as usize).map(|&v| vec![v]).collect();
                 }
                 DiceModifier::ExplodeKeepHigh(n) => {
                     // equivalent to explode then keep high n
-                    let all_values: Vec<i32> = final_rolls.iter().flatten().cloned().collect();
+                    let all_values: Vec<i64> = final_rolls.iter().flatten().copied().collect();
                     let mut sorted = all_values;
                     sorted.sort_by(|a, b| b.cmp(a));
                     final_rolls = sorted.iter().take(*n as usize).map(|&v| vec![v]).collect();
@@ -220,7 +227,7 @@ impl DiceCalculator {
                 DiceModifier::Unique => {
                     use std::collections::HashSet;
                     let mut seen = HashSet::new();
-                    let mut uniques: Vec<i32> = Vec::new();
+                    let mut uniques: Vec<i64> = Vec::new();
                     for v in final_rolls.iter().flatten() {
                         if seen.insert(*v) {
                             uniques.push(*v);
@@ -229,13 +236,21 @@ impl DiceCalculator {
                     final_rolls = uniques.into_iter().map(|v| vec![v]).collect();
                 }
                 DiceModifier::Sort => {
-                    let mut values: Vec<i32> = final_rolls.iter().flatten().cloned().collect();
+                    let mut values: Vec<i64> = final_rolls.iter().flatten().copied().collect();
                     values.sort();
                     final_rolls = values.into_iter().map(|v| vec![v]).collect();
                 }
                 DiceModifier::Count(target) => {
-                    let values: Vec<i32> = final_rolls.iter().flatten().cloned().collect();
-                    let count = values.iter().filter(|&&v| v == *target).count() as i32;
+                    let values: Vec<i64> = final_rolls.iter().flatten().copied().collect();
+                    let count = i64::try_from(
+                        values
+                            .iter()
+                            .filter(|&&value| value == i64::from(*target))
+                            .count(),
+                    )
+                    .map_err(|_| DiceError::ArithmeticOverflow {
+                        operation: "occurrence count",
+                    })?;
                     final_rolls = vec![vec![count]];
                 }
                 _ => {}
@@ -247,18 +262,18 @@ impl DiceCalculator {
         Ok(final_rolls)
     }
 
-    fn roll_item_count(rolls: &[Vec<i32>]) -> usize {
+    fn roll_item_count(rolls: &[Vec<i64>]) -> usize {
         rolls
             .iter()
             .fold(0usize, |total, values| total.saturating_add(values.len()))
     }
 
-    fn charge_modifier_work(&mut self, rolls: &[Vec<i32>]) -> Result<(), DiceError> {
+    fn charge_modifier_work(&mut self, rolls: &[Vec<i64>]) -> Result<(), DiceError> {
         self.budget
             .charge("work_units", Self::roll_item_count(rolls))
     }
 
-    fn charge_output_items_for_rolls(&mut self, rolls: &[Vec<i32>]) -> Result<(), DiceError> {
+    fn charge_output_items_for_rolls(&mut self, rolls: &[Vec<i64>]) -> Result<(), DiceError> {
         self.budget
             .charge("output_items", Self::roll_item_count(rolls))
     }
@@ -268,6 +283,17 @@ impl DiceCalculator {
             "output_items",
             1usize.saturating_add(Self::roll_item_count(&result.rolls)),
         )
+    }
+
+    fn checked_sum(
+        values: impl IntoIterator<Item = i64>,
+        operation: &'static str,
+    ) -> Result<i64, DiceError> {
+        values.into_iter().try_fold(0i64, |total, value| {
+            total
+                .checked_add(value)
+                .ok_or(DiceError::ArithmeticOverflow { operation })
+        })
     }
 
     fn charge_serialized_output<T: Serialize>(&mut self, value: &T) -> Result<(), DiceError> {
@@ -347,7 +373,8 @@ impl DiceCalculator {
             }),
             Expression::DiceRoll(dice) => {
                 let rolls = self.roll_dice_with_budget(dice)?;
-                let total: i32 = rolls.iter().flatten().sum();
+                let total =
+                    Self::checked_sum(rolls.iter().flatten().copied(), "dice result aggregation")?;
                 let details = format!(
                     "{}d{}{} = {} (详情: {:?})",
                     dice.count,
@@ -367,57 +394,57 @@ impl DiceCalculator {
             Expression::Add(left, right) => {
                 let left_result = self.evaluate_expression_with_budget(left)?;
                 let right_result = self.evaluate_expression_with_budget(right)?;
+                let total = left_result.total.checked_add(right_result.total).ok_or(
+                    DiceError::ArithmeticOverflow {
+                        operation: "addition",
+                    },
+                )?;
                 Ok(DiceResult {
                     expression: format!(
                         "({}) + ({})",
                         left_result.expression, right_result.expression
                     ),
-                    total: left_result.total + right_result.total,
+                    total,
                     rolls: [left_result.rolls, right_result.rolls].concat(),
-                    details: format!(
-                        "{} + {} = {}",
-                        left_result.total,
-                        right_result.total,
-                        left_result.total + right_result.total
-                    ),
+                    details: format!("{} + {} = {}", left_result.total, right_result.total, total),
                     comment: None,
                 })
             }
             Expression::Subtract(left, right) => {
                 let left_result = self.evaluate_expression_with_budget(left)?;
                 let right_result = self.evaluate_expression_with_budget(right)?;
+                let total = left_result.total.checked_sub(right_result.total).ok_or(
+                    DiceError::ArithmeticOverflow {
+                        operation: "subtraction",
+                    },
+                )?;
                 Ok(DiceResult {
                     expression: format!(
                         "({}) - ({})",
                         left_result.expression, right_result.expression
                     ),
-                    total: left_result.total - right_result.total,
+                    total,
                     rolls: [left_result.rolls, right_result.rolls].concat(),
-                    details: format!(
-                        "{} - {} = {}",
-                        left_result.total,
-                        right_result.total,
-                        left_result.total - right_result.total
-                    ),
+                    details: format!("{} - {} = {}", left_result.total, right_result.total, total),
                     comment: None,
                 })
             }
             Expression::Multiply(left, right) => {
                 let left_result = self.evaluate_expression_with_budget(left)?;
                 let right_result = self.evaluate_expression_with_budget(right)?;
+                let total = left_result.total.checked_mul(right_result.total).ok_or(
+                    DiceError::ArithmeticOverflow {
+                        operation: "multiplication",
+                    },
+                )?;
                 Ok(DiceResult {
                     expression: format!(
                         "({}) * ({})",
                         left_result.expression, right_result.expression
                     ),
-                    total: left_result.total * right_result.total,
+                    total,
                     rolls: [left_result.rolls, right_result.rolls].concat(),
-                    details: format!(
-                        "{} * {} = {}",
-                        left_result.total,
-                        right_result.total,
-                        left_result.total * right_result.total
-                    ),
+                    details: format!("{} * {} = {}", left_result.total, right_result.total, total),
                     comment: None,
                 })
             }
@@ -425,28 +452,37 @@ impl DiceCalculator {
                 let left_result = self.evaluate_expression_with_budget(left)?;
                 let right_result = self.evaluate_expression_with_budget(right)?;
                 if right_result.total == 0 {
-                    return Err(DiceError::CalculationError("除零错误".to_string()));
+                    return Err(DiceError::ArithmeticDivideByZero);
                 }
+                let total = left_result.total.checked_div(right_result.total).ok_or(
+                    DiceError::ArithmeticOverflow {
+                        operation: "division",
+                    },
+                )?;
                 Ok(DiceResult {
                     expression: format!(
                         "({}) / ({})",
                         left_result.expression, right_result.expression
                     ),
-                    total: left_result.total / right_result.total,
+                    total,
                     rolls: [left_result.rolls, right_result.rolls].concat(),
-                    details: format!(
-                        "{} / {} = {}",
-                        left_result.total,
-                        right_result.total,
-                        left_result.total / right_result.total
-                    ),
+                    details: format!("{} / {} = {}", left_result.total, right_result.total, total),
                     comment: None,
                 })
             }
             Expression::Power(left, right) => {
                 let left_result = self.evaluate_expression_with_budget(left)?;
                 let right_result = self.evaluate_expression_with_budget(right)?;
-                let result = left_result.total.pow(right_result.total as u32);
+                let exponent = u32::try_from(right_result.total).map_err(|_| {
+                    DiceError::ArithmeticInvalidExponent {
+                        exponent: right_result.total,
+                    }
+                })?;
+                let result = left_result.total.checked_pow(exponent).ok_or(
+                    DiceError::ArithmeticOverflow {
+                        operation: "exponentiation",
+                    },
+                )?;
                 Ok(DiceResult {
                     expression: format!(
                         "({}) ^ ({})",
@@ -584,5 +620,26 @@ mod tests {
         );
 
         assert_budget_exceeded(calculator.evaluate_expression(&expression), 2);
+    }
+
+    #[test]
+    fn simple_roll_returns_an_i64_total() {
+        let mut calculator = DiceCalculator::new();
+        let total: i64 = calculator.roll_simple(&dice(2, vec![])).unwrap();
+
+        assert_eq!(total, 2);
+    }
+
+    #[test]
+    fn checked_collection_sum_rejects_i64_overflow() {
+        let result =
+            DiceCalculator::checked_sum([i64::MAX, 1], "checked collection sum regression");
+
+        assert!(matches!(
+            result,
+            Err(DiceError::ArithmeticOverflow {
+                operation: "checked collection sum regression"
+            })
+        ));
     }
 }

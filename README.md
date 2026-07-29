@@ -10,6 +10,10 @@ evolves that expression roller into a bounded, typed program language with
 ranges, weighted-list dice, validators, variables, option pipelines, and
 structured results.
 
+Current scalar literals and totals use checked signed 64-bit arithmetic.
+Overflow, division by zero, and invalid exponents raise `ValueError` with a
+stable `arithmetic.*` code instead of panicking or wrapping.
+
 > OneRoll is being hardened for production. Features listed in the v2 RFC are
 > targets unless the implementation status explicitly says otherwise.
 

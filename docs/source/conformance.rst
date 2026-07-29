@@ -10,7 +10,8 @@ The corpus covers every syntax family in the grammar embedded by
 :doc:`language`, including literals, numeric dice, arithmetic, parentheses,
 comments, every v1 modifier, modifier composition, semicolon-separated
 programs, resource-limit failures, and representative parse and evaluation
-errors.
+errors.  Arithmetic cases include both signed 64-bit boundaries, every checked
+binary operation, division sign behavior, invalid exponents, and overflow.
 
 Behavior classifications
 ------------------------
@@ -39,6 +40,7 @@ From the repository root:
 .. code-block:: console
 
    cargo test rust_engine_matches_v1_conformance_corpus
+   cargo test --release checked_i64_
    uv run --frozen maturin develop
    uv run --frozen python -m unittest tests.test_v1_conformance -v
 

@@ -145,7 +145,7 @@ impl OneRoll {
         })
     }
 
-    fn roll_simple(&mut self, dice_count: i32, dice_sides: i32) -> PyResult<i32> {
+    fn roll_simple(&mut self, dice_count: i32, dice_sides: i32) -> PyResult<i64> {
         let mut calculator = DiceCalculator::with_policy(self.policy.clone());
         let dice = DiceRoll {
             count: dice_count,
@@ -273,7 +273,7 @@ pub fn run_program(program: &str) -> PyResult<PyObject> {
 }
 
 #[pyfunction]
-pub fn roll_simple(dice_count: i32, dice_sides: i32) -> PyResult<i32> {
+pub fn roll_simple(dice_count: i32, dice_sides: i32) -> PyResult<i64> {
     let mut calculator = DiceCalculator::new();
     let dice = DiceRoll {
         count: dice_count,

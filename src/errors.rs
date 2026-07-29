@@ -6,6 +6,12 @@ pub enum DiceError {
     ParseError(String),
     #[error("计算错误: {0}")]
     CalculationError(String),
+    #[error("[arithmetic.overflow] checked i64 overflow during {operation}")]
+    ArithmeticOverflow { operation: &'static str },
+    #[error("[arithmetic.divide_by_zero] 除零错误")]
+    ArithmeticDivideByZero,
+    #[error("[arithmetic.invalid_exponent] exponent {exponent} must fit unsigned 32-bit range")]
+    ArithmeticInvalidExponent { exponent: i64 },
     #[error("无效的骰子表达式: {0}")]
     InvalidExpression(String),
     #[error("计算预算已耗尽: 最多生成 {limit} 个骰子结果")]

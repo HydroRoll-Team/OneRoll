@@ -4,8 +4,8 @@ use std::collections::HashMap;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DiceResult {
     pub expression: String,
-    pub total: i32,
-    pub rolls: Vec<Vec<i32>>,
+    pub total: i64,
+    pub rolls: Vec<Vec<i64>>,
     pub details: String,
     pub comment: Option<String>,
 }
@@ -50,7 +50,7 @@ pub enum DiceModifier {
 
 #[derive(Debug, Clone)]
 pub enum Expression {
-    Number(i32),
+    Number(i64),
     DiceRoll(DiceRoll),
     Add(Box<Expression>, Box<Expression>),
     Subtract(Box<Expression>, Box<Expression>),
@@ -64,7 +64,7 @@ pub enum Expression {
 // TODO: Variable storage
 #[derive(Debug, Clone, Default)]
 pub struct VariableStore {
-    pub variables: HashMap<String, i32>,
+    pub variables: HashMap<String, i64>,
 }
 
 impl VariableStore {
@@ -74,11 +74,11 @@ impl VariableStore {
         }
     }
 
-    pub fn set(&mut self, name: &str, value: i32) {
+    pub fn set(&mut self, name: &str, value: i64) {
         self.variables.insert(name.to_string(), value);
     }
 
-    pub fn get(&self, name: &str) -> Option<i32> {
+    pub fn get(&self, name: &str) -> Option<i64> {
         self.variables.get(name).copied()
     }
 }

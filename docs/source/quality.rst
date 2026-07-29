@@ -17,10 +17,11 @@ from the repository root:
    uv sync --all-groups --frozen
    cargo fmt --all -- --check
    cargo test --all-targets --all-features
+   cargo test --release checked_i64_
    cargo clippy --all-targets --all-features -- -D warnings -A non-local-definitions
    uv run --frozen ruff check .
    uv run --frozen ruff format --check .
-   uv run --frozen mypy --strict src/oneroll
+   uv run --frozen mypy --strict src/oneroll docs/rfcs/0004-target-api.pyi
    uv run --frozen python -m unittest discover -s tests -v
    uv run --frozen sphinx-build -W --keep-going -b html docs/source docs/_build/html
 

@@ -257,7 +257,7 @@ impl DiceParser {
                     Rule::number => {
                         let num = inner
                             .as_str()
-                            .parse::<i32>()
+                            .parse::<i64>()
                             .map_err(|_| DiceError::ParseError("无效数字".to_string()))?;
                         Ok(Expression::Number(num))
                     }
