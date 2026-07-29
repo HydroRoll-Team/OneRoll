@@ -64,6 +64,8 @@ class ReleaseWorkflowContractTests(unittest.TestCase):
         self.assertNotIn("maturin upload", serialized)
         self.assertNotIn("python3.13t", serialized)
         self.assertNotIn("cp313t", serialized)
+        self.assertNotIn("macos-13", serialized)
+        self.assertIn("macos-15-intel", serialized)
 
     def test_publication_is_manual_and_consumes_one_verified_build_run(self):
         release = load_workflow("changelog.yml")
