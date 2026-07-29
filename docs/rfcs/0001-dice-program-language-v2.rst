@@ -595,6 +595,19 @@ semicolons remain errors.  Diagnostics include phase, span, construct, and the
 canonical replacement; client code branches on their stable code rather than
 localized message text.
 
+Design provenance
+-----------------
+
+The original sketch and much of its option vocabulary derive from the
+`Rolisteam DiceParser language <https://doc.rolisteam.org/21_dice_roller/>`_.
+OneRoll treats that language as design provenance, not as an implicit
+compatibility contract.  RFC-0001 intentionally replaces history-mutating bare
+merge with ``m(expr)``, makes bind history read-only, defines group as bounded
+consecutive-width grouping instead of combinatorial threshold packing, reserves
+backward jump, quotes list text, and makes every transformation typed and
+budgeted.  The explicit v1 matrix above, not upstream behavior, defines OneRoll
+compatibility.
+
 Implementation status
 ---------------------
 
