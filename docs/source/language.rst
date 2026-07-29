@@ -53,6 +53,12 @@ normative review contract and migration decisions live in :doc:`rfc-0001`.
 Syntax shown there is a target contract unless its implementation-status table
 marks a feature implemented.
 
+The versioned ``ProgramResult``, typed Value union, normalized RollNode pool,
+trace DAG, and structured error envelope are frozen for review in
+:doc:`rfc-0003`.  They are target v2 contracts; the current ``roll`` and ``run``
+dictionaries remain the compatibility API until their implementation issues
+land.
+
 Important compatibility decisions are:
 
 * ``**`` is the v2 exponent operator; ``^`` is reserved for validator XOR.

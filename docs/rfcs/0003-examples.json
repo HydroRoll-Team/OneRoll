@@ -1,0 +1,521 @@
+{
+  "schema_version": "2.0",
+  "result_cases": [
+    {
+      "id": "result.scalar",
+      "payload": {
+        "schema_version": "2.0",
+        "kind": "program_result",
+        "source": "1 + 2",
+        "canonical": "1 + 2",
+        "comment": null,
+        "instructions": [
+          {
+            "id": "i0",
+            "index": 0,
+            "span": { "start_byte": 0, "end_byte": 5 },
+            "canonical": "1 + 2",
+            "value": { "kind": "scalar", "value": 3 },
+            "scalar": 3,
+            "trace_root": "t2",
+            "executions": []
+          }
+        ],
+        "roll_nodes": [],
+        "trace_nodes": [
+          {
+            "id": "t0",
+            "kind": "literal",
+            "span": { "start_byte": 0, "end_byte": 1 },
+            "inputs": [],
+            "value": { "kind": "scalar", "value": 1 },
+            "related_roll_ids": [],
+            "data": { "operation": "1" }
+          },
+          {
+            "id": "t1",
+            "kind": "literal",
+            "span": { "start_byte": 4, "end_byte": 5 },
+            "inputs": [],
+            "value": { "kind": "scalar", "value": 2 },
+            "related_roll_ids": [],
+            "data": { "operation": "2" }
+          },
+          {
+            "id": "t2",
+            "kind": "arithmetic",
+            "span": { "start_byte": 0, "end_byte": 5 },
+            "inputs": ["t0", "t1"],
+            "value": { "kind": "scalar", "value": 3 },
+            "related_roll_ids": [],
+            "data": { "operation": "+" }
+          }
+        ],
+        "metadata": {
+          "compatibility_mode": "strict_v2",
+          "random": {
+            "algorithm": "oneroll-chacha12-v1",
+            "seed": "0000000000000000000000000000000000000000000000000000000000000000",
+            "rng_words": 0
+          },
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "result.text",
+      "payload": {
+        "schema_version": "2.0",
+        "kind": "program_result",
+        "source": "\"orc\"",
+        "canonical": "\"orc\"",
+        "comment": null,
+        "instructions": [
+          {
+            "id": "i0",
+            "index": 0,
+            "span": { "start_byte": 0, "end_byte": 5 },
+            "canonical": "\"orc\"",
+            "value": { "kind": "text", "value": "orc" },
+            "scalar": null,
+            "trace_root": "t0",
+            "executions": []
+          }
+        ],
+        "roll_nodes": [],
+        "trace_nodes": [
+          {
+            "id": "t0",
+            "kind": "literal",
+            "span": { "start_byte": 0, "end_byte": 5 },
+            "inputs": [],
+            "value": { "kind": "text", "value": "orc" },
+            "related_roll_ids": [],
+            "data": { "operation": "\"orc\"" }
+          }
+        ],
+        "metadata": {
+          "compatibility_mode": "strict_v2",
+          "random": {
+            "algorithm": "oneroll-chacha12-v1",
+            "seed": "0000000000000000000000000000000000000000000000000000000000000000",
+            "rng_words": 0
+          },
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "result.collection",
+      "payload": {
+        "schema_version": "2.0",
+        "kind": "program_result",
+        "source": "[1, \"orc\"]",
+        "canonical": "[1, \"orc\"]",
+        "comment": null,
+        "instructions": [
+          {
+            "id": "i0",
+            "index": 0,
+            "span": { "start_byte": 0, "end_byte": 10 },
+            "canonical": "[1, \"orc\"]",
+            "value": {
+              "kind": "values",
+              "items": [
+                { "kind": "scalar", "value": 1 },
+                { "kind": "text", "value": "orc" }
+              ]
+            },
+            "scalar": null,
+            "trace_root": "t0",
+            "executions": []
+          }
+        ],
+        "roll_nodes": [],
+        "trace_nodes": [
+          {
+            "id": "t0",
+            "kind": "literal",
+            "span": { "start_byte": 0, "end_byte": 10 },
+            "inputs": [],
+            "value": {
+              "kind": "values",
+              "items": [
+                { "kind": "scalar", "value": 1 },
+                { "kind": "text", "value": "orc" }
+              ]
+            },
+            "related_roll_ids": [],
+            "data": { "operation": "values" }
+          }
+        ],
+        "metadata": {
+          "compatibility_mode": "strict_v2",
+          "random": {
+            "algorithm": "oneroll-chacha12-v1",
+            "seed": "0000000000000000000000000000000000000000000000000000000000000000",
+            "rng_words": 0
+          },
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "result.roll_set",
+      "payload": {
+        "schema_version": "2.0",
+        "kind": "program_result",
+        "source": "2d6k1",
+        "canonical": "2d6k1",
+        "comment": null,
+        "instructions": [
+          {
+            "id": "i0",
+            "index": 0,
+            "span": { "start_byte": 0, "end_byte": 5 },
+            "canonical": "2d6k1",
+            "value": {
+              "kind": "roll_set",
+              "item_kind": "scalar",
+              "items": [
+                { "node_id": "r1", "annotations": {} }
+              ]
+            },
+            "scalar": 6,
+            "trace_root": "t1",
+            "executions": []
+          }
+        ],
+        "roll_nodes": [
+          {
+            "id": "r0",
+            "value": { "kind": "scalar", "value": 2 },
+            "source": {
+              "kind": "numeric_die",
+              "instruction_id": "i0",
+              "source_index": 0,
+              "draw_index": 0,
+              "generation": 0,
+              "span": { "start_byte": 0, "end_byte": 3 }
+            },
+            "parent_node_id": null,
+            "cause_trace_id": "t0"
+          },
+          {
+            "id": "r1",
+            "value": { "kind": "scalar", "value": 6 },
+            "source": {
+              "kind": "numeric_die",
+              "instruction_id": "i0",
+              "source_index": 0,
+              "draw_index": 1,
+              "generation": 0,
+              "span": { "start_byte": 0, "end_byte": 3 }
+            },
+            "parent_node_id": null,
+            "cause_trace_id": "t0"
+          }
+        ],
+        "trace_nodes": [
+          {
+            "id": "t0",
+            "kind": "source",
+            "span": { "start_byte": 0, "end_byte": 3 },
+            "inputs": [],
+            "value": {
+              "kind": "roll_set",
+              "item_kind": "scalar",
+              "items": [
+                { "node_id": "r0", "annotations": {} },
+                { "node_id": "r1", "annotations": {} }
+              ]
+            },
+            "related_roll_ids": ["r0", "r1"],
+            "data": {
+              "operation": "2d6",
+              "generated_roll_ids": ["r0", "r1"]
+            }
+          },
+          {
+            "id": "t1",
+            "kind": "select",
+            "span": { "start_byte": 3, "end_byte": 5 },
+            "inputs": ["t0"],
+            "value": {
+              "kind": "roll_set",
+              "item_kind": "scalar",
+              "items": [
+                { "node_id": "r1", "annotations": {} }
+              ]
+            },
+            "related_roll_ids": ["r0", "r1"],
+            "data": {
+              "operation": "k1",
+              "selected_roll_ids": ["r1"],
+              "discarded_roll_ids": ["r0"]
+            }
+          }
+        ],
+        "metadata": {
+          "compatibility_mode": "strict_v2",
+          "random": {
+            "algorithm": "oneroll-chacha12-v1",
+            "seed": "0000000000000000000000000000000000000000000000000000000000000000",
+            "rng_words": 2
+          },
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "result.boolean",
+      "payload": {
+        "schema_version": "2.0",
+        "kind": "program_result",
+        "source": "true",
+        "canonical": "true",
+        "comment": null,
+        "instructions": [
+          {
+            "id": "i0",
+            "index": 0,
+            "span": { "start_byte": 0, "end_byte": 4 },
+            "canonical": "true",
+            "value": { "kind": "boolean", "value": true },
+            "scalar": null,
+            "trace_root": "t0",
+            "executions": []
+          }
+        ],
+        "roll_nodes": [],
+        "trace_nodes": [
+          {
+            "id": "t0",
+            "kind": "literal",
+            "span": { "start_byte": 0, "end_byte": 4 },
+            "inputs": [],
+            "value": { "kind": "boolean", "value": true },
+            "related_roll_ids": [],
+            "data": { "operation": "true" }
+          }
+        ],
+        "metadata": {
+          "compatibility_mode": "strict_v2",
+          "random": {
+            "algorithm": "oneroll-chacha12-v1",
+            "seed": "0000000000000000000000000000000000000000000000000000000000000000",
+            "rng_words": 0
+          },
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "result.nested_program",
+      "payload": {
+        "schema_version": "2.0",
+        "kind": "program_result",
+        "source": "repeat(2; 1; \"x\")",
+        "canonical": "repeat(2; 1; \"x\")",
+        "comment": null,
+        "instructions": [
+          {
+            "id": "i0",
+            "index": 0,
+            "span": { "start_byte": 0, "end_byte": 17 },
+            "canonical": "repeat(2; 1; \"x\")",
+            "value": {
+              "kind": "values",
+              "items": [
+                {
+                  "kind": "values",
+                  "items": [
+                    { "kind": "scalar", "value": 1 },
+                    { "kind": "text", "value": "x" }
+                  ]
+                },
+                {
+                  "kind": "values",
+                  "items": [
+                    { "kind": "scalar", "value": 1 },
+                    { "kind": "text", "value": "x" }
+                  ]
+                }
+              ]
+            },
+            "scalar": null,
+            "trace_root": "t4",
+            "executions": [
+              {
+                "kind": "repeat_iteration",
+                "index": 0,
+                "label": null,
+                "instructions": [
+                  {
+                    "id": "i1",
+                    "index": 0,
+                    "span": { "start_byte": 10, "end_byte": 11 },
+                    "canonical": "1",
+                    "value": { "kind": "scalar", "value": 1 },
+                    "scalar": 1,
+                    "trace_root": "t0",
+                    "executions": []
+                  },
+                  {
+                    "id": "i2",
+                    "index": 1,
+                    "span": { "start_byte": 13, "end_byte": 16 },
+                    "canonical": "\"x\"",
+                    "value": { "kind": "text", "value": "x" },
+                    "scalar": null,
+                    "trace_root": "t1",
+                    "executions": []
+                  }
+                ]
+              },
+              {
+                "kind": "repeat_iteration",
+                "index": 1,
+                "label": null,
+                "instructions": [
+                  {
+                    "id": "i3",
+                    "index": 0,
+                    "span": { "start_byte": 10, "end_byte": 11 },
+                    "canonical": "1",
+                    "value": { "kind": "scalar", "value": 1 },
+                    "scalar": 1,
+                    "trace_root": "t2",
+                    "executions": []
+                  },
+                  {
+                    "id": "i4",
+                    "index": 1,
+                    "span": { "start_byte": 13, "end_byte": 16 },
+                    "canonical": "\"x\"",
+                    "value": { "kind": "text", "value": "x" },
+                    "scalar": null,
+                    "trace_root": "t3",
+                    "executions": []
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "roll_nodes": [],
+        "trace_nodes": [
+          {
+            "id": "t0",
+            "kind": "literal",
+            "span": { "start_byte": 10, "end_byte": 11 },
+            "inputs": [],
+            "value": { "kind": "scalar", "value": 1 },
+            "related_roll_ids": [],
+            "data": { "operation": "1", "iteration": 0 }
+          },
+          {
+            "id": "t1",
+            "kind": "literal",
+            "span": { "start_byte": 13, "end_byte": 16 },
+            "inputs": [],
+            "value": { "kind": "text", "value": "x" },
+            "related_roll_ids": [],
+            "data": { "operation": "\"x\"", "iteration": 0 }
+          },
+          {
+            "id": "t2",
+            "kind": "literal",
+            "span": { "start_byte": 10, "end_byte": 11 },
+            "inputs": [],
+            "value": { "kind": "scalar", "value": 1 },
+            "related_roll_ids": [],
+            "data": { "operation": "1", "iteration": 1 }
+          },
+          {
+            "id": "t3",
+            "kind": "literal",
+            "span": { "start_byte": 13, "end_byte": 16 },
+            "inputs": [],
+            "value": { "kind": "text", "value": "x" },
+            "related_roll_ids": [],
+            "data": { "operation": "\"x\"", "iteration": 1 }
+          },
+          {
+            "id": "t4",
+            "kind": "function",
+            "span": { "start_byte": 0, "end_byte": 17 },
+            "inputs": ["t0", "t1", "t2", "t3"],
+            "value": {
+              "kind": "values",
+              "items": [
+                {
+                  "kind": "values",
+                  "items": [
+                    { "kind": "scalar", "value": 1 },
+                    { "kind": "text", "value": "x" }
+                  ]
+                },
+                {
+                  "kind": "values",
+                  "items": [
+                    { "kind": "scalar", "value": 1 },
+                    { "kind": "text", "value": "x" }
+                  ]
+                }
+              ]
+            },
+            "related_roll_ids": [],
+            "data": { "operation": "repeat" }
+          }
+        ],
+        "metadata": {
+          "compatibility_mode": "strict_v2",
+          "random": {
+            "algorithm": "oneroll-chacha12-v1",
+            "seed": "0000000000000000000000000000000000000000000000000000000000000000",
+            "rng_words": 0
+          },
+          "warnings": []
+        }
+      }
+    }
+  ],
+  "error_cases": [
+    {
+      "id": "error.parse",
+      "payload": {
+        "schema_version": "2.0",
+        "kind": "error",
+        "error": {
+          "phase": "parse",
+          "code": "parse.invalid_syntax",
+          "message": "expected an expression",
+          "span": { "start_byte": 0, "end_byte": 1 },
+          "expected": ["expression"]
+        }
+      }
+    },
+    {
+      "id": "error.budget_after_random",
+      "payload": {
+        "schema_version": "2.0",
+        "kind": "error",
+        "error": {
+          "phase": "evaluate",
+          "code": "limit.generated_values",
+          "message": "generated value budget exceeded",
+          "resource": "generated_values",
+          "used": 10000,
+          "requested": 1,
+          "limit": 10000,
+          "random": {
+            "algorithm": "oneroll-chacha12-v1",
+            "seed": "0000000000000000000000000000000000000000000000000000000000000000",
+            "rng_words": 10000
+          }
+        }
+      }
+    }
+  ]
+}

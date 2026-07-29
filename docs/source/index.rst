@@ -42,6 +42,7 @@ Documentation
    roadmap
    rfc-0001
    rfc-0002
+   rfc-0003
 
 Source and planning
 -------------------
