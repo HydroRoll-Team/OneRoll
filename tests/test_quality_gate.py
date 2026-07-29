@@ -58,9 +58,10 @@ class QualityGateContractTests(unittest.TestCase):
             with self.subTest(job=job_name):
                 self.assertIn("quality", job_needs(build["jobs"][job_name]))
 
-        self.assertIn("quality", job_needs(build["jobs"]["release"]))
         self.assertIn("quality", job_needs(docs["jobs"]["build"]))
-        self.assertIn("quality", job_needs(changelog["jobs"]["deploy"]))
+        self.assertNotIn("release", build["jobs"])
+        self.assertIn("quality", job_needs(changelog["jobs"]["verify"]))
+        self.assertIn("verify", job_needs(changelog["jobs"]["publish"]))
 
 
 if __name__ == "__main__":

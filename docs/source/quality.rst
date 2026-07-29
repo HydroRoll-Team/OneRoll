@@ -41,11 +41,13 @@ Delivery dependency
 -------------------
 
 Wheel and source-distribution jobs cannot begin until the quality workflow
-succeeds, and the package release also names the quality job as a direct
-dependency.  Documentation deployment and changelog-based GitHub releases use
-the same reusable workflow.  The focused :doc:`conformance` workflow remains a
-separate, fast semantic-drift signal, while the quality gate runs the complete
-Rust and installed-Python suites.
+succeeds.  The manual publication workflow also runs that gate, then verifies
+that its signed tag and sealed files match one successful manual candidate-build
+run for the same protected-main SHA.  Documentation deployment uses the same
+reusable workflow.  The focused :doc:`conformance` workflow remains a separate,
+fast semantic-drift signal, while the quality gate runs the complete Rust and
+installed-Python suites.  See :doc:`releasing` for the approval and Trusted
+Publishing boundary.
 
 The RFC-0005 contract tests also validate the v2 corpus format, representative
 success/error coverage, and milestone release mapping.  Planned cases validate

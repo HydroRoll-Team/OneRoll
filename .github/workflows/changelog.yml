@@ -1,51 +1,185 @@
-name: CHANGELOG
+name: Publish Release
 
 on:
-  push:
-    tags: 
-      - "v*"
-      # - v[0-9]+.[0-9]+.[0-9]+
   workflow_dispatch:
+    inputs:
+      tag:
+        description: Signed annotated release tag (for example, v1.3.5)
+        required: true
+        type: string
+      build_run_id:
+        description: Successful manual Build distributions workflow run ID
+        required: true
+        type: string
+      publish_pypi:
+        description: Publish the verified distributions to PyPI
+        required: true
+        default: false
+        type: boolean
+      prerelease:
+        description: Mark the GitHub Release as a prerelease
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-${{ inputs.tag }}
+  cancel-in-progress: false
 
 jobs:
   quality:
     uses: ./.github/workflows/quality.yml
 
-  deploy:
-    needs: quality
+  verify:
+    name: Verify immutable candidate
+    needs: [quality]
     runs-on: ubuntu-latest
     permissions:
+      actions: read
+      contents: read
+    outputs:
+      tag-commit: ${{ steps.source.outputs.tag-commit }}
+    steps:
+      - name: Checkout signed tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ inputs.tag }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.11"
+
+      - name: Verify signed tag, main ancestry, version, and release notes
+        id: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          git fetch origin main --tags --force
+          if [[ "$(git cat-file -t "refs/tags/${TAG}")" != "tag" ]]; then
+            echo "${TAG} must be an annotated tag" >&2
+            exit 1
+          fi
+          tag_object="$(git rev-parse "refs/tags/${TAG}")"
+          verified="$(gh api "repos/${GITHUB_REPOSITORY}/git/tags/${tag_object}" --jq '.verification.verified')"
+          if [[ "${verified}" != "true" ]]; then
+            echo "${TAG} must have a signature verified by GitHub" >&2
+            exit 1
+          fi
+          tag_commit="$(git rev-list -n 1 "${TAG}")"
+          git merge-base --is-ancestor "${tag_commit}" origin/main
+          mkdir -p release-candidate
+          python scripts/release_contract.py source \
+            --root . \
+            --tag "${TAG}" \
+            --notes-output release-candidate/RELEASE_NOTES.md
+          echo "tag-commit=${tag_commit}" >> "${GITHUB_OUTPUT}"
+
+      - name: Verify candidate build identity
+        env:
+          BUILD_RUN_ID: ${{ inputs.build_run_id }}
+          EXPECTED_SHA: ${{ steps.source.outputs.tag-commit }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          expected_workflow_id="$(gh api \
+            "repos/${GITHUB_REPOSITORY}/actions/workflows/build.yml" \
+            --jq '.id')"
+          run_json="$(gh run view "${BUILD_RUN_ID}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --json conclusion,event,headSha,workflowDatabaseId,url)"
+          jq -e \
+            --arg expected_sha "${EXPECTED_SHA}" \
+            --argjson expected_workflow_id "${expected_workflow_id}" \
+            '.conclusion == "success"
+              and .event == "workflow_dispatch"
+              and .headSha == $expected_sha
+              and .workflowDatabaseId == $expected_workflow_id' \
+            <<< "${run_json}"
+
+      - name: Download prebuilt distributions
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.build_run_id }}
+          pattern: wheels-*
+          path: release-candidate/packages
+          merge-multiple: true
+
+      - name: Validate versions and published wheel policy
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          python scripts/release_contract.py artifacts \
+            --tag "${TAG}" \
+            --directory release-candidate/packages
+          (
+            cd release-candidate/packages
+            LC_ALL=C sha256sum * > ../SHA256SUMS
+          )
+
+      - name: Seal release candidate
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-candidate-${{ inputs.tag }}
+          path: release-candidate
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    name: Publish approved candidate
+    needs: [verify]
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/oneroll/
+    permissions:
       contents: write
-      pull-requests: write
       id-token: write
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v7
-
-      - name: Update CHANGELOG
-        id: changelog
-        uses: requarks/changelog-action@v1
+      - name: Download sealed candidate
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
         with:
-          token: ${{ github.token }}
-          tag: ${{ github.ref_name }}
-          includeInvalidCommits: true
-          changelogFilePath: CHANGELOG.md
-          writeToFile: true
-          useGitmojis: false
+          name: release-candidate-${{ inputs.tag }}
+          path: release-candidate
 
-      - name: Create Release
-        uses: ncipollo/release-action@v1.14.0
-        with:
-          allowUpdates: true
-          draft: false
-          makeLatest: true
-          name: ${{ github.ref_name }}
-          body: ${{ steps.changelog.outputs.changes }}
-          token: ${{ github.token }}
+      - name: Create immutable GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PRERELEASE: ${{ inputs.prerelease }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          if gh release view "${TAG}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            echo "GitHub Release ${TAG} already exists and will not be overwritten" >&2
+            exit 1
+          fi
+          release_args=(
+            release create "${TAG}"
+            release-candidate/packages/*
+            release-candidate/SHA256SUMS
+            --repo "${GITHUB_REPOSITORY}"
+            --title "${TAG}"
+            --notes-file release-candidate/RELEASE_NOTES.md
+            --verify-tag
+          )
+          if [[ "${PRERELEASE}" == "true" ]]; then
+            release_args+=(--prerelease)
+          else
+            release_args+=(--latest)
+          fi
+          gh "${release_args[@]}"
 
-      - name: Commit CHANGELOG.md
-        uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Publish distributions with PyPI Trusted Publishing
+        if: ${{ inputs.publish_pypi == true }}
+        uses: pypa/gh-action-pypi-publish@ba38be9e461d3875417946c167d0b5f3d385a247 # release/v1
         with:
-          branch: main
-          commit_message: 'docs: update CHANGELOG.md for ${{ github.ref_name }} [skip ci]'
-          file_pattern: CHANGELOG.md
+          packages-dir: release-candidate/packages

@@ -27,28 +27,81 @@ Version update path
       uv run --frozen python -m unittest discover -s tests -p 'test_package_version.py' -v
       uv run --frozen python -m oneroll --version
 
-#. Run the complete :doc:`quality` gate.
-#. Create a ``vX.Y.Z`` tag whose numeric component exactly matches the value in
-   ``Cargo.toml``.  The tag starts the artifact and changelog workflows.
+#. Run the complete :doc:`quality` gate and merge the release commit to protected
+   ``main``.
+#. Manually run the ``Build distributions`` workflow for that exact ``main``
+   commit and retain its run ID.  This workflow has read-only repository
+   permission and cannot publish.
+#. After the version, push, and publication choices receive explicit human
+   confirmation, create and push a signed annotated ``vX.Y.Z`` tag for that
+   commit.
+#. Manually run ``Publish Release`` from ``main`` with the tag, candidate build
+   run ID, PyPI choice, and prerelease choice.  Approve the protected ``pypi``
+   environment only after its verification job identifies the expected source
+   and artifacts.
 
 The version-contract test compares Cargo metadata, installed distribution
 metadata, Python runtime metadata, and CLI output.  This prevents a wheel from
 passing the release gate when any of those public surfaces drift.
 
-Current publication boundary
-----------------------------
+Protected publication boundary
+------------------------------
 
-In the current 1.x workflow, pushing a version tag is an irreversible public
-action: it starts the GitHub Release workflow and the PyPI upload job after the
-quality gate.  Do not push a release tag without an explicit version, push, and
-publication confirmation.  Confirm the target commit, package version,
-changelog, and applicable milestone evidence first.
+Pushing a tag does not invoke a build, GitHub Release, or registry write.  The
+two manual workflows deliberately separate unprivileged construction from
+privileged publication:
 
-RFC-0005 target
----------------
+``Build distributions``
+   Runs the reusable quality gate, builds the supported wheels and sdist, and
+   retains them for 14 days.  It does not receive ``contents: write`` or an OIDC
+   token.  Free-threaded wheels are not built while PyO3 0.19 is installed and
+   the RFC-0004 concurrency contract is unfinished.
 
-:ref:`rfc-0005` replaces tag-as-approval for the v2 release train.  Candidate
-artifacts are built and verified once, then a separate ``workflow_dispatch``
-job publishes those exact digests through a reviewer-protected ``pypi``
-environment and Trusted Publishing.  The current workflow remains accurately
-documented above until issue 34 implements that protected boundary.
+``Publish Release``
+   Accepts a signed tag and one manual build run ID.  Before an approval prompt,
+   it proves that the tag is annotated and GitHub-verified, targets protected
+   ``main``, matches ``Cargo.toml`` and a non-empty dated changelog section, and
+   names a successful manual ``Build distributions`` run for the same SHA.  It
+   downloads those prebuilt files, rejects version drift and free-threaded
+   artifacts, writes ``SHA256SUMS``, and seals one candidate artifact.
+
+The final job is protected by the ``pypi`` environment.  It downloads only the
+sealed candidate and runs no checked-out project code or build command.  It
+creates a new immutable GitHub Release and, when ``publish_pypi`` is true, uses
+PyPI Trusted Publishing through the short-lived GitHub OIDC identity.  Existing
+GitHub Releases and registry files are never updated or skipped silently.
+
+Repository and PyPI prerequisites
+---------------------------------
+
+Before the first publication, repository administrators must configure:
+
+* a GitHub environment named ``pypi`` with required reviewers and deployment
+  restricted to protected ``main``; and
+* the ``oneroll`` PyPI Trusted Publisher for owner ``HydroRoll-Team``, repository
+  ``OneRoll``, workflow ``changelog.yml``, and environment ``pypi``.
+
+If either external control is missing, publication must fail.  A long-lived API
+token is not a supported fallback.  Issue 34 retains the remaining M4 provenance,
+SBOM, audit, and incident-response work.
+
+Command sequence
+----------------
+
+After the release commit is on ``main`` and all human confirmations are recorded:
+
+.. code-block:: console
+
+   gh workflow run build.yml --ref main
+   gh run list --workflow build.yml --event workflow_dispatch --limit 1
+   git tag -s vX.Y.Z -F RELEASE_NOTES.md <verified-main-sha>
+   git push origin vX.Y.Z
+   gh workflow run changelog.yml --ref main \
+     -f tag=vX.Y.Z \
+     -f build_run_id=<successful-run-id> \
+     -f publish_pypi=true \
+     -f prerelease=false
+
+The M1 specification prerelease uses ``publish_pypi=false`` and
+``prerelease=true``.  The milestone/version/channel mapping remains normative in
+:ref:`rfc-0005`.

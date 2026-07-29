@@ -42,14 +42,18 @@ The repository already has several parts of the target system:
   linting, strict typing, and Sphinx with warnings as errors;
 * property tests and bounded parser/evaluator fuzz targets are versioned;
 * ``Cargo.toml`` is the only manually maintained package-version source; and
-* tagged builds produce wheels, an sdist, and GitHub provenance attestations.
+* manual candidate builds produce wheels and an sdist only after the reusable
+  quality gate succeeds.
 
 The baseline is not the final v2 release system.  It does not yet execute a v2
 corpus against real typed results, install every advertised wheel, produce an
-SBOM, or use an approval-protected PyPI Trusted Publisher.  The current tag
-workflow can publish with ``MATURIN_PYPI_TOKEN`` and builds free-threaded wheels
-before the RFC-0004 concurrency boundary is implemented.  Issues 20, 30, 34,
-and 37 close those gaps; this RFC defines the contract they must satisfy.
+SBOM, or emit the complete M4 provenance record.  Publication is now separated
+from candidate construction: arbitrary tag pushes cannot publish, free-threaded
+wheels are excluded, and the manual path consumes one verified build through a
+reviewer-protected ``pypi`` environment and PyPI Trusted Publishing OIDC.  The
+environment protection and PyPI publisher are external controls that must be
+configured before the first release.  Issues 20, 30, 34, and 37 close the
+remaining gaps; this RFC defines the contract they must satisfy.
 
 Goals
 -----
