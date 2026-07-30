@@ -92,6 +92,7 @@ html_split_index = True
 
 html_theme = "furo"
 html_static_path = []
+html_extra_path = ["_headers"]
 
 html_css_files = [
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/fontawesome.min.css",
