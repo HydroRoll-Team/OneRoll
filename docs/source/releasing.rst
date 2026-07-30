@@ -24,8 +24,12 @@ Version update path
    .. code-block:: console
 
       uv run --frozen maturin develop
-      uv run --frozen python -m unittest discover -s tests -p 'test_package_version.py' -v
-      uv run --frozen python -m oneroll --version
+      uv run --no-sync python -m unittest discover -s tests -p 'test_package_version.py' -v
+      uv run --no-sync python -m oneroll --version
+
+   ``--no-sync`` is intentional after ``maturin develop``: it verifies the
+   freshly rebuilt editable distribution instead of allowing a subsequent
+   environment sync to restore stale cached metadata from the previous version.
 
 #. Run the complete :doc:`quality` gate and merge the release commit to protected
    ``main``.
