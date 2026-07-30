@@ -1,0 +1,588 @@
+{
+  "schema_version": 1,
+  "language": "oneroll-v1",
+  "cases": [
+    {
+      "id": "integer_literal",
+      "expression": "7",
+      "classification": "intended",
+      "note": "Integer literals evaluate without generating dice values.",
+      "expect": {
+        "status": "success",
+        "total": 7,
+        "flattened_rolls": 0,
+        "comment": ""
+      }
+    },
+    {
+      "id": "negative_integer_literal",
+      "expression": "-2",
+      "classification": "intended",
+      "note": "Signed integer literals evaluate without generating dice values.",
+      "expect": {
+        "status": "success",
+        "total": -2,
+        "flattened_rolls": 0,
+        "comment": ""
+      }
+    },
+    {
+      "id": "i64_max_literal",
+      "expression": "9223372036854775807",
+      "classification": "intended",
+      "note": "Scalar literals use the complete signed 64-bit range.",
+      "expect": {
+        "status": "success",
+        "total": 9223372036854775807,
+        "flattened_rolls": 0,
+        "comment": ""
+      }
+    },
+    {
+      "id": "i64_min_literal",
+      "expression": "-9223372036854775808",
+      "classification": "intended",
+      "note": "Scalar literals use the complete signed 64-bit range.",
+      "expect": {
+        "status": "success",
+        "total": -9223372036854775808,
+        "flattened_rolls": 0,
+        "comment": ""
+      }
+    },
+    {
+      "id": "addition_overflow",
+      "expression": "9223372036854775807 + 1",
+      "classification": "intended",
+      "note": "Checked addition returns a stable error instead of panicking or wrapping.",
+      "expect": {
+        "status": "error",
+        "message_contains": "[arithmetic.overflow]"
+      }
+    },
+    {
+      "id": "subtraction_overflow",
+      "expression": "-9223372036854775808 - 1",
+      "classification": "intended",
+      "note": "Checked subtraction returns a stable error instead of panicking or wrapping.",
+      "expect": {
+        "status": "error",
+        "message_contains": "[arithmetic.overflow]"
+      }
+    },
+    {
+      "id": "multiplication_overflow",
+      "expression": "3037000500 * 3037000500",
+      "classification": "intended",
+      "note": "Checked multiplication returns a stable error instead of panicking or wrapping.",
+      "expect": {
+        "status": "error",
+        "message_contains": "[arithmetic.overflow]"
+      }
+    },
+    {
+      "id": "division_overflow",
+      "expression": "-9223372036854775808 / -1",
+      "classification": "intended",
+      "note": "The signed division overflow edge returns a stable error.",
+      "expect": {
+        "status": "error",
+        "message_contains": "[arithmetic.overflow]"
+      }
+    },
+    {
+      "id": "negative_exponent",
+      "expression": "2 ^ -1",
+      "classification": "intended",
+      "note": "Negative integer exponents are invalid.",
+      "expect": {
+        "status": "error",
+        "message_contains": "[arithmetic.invalid_exponent]"
+      }
+    },
+    {
+      "id": "exponent_above_u32",
+      "expression": "2 ^ 4294967296",
+      "classification": "intended",
+      "note": "An exponent above the accepted unsigned 32-bit range is invalid.",
+      "expect": {
+        "status": "error",
+        "message_contains": "[arithmetic.invalid_exponent]"
+      }
+    },
+    {
+      "id": "exponentiation_overflow",
+      "expression": "2 ^ 63",
+      "classification": "intended",
+      "note": "Checked exponentiation returns a stable overflow error.",
+      "expect": {
+        "status": "error",
+        "message_contains": "[arithmetic.overflow]"
+      }
+    },
+    {
+      "id": "deterministic_dice",
+      "expression": "3d1",
+      "classification": "intended",
+      "note": "A basic NdM roll generates one value per die.",
+      "expect": {
+        "status": "success",
+        "total": 3,
+        "flattened_rolls": 3,
+        "comment": ""
+      }
+    },
+    {
+      "id": "surrounding_whitespace",
+      "expression": "  1d1  ",
+      "classification": "intended",
+      "note": "Leading and trailing whitespace is ignored.",
+      "expect": {
+        "status": "success",
+        "total": 1,
+        "flattened_rolls": 1,
+        "comment": ""
+      }
+    },
+    {
+      "id": "zero_dice_count",
+      "expression": "0d6",
+      "classification": "intended",
+      "note": "Dice count must be positive.",
+      "expect": {
+        "status": "error",
+        "message_contains": "骰子数量和面数必须大于0"
+      }
+    },
+    {
+      "id": "zero_dice_sides",
+      "expression": "1d0",
+      "classification": "intended",
+      "note": "Dice sides must be positive.",
+      "expect": {
+        "status": "error",
+        "message_contains": "骰子数量和面数必须大于0"
+      }
+    },
+    {
+      "id": "addition",
+      "expression": "1 + 2",
+      "classification": "intended",
+      "note": "Addition combines two scalar expressions.",
+      "expect": {
+        "status": "success",
+        "total": 3,
+        "flattened_rolls": 0,
+        "comment": ""
+      }
+    },
+    {
+      "id": "subtraction",
+      "expression": "3 - 1",
+      "classification": "intended",
+      "note": "Subtraction combines two scalar expressions.",
+      "expect": {
+        "status": "success",
+        "total": 2,
+        "flattened_rolls": 0,
+        "comment": ""
+      }
+    },
+    {
+      "id": "multiplication",
+      "expression": "2 * 3",
+      "classification": "intended",
+      "note": "Multiplication combines two scalar expressions.",
+      "expect": {
+        "status": "success",
+        "total": 6,
+        "flattened_rolls": 0,
+        "comment": ""
+      }
+    },
+    {
+      "id": "integer_division",
+      "expression": "5 / 2",
+      "classification": "compatibility_sensitive",
+      "tracking_issue": "#7",
+      "note": "v1 division truncates integer results; v2 must decide whether to preserve or replace this behavior.",
+      "expect": {
+        "status": "success",
+        "total": 2,
+        "flattened_rolls": 0,
+        "comment": ""
+      }
+    },
+    {
+      "id": "division_by_zero",
+      "expression": "1 / 0",
+      "classification": "intended",
+      "note": "Division by zero is an evaluation error.",
+      "expect": {
+        "status": "error",
+        "message_contains": "除零错误"
+      }
+    },
+    {
+      "id": "power",
+      "expression": "2 ^ 3",
+      "classification": "intended",
+      "note": "The caret operator performs integer exponentiation in v1.",
+      "expect": {
+        "status": "success",
+        "total": 8,
+        "flattened_rolls": 0,
+        "comment": ""
+      }
+    },
+    {
+      "id": "parenthesized_expression",
+      "expression": "(1 + 2) * 3",
+      "classification": "intended",
+      "note": "Parentheses explicitly group arithmetic expressions.",
+      "expect": {
+        "status": "success",
+        "total": 9,
+        "flattened_rolls": 0,
+        "comment": ""
+      }
+    },
+    {
+      "id": "flat_operator_precedence",
+      "expression": "1d1 + 2 * 3",
+      "classification": "known_defect",
+      "tracking_issue": "#16",
+      "note": "v1 evaluates all binary operators left-to-right instead of using mathematical precedence.",
+      "expect": {
+        "status": "success",
+        "total": 9,
+        "flattened_rolls": 1,
+        "comment": ""
+      }
+    },
+    {
+      "id": "left_associative_power",
+      "expression": "2 ^ 3 ^ 2",
+      "classification": "known_defect",
+      "tracking_issue": "#16",
+      "note": "v1 parses chained powers left-to-right rather than right-to-left.",
+      "expect": {
+        "status": "success",
+        "total": 64,
+        "flattened_rolls": 0,
+        "comment": ""
+      }
+    },
+    {
+      "id": "keep_alias",
+      "expression": "2d1k1",
+      "classification": "compatibility_sensitive",
+      "tracking_issue": "#15",
+      "note": "The v1 kN alias keeps the highest N values.",
+      "expect": {
+        "status": "success",
+        "total": 1,
+        "flattened_rolls": 1,
+        "comment": ""
+      }
+    },
+    {
+      "id": "keep_high",
+      "expression": "2d1kh1",
+      "classification": "intended",
+      "note": "khN keeps the highest N values.",
+      "expect": {
+        "status": "success",
+        "total": 1,
+        "flattened_rolls": 1,
+        "comment": ""
+      }
+    },
+    {
+      "id": "keep_low",
+      "expression": "2d1kl1",
+      "classification": "intended",
+      "note": "klN keeps the lowest N values.",
+      "expect": {
+        "status": "success",
+        "total": 1,
+        "flattened_rolls": 1,
+        "comment": ""
+      }
+    },
+    {
+      "id": "drop_high",
+      "expression": "2d1dh1",
+      "classification": "intended",
+      "note": "dhN drops the highest N values.",
+      "expect": {
+        "status": "success",
+        "total": 1,
+        "flattened_rolls": 1,
+        "comment": ""
+      }
+    },
+    {
+      "id": "drop_low",
+      "expression": "2d1dl1",
+      "classification": "intended",
+      "note": "dlN drops the lowest N values.",
+      "expect": {
+        "status": "success",
+        "total": 1,
+        "flattened_rolls": 1,
+        "comment": ""
+      }
+    },
+    {
+      "id": "unique",
+      "expression": "2d1u",
+      "classification": "intended",
+      "note": "u removes duplicate values from the roll result.",
+      "expect": {
+        "status": "success",
+        "total": 1,
+        "flattened_rolls": 1,
+        "comment": ""
+      }
+    },
+    {
+      "id": "sort",
+      "expression": "2d1s",
+      "classification": "intended",
+      "note": "s sorts generated values without changing their count.",
+      "expect": {
+        "status": "success",
+        "total": 2,
+        "flattened_rolls": 2,
+        "comment": ""
+      }
+    },
+    {
+      "id": "count",
+      "expression": "2d1c1",
+      "classification": "intended",
+      "note": "cN counts values equal to N and returns one aggregate value.",
+      "expect": {
+        "status": "success",
+        "total": 2,
+        "flattened_rolls": 1,
+        "comment": ""
+      }
+    },
+    {
+      "id": "modifier_composition_order",
+      "expression": "3d1kh2c1",
+      "classification": "compatibility_sensitive",
+      "tracking_issue": "#15",
+      "note": "v1 applies modifiers in source order; the typed v2 pipeline must preserve this case intentionally.",
+      "expect": {
+        "status": "success",
+        "total": 2,
+        "flattened_rolls": 1,
+        "comment": ""
+      }
+    },
+    {
+      "id": "reroll",
+      "expression": "1d1r1",
+      "classification": "compatibility_sensitive",
+      "tracking_issue": "#24",
+      "note": "v1 rN rerolls once when the value is less than or equal to N.",
+      "expect": {
+        "status": "success",
+        "total": 1,
+        "flattened_rolls": 1,
+        "comment": ""
+      }
+    },
+    {
+      "id": "reroll_once",
+      "expression": "1d1ro1",
+      "classification": "compatibility_sensitive",
+      "tracking_issue": "#24",
+      "note": "v1 roN currently has the same observable one-reroll behavior as rN.",
+      "expect": {
+        "status": "success",
+        "total": 1,
+        "flattened_rolls": 1,
+        "comment": ""
+      }
+    },
+    {
+      "id": "reroll_and_add",
+      "expression": "1d1a1",
+      "classification": "compatibility_sensitive",
+      "tracking_issue": "#24",
+      "note": "v1 aN adds one replacement roll to a matching die.",
+      "expect": {
+        "status": "success",
+        "total": 2,
+        "flattened_rolls": 1,
+        "comment": ""
+      }
+    },
+    {
+      "id": "reroll_until_budget",
+      "expression": "1d1R1",
+      "classification": "intended",
+      "note": "An unbounded reroll-until sequence is stopped by the generated-roll budget.",
+      "expect": {
+        "status": "error",
+        "message_contains": "最多生成 10000 个骰子结果"
+      }
+    },
+    {
+      "id": "explode_budget",
+      "expression": "1d1!",
+      "classification": "intended",
+      "note": "An unbounded explode sequence is stopped by the generated-roll budget.",
+      "expect": {
+        "status": "error",
+        "message_contains": "最多生成 10000 个骰子结果"
+      }
+    },
+    {
+      "id": "explode_alias_budget",
+      "expression": "1d1e",
+      "classification": "compatibility_sensitive",
+      "tracking_issue": "#24",
+      "note": "The v1 e alias explodes and is subject to the same generated-roll budget as !.",
+      "expect": {
+        "status": "error",
+        "message_contains": "最多生成 10000 个骰子结果"
+      }
+    },
+    {
+      "id": "keep_and_explode_incomplete",
+      "expression": "2d1K1",
+      "classification": "known_defect",
+      "tracking_issue": "#24",
+      "note": "K is parsed but v1 only keeps values; its documented explode behavior is missing.",
+      "expect": {
+        "status": "success",
+        "total": 1,
+        "flattened_rolls": 1,
+        "comment": ""
+      }
+    },
+    {
+      "id": "trailing_comment",
+      "expression": "1 # attack",
+      "classification": "intended",
+      "note": "A trailing hash comment is returned without changing evaluation.",
+      "expect": {
+        "status": "success",
+        "total": 1,
+        "flattened_rolls": 0,
+        "comment": "attack"
+      }
+    },
+    {
+      "id": "empty_program",
+      "expression": "",
+      "classification": "intended",
+      "note": "An empty input is rejected by the parser.",
+      "expect": {
+        "status": "error",
+        "message_contains": "解析错误"
+      }
+    },
+    {
+      "id": "trailing_operator",
+      "expression": "1 +",
+      "classification": "intended",
+      "note": "A binary operator requires a right-hand expression.",
+      "expect": {
+        "status": "error",
+        "message_contains": "解析错误"
+      }
+    },
+    {
+      "id": "unclosed_parenthesis",
+      "expression": "(1 + 2",
+      "classification": "intended",
+      "note": "Unbalanced parentheses are rejected by the parser.",
+      "expect": {
+        "status": "error",
+        "message_contains": "解析错误"
+      }
+    },
+    {
+      "id": "unknown_modifier",
+      "expression": "1d1z",
+      "classification": "intended",
+      "note": "Unknown modifier tokens are rejected by the parser.",
+      "expect": {
+        "status": "error",
+        "message_contains": "解析错误"
+      }
+    },
+    {
+      "id": "multiple_instructions_in_roll",
+      "expression": "1; 2",
+      "classification": "intended",
+      "note": "The legacy single-expression roll entry point rejects a multi-instruction program.",
+      "expect": {
+        "status": "error",
+        "message_contains": "只接受一条指令"
+      }
+    }
+  ],
+  "program_cases": [
+    {
+      "id": "program_sequence",
+      "expression": "1; 2",
+      "classification": "intended",
+      "note": "run evaluates semicolon-separated instructions in source order.",
+      "expect": {
+        "status": "success",
+        "totals": [1, 2],
+        "flattened_rolls": 0,
+        "comment": ""
+      }
+    },
+    {
+      "id": "program_trailing_comment",
+      "expression": "1d1; 2 # encounter",
+      "classification": "intended",
+      "note": "A trailing comment belongs to the whole program rather than one instruction.",
+      "expect": {
+        "status": "success",
+        "totals": [1, 2],
+        "flattened_rolls": 1,
+        "comment": "encounter"
+      }
+    },
+    {
+      "id": "program_trailing_separator",
+      "expression": "1;",
+      "classification": "intended",
+      "note": "A trailing instruction separator is rejected.",
+      "expect": {
+        "status": "error",
+        "message_contains": "解析错误"
+      }
+    },
+    {
+      "id": "program_empty_instruction",
+      "expression": "1;;2",
+      "classification": "intended",
+      "note": "An empty instruction between separators is rejected.",
+      "expect": {
+        "status": "error",
+        "message_contains": "解析错误"
+      }
+    },
+    {
+      "id": "program_shared_roll_budget",
+      "expression": "9999d1; 2d1",
+      "classification": "intended",
+      "note": "All instructions in one program consume the same generated-roll budget.",
+      "expect": {
+        "status": "error",
+        "message_contains": "最多生成 10000 个骰子结果"
+      }
+    }
+  ]
+}

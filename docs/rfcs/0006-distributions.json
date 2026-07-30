@@ -1,0 +1,213 @@
+{
+  "schema_version": 1,
+  "analysis_schema_version": "1.0",
+  "cases": [
+    {
+      "id": "numeric.2d2",
+      "source": "2d2",
+      "tracking_issue": "#32",
+      "capabilities": ["dice.numeric"],
+      "outcomes": [
+        {
+          "value": {
+            "kind": "roll_set",
+            "item_kind": "scalar",
+            "items": [
+              {"value": {"kind": "scalar", "value": 1}, "annotations": {}},
+              {"value": {"kind": "scalar", "value": 1}, "annotations": {}}
+            ]
+          },
+          "scalar": 2,
+          "probability": {"numerator": "1", "denominator": "4"}
+        },
+        {
+          "value": {
+            "kind": "roll_set",
+            "item_kind": "scalar",
+            "items": [
+              {"value": {"kind": "scalar", "value": 1}, "annotations": {}},
+              {"value": {"kind": "scalar", "value": 2}, "annotations": {}}
+            ]
+          },
+          "scalar": 3,
+          "probability": {"numerator": "1", "denominator": "4"}
+        },
+        {
+          "value": {
+            "kind": "roll_set",
+            "item_kind": "scalar",
+            "items": [
+              {"value": {"kind": "scalar", "value": 2}, "annotations": {}},
+              {"value": {"kind": "scalar", "value": 1}, "annotations": {}}
+            ]
+          },
+          "scalar": 3,
+          "probability": {"numerator": "1", "denominator": "4"}
+        },
+        {
+          "value": {
+            "kind": "roll_set",
+            "item_kind": "scalar",
+            "items": [
+              {"value": {"kind": "scalar", "value": 2}, "annotations": {}},
+              {"value": {"kind": "scalar", "value": 2}, "annotations": {}}
+            ]
+          },
+          "scalar": 4,
+          "probability": {"numerator": "1", "denominator": "4"}
+        }
+      ]
+    },
+    {
+      "id": "option.keep_high_2d2",
+      "source": "2d2k1",
+      "tracking_issue": "#32",
+      "capabilities": ["dice.numeric", "option.keep_drop"],
+      "outcomes": [
+        {
+          "value": {
+            "kind": "roll_set",
+            "item_kind": "scalar",
+            "items": [
+              {"value": {"kind": "scalar", "value": 1}, "annotations": {}}
+            ]
+          },
+          "scalar": 1,
+          "probability": {"numerator": "1", "denominator": "4"}
+        },
+        {
+          "value": {
+            "kind": "roll_set",
+            "item_kind": "scalar",
+            "items": [
+              {"value": {"kind": "scalar", "value": 2}, "annotations": {}}
+            ]
+          },
+          "scalar": 2,
+          "probability": {"numerator": "3", "denominator": "4"}
+        }
+      ]
+    },
+    {
+      "id": "list.weighted_single",
+      "source": "1L[\"A\"[2], \"B\"[1], \"C\"[1]]",
+      "tracking_issue": "#32",
+      "capabilities": ["dice.list_weighted"],
+      "outcomes": [
+        {
+          "value": {
+            "kind": "roll_set",
+            "item_kind": "text",
+            "items": [
+              {"value": {"kind": "text", "value": "A"}, "annotations": {}}
+            ]
+          },
+          "scalar": null,
+          "probability": {"numerator": "1", "denominator": "2"}
+        },
+        {
+          "value": {
+            "kind": "roll_set",
+            "item_kind": "text",
+            "items": [
+              {"value": {"kind": "text", "value": "B"}, "annotations": {}}
+            ]
+          },
+          "scalar": null,
+          "probability": {"numerator": "1", "denominator": "4"}
+        },
+        {
+          "value": {
+            "kind": "roll_set",
+            "item_kind": "text",
+            "items": [
+              {"value": {"kind": "text", "value": "C"}, "annotations": {}}
+            ]
+          },
+          "scalar": null,
+          "probability": {"numerator": "1", "denominator": "4"}
+        }
+      ]
+    },
+    {
+      "id": "list.weighted_unique_ordered",
+      "source": "2Lu[\"A\"[2], \"B\"[1], \"C\"[1]]",
+      "tracking_issue": "#32",
+      "capabilities": ["dice.list_weighted", "dice.unique_list"],
+      "outcomes": [
+        {
+          "value": {
+            "kind": "roll_set",
+            "item_kind": "text",
+            "items": [
+              {"value": {"kind": "text", "value": "A"}, "annotations": {}},
+              {"value": {"kind": "text", "value": "B"}, "annotations": {}}
+            ]
+          },
+          "scalar": null,
+          "probability": {"numerator": "1", "denominator": "4"}
+        },
+        {
+          "value": {
+            "kind": "roll_set",
+            "item_kind": "text",
+            "items": [
+              {"value": {"kind": "text", "value": "A"}, "annotations": {}},
+              {"value": {"kind": "text", "value": "C"}, "annotations": {}}
+            ]
+          },
+          "scalar": null,
+          "probability": {"numerator": "1", "denominator": "4"}
+        },
+        {
+          "value": {
+            "kind": "roll_set",
+            "item_kind": "text",
+            "items": [
+              {"value": {"kind": "text", "value": "B"}, "annotations": {}},
+              {"value": {"kind": "text", "value": "A"}, "annotations": {}}
+            ]
+          },
+          "scalar": null,
+          "probability": {"numerator": "1", "denominator": "6"}
+        },
+        {
+          "value": {
+            "kind": "roll_set",
+            "item_kind": "text",
+            "items": [
+              {"value": {"kind": "text", "value": "B"}, "annotations": {}},
+              {"value": {"kind": "text", "value": "C"}, "annotations": {}}
+            ]
+          },
+          "scalar": null,
+          "probability": {"numerator": "1", "denominator": "12"}
+        },
+        {
+          "value": {
+            "kind": "roll_set",
+            "item_kind": "text",
+            "items": [
+              {"value": {"kind": "text", "value": "C"}, "annotations": {}},
+              {"value": {"kind": "text", "value": "A"}, "annotations": {}}
+            ]
+          },
+          "scalar": null,
+          "probability": {"numerator": "1", "denominator": "6"}
+        },
+        {
+          "value": {
+            "kind": "roll_set",
+            "item_kind": "text",
+            "items": [
+              {"value": {"kind": "text", "value": "C"}, "annotations": {}},
+              {"value": {"kind": "text", "value": "B"}, "annotations": {}}
+            ]
+          },
+          "scalar": null,
+          "probability": {"numerator": "1", "denominator": "12"}
+        }
+      ]
+    }
+  ]
+}

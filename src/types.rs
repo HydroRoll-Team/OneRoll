@@ -4,9 +4,21 @@ use std::collections::HashMap;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DiceResult {
     pub expression: String,
-    pub total: i32,
-    pub rolls: Vec<Vec<i32>>,
+    pub total: i64,
+    pub rolls: Vec<Vec<i64>>,
     pub details: String,
+    pub comment: Option<String>,
+}
+
+#[derive(Debug, Clone)]
+pub struct Program {
+    pub instructions: Vec<Expression>,
+    pub comment: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ProgramResult {
+    pub results: Vec<DiceResult>,
     pub comment: Option<String>,
 }
 
@@ -19,27 +31,26 @@ pub struct DiceRoll {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum DiceModifier {
-    Explode,           // !
-    ExplodeAlias,      // e (alias of !)
+    Explode,              // !
+    ExplodeAlias,         // e (alias of !)
     ExplodeKeepHigh(i32), // KX == explode then keep high X
-    Reroll(i32),       // rX
-    RerollOnce(i32),   // roX
-    RerollUntil(i32),  // RX (until > X; with cap)
-    RerollAndAdd(i32), // aX (reroll if <= X and add)
-    KeepAlias(i32),    // kX == khX
-    KeepHigh(i32),     // khX
-    KeepLow(i32),      // klX
-    DropHigh(i32),     // dhX
-    DropLow(i32),      // dlX
-    Unique,            // u
-    Sort,              // s (sort results)
-    Count(i32),        // cV (count value V)
+    Reroll(i32),          // rX
+    RerollOnce(i32),      // roX
+    RerollUntil(i32),     // RX (until > X; evaluation-budget bounded)
+    RerollAndAdd(i32),    // aX (reroll if <= X and add)
+    KeepAlias(i32),       // kX == khX
+    KeepHigh(i32),        // khX
+    KeepLow(i32),         // klX
+    DropHigh(i32),        // dhX
+    DropLow(i32),         // dlX
+    Unique,               // u
+    Sort,                 // s (sort results)
+    Count(i32),           // cV (count value V)
 }
-
 
 #[derive(Debug, Clone)]
 pub enum Expression {
-    Number(i32),
+    Number(i64),
     DiceRoll(DiceRoll),
     Add(Box<Expression>, Box<Expression>),
     Subtract(Box<Expression>, Box<Expression>),
@@ -53,7 +64,7 @@ pub enum Expression {
 // TODO: Variable storage
 #[derive(Debug, Clone, Default)]
 pub struct VariableStore {
-    pub variables: HashMap<String, i32>,
+    pub variables: HashMap<String, i64>,
 }
 
 impl VariableStore {
@@ -62,12 +73,12 @@ impl VariableStore {
             variables: HashMap::new(),
         }
     }
-    
-    pub fn set(&mut self, name: &str, value: i32) {
+
+    pub fn set(&mut self, name: &str, value: i64) {
         self.variables.insert(name.to_string(), value);
     }
-    
-    pub fn get(&self, name: &str) -> Option<i32> {
+
+    pub fn get(&self, name: &str) -> Option<i64> {
         self.variables.get(name).copied()
     }
 }

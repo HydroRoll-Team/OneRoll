@@ -1,7 +1,10 @@
 WHITESPACE = _{ " " | "\t" | "\n" | "\r" }
 number = @{ "-"? ~ ("0" | ('1'..'9' ~ ('0'..'9')*)) }
-comment = { "#" ~ (!"\n" ~ ANY)* }
-dice_expr = { dice_term ~ (op ~ dice_term)* ~ comment? }
+comment = @{ "#" ~ (!"\n" ~ ANY)* }
+program = { SOI ~ instruction ~ (instruction_separator ~ instruction)* ~ comment? ~ EOI }
+instruction = { dice_expr }
+instruction_separator = _{ ";" }
+dice_expr = { dice_term ~ (op ~ dice_term)* }
 dice_term = { 
     dice_roll 
     | paren_expr 
@@ -46,4 +49,3 @@ unique = { "u" }
 sort = { "s" }
 count = { "c" ~ number }
 op = { "+" | "-" | "*" | "/" | "^" }
-main = { SOI ~ dice_expr ~ EOI }

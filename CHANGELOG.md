@@ -4,6 +4,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.3.5] - 2026-07-30
+### Security
+- Remove the legacy `setup.py` bootstrap path identified by the upstream security report ([`c460b64`](https://github.com/HydroRoll-Team/OneRoll/commit/c460b64dcd90a0a64b6940edcfa9d045d2c68c1c)).
+- Require GitHub-verified signed tags, protected `main` ancestry, immutable prebuilt candidates, environment approval, and PyPI Trusted Publishing OIDC ([`686b2ca`](https://github.com/HydroRoll-Team/OneRoll/commit/686b2ca072efbd95bd3bb26c2e957a25f39e855a)).
+
+### New Features
+- Enforce bounded parsing and evaluation workloads across Rust and Python entry points ([`4b65b60`](https://github.com/HydroRoll-Team/OneRoll/commit/4b65b601a7999c869a5c0179801e78bfb9977e2d), [`841934c`](https://github.com/HydroRoll-Team/OneRoll/commit/841934cd7fcb5d689b1d5a32d790950054e47f3c), [`997175e`](https://github.com/HydroRoll-Team/OneRoll/commit/997175e215f636568e98f3d294c115f39aaf9850)).
+- Add deterministic ChaCha12 randomness with stable seeded behavior ([`79a3793`](https://github.com/HydroRoll-Team/OneRoll/commit/79a379326e56ee7928c6326e5b0347dd4a307c7e)).
+
+### Bug Fixes
+- Reject integer overflow with checked `i64` arithmetic ([`394062d`](https://github.com/HydroRoll-Team/OneRoll/commit/394062d0a69e410eb4f41f31a077e8114556b61e)).
+- Derive Rust, Python, distribution, and CLI versions from the Cargo package version ([`97abe38`](https://github.com/HydroRoll-Team/OneRoll/commit/97abe38e746e0f6303039f7240cea7f8704db497)).
+- Rebuild the editable extension before version-contract tests so cached metadata from the previous release cannot mask package-version drift.
+- Use supported Intel macOS runners and current Node 24 artifact actions in the distribution pipeline ([`fde34b1`](https://github.com/HydroRoll-Team/OneRoll/commit/fde34b15652826a21997325b6cafb3c993bdf963), [`b2d5493`](https://github.com/HydroRoll-Team/OneRoll/commit/b2d549342333d01b44b7e860e94f785a40b568ab)).
+
+### Verification
+- Add a v1 conformance corpus plus checked-arithmetic, deterministic-randomness, property, and fuzz gates ([`6787313`](https://github.com/HydroRoll-Team/OneRoll/commit/67873131f4b79bdfaafe71c9ea0c4829afaa86e6), [`5bc93ac`](https://github.com/HydroRoll-Team/OneRoll/commit/5bc93acf01b1b39546f43630155e645f38672263), [`537c7b0`](https://github.com/HydroRoll-Team/OneRoll/commit/537c7b07ddebd9f8ae250ecd0d64416502c04baf)).
+- Enforce formatting, tests, Clippy, Ruff, strict mypy, strict documentation, conformance, fuzzing, and a 15-target wheel/source-distribution matrix in CI ([`ce7ee72`](https://github.com/HydroRoll-Team/OneRoll/commit/ce7ee72793b65b409989eb121e85c3149b9a08c6)).
+
+### Documentation
+- Make the pest grammar executable and the single documentation source of truth, with frozen v2 language, typed result, Python API, verification, release, and probability-analysis contracts ([`d0ec68a`](https://github.com/HydroRoll-Team/OneRoll/commit/d0ec68acd5453cb9be0c2524a51d6abc684ff2f5), [`8edbd50`](https://github.com/HydroRoll-Team/OneRoll/commit/8edbd5092a3f8f69c75fa229d8c75debb631829c), [`0ee6b04`](https://github.com/HydroRoll-Team/OneRoll/commit/0ee6b047483b3393d1d14750153dd3c58d98f1ab), [`989af9c`](https://github.com/HydroRoll-Team/OneRoll/commit/989af9c21319aba5638703991301b3c626883cf7), [`fb139aa`](https://github.com/HydroRoll-Team/OneRoll/commit/fb139aa08db452d09d33f79770d11ac39763fecb), [`bf2feeb`](https://github.com/HydroRoll-Team/OneRoll/commit/bf2feeb610510ebfe1d7e1434a6d483fa034fec6)).
+
+### Governance
+- Establish repository-wide ownership with `@fu050409` as the required Code Owner ([`43d0a95`](https://github.com/HydroRoll-Team/OneRoll/commit/43d0a95596eae61531c9c1c9f57cfda03f831a68)).
+
 ## [v1.3.4] - 2025-10-14
 ### New Features
 - [`02c240c`](https://github.com/HydroRoll-Team/OneRoll/commit/02c240c3be438feddd43a1f8597b9d64c19ef72e) - add new CI workflow for build and release process *(commit by [@HsiangNianian](https://github.com/HsiangNianian))*

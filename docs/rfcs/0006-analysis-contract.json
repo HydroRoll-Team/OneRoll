@@ -1,0 +1,282 @@
+{
+  "schema_version": 1,
+  "analysis_schema_version": "1.0",
+  "status": "draft",
+  "methods": ["sample", "analyze_exact"],
+  "value_kinds": ["scalar", "text", "boolean", "values", "roll_set"],
+  "sampling": {
+    "result_type": "SampleResult",
+    "execution": "Engine.run_batch",
+    "random_algorithm": "oneroll-chacha12-v1",
+    "batch_algorithm": "oneroll-sha256-batch-v1",
+    "aggregation_version": "oneroll-sample-summary-v1",
+    "atomic": true,
+    "ordered_by": "sample_index",
+    "histogram_key": "canonical-analysis-value-json",
+    "summary_fields": [
+      "count",
+      "min",
+      "max",
+      "mean",
+      "variance",
+      "standard_error",
+      "quantiles",
+      "histogram"
+    ],
+    "variance": {
+      "kind": "unbiased-sample",
+      "denominator": "n-1",
+      "one_sample": null,
+      "floating_point": "ieee754-binary64"
+    },
+    "quantiles": {
+      "method": "nearest-rank",
+      "probabilities": [0.05, 0.25, 0.5, 0.75, 0.95]
+    },
+    "confidence": {
+      "method": "wilson-score",
+      "level": 0.95,
+      "z": 1.959963984540054
+    },
+    "scalar_statistics_condition": "one-instruction-program-and-every-value-has-scalar-projection",
+    "non_scalar_statistics": null,
+    "typed_children": {
+      "included_by_default": false,
+      "order": "sample_index",
+      "charged_to": ["output_items", "output_bytes"]
+    },
+    "budgets": [
+      "source_bytes",
+      "parse_depth",
+      "ast_nodes",
+      "parsed_instructions",
+      "batch_samples",
+      "executed_instructions",
+      "source_items",
+      "generated_values",
+      "collection_items",
+      "function_activations",
+      "nesting_depth",
+      "work_units",
+      "output_items",
+      "output_bytes"
+    ]
+  },
+  "exact": {
+    "result_type": "ExactDistribution",
+    "accepts_seed": false,
+    "max_program_instructions": 1,
+    "fallback": "never",
+    "probability": {
+      "representation": "reduced-arbitrary-precision-rational",
+      "numerator_wire_type": "decimal-string",
+      "denominator_wire_type": "positive-decimal-string",
+      "success_sum": "1/1"
+    },
+    "outcome_value": "analysis-value",
+    "possible_runtime_errors": "reject-atomically-without-distribution",
+    "partial_distribution": "never",
+    "limits": {
+      "analysis_states": {
+        "default": 100000,
+        "hard_maximum": 10000000,
+        "unit": "states"
+      },
+      "analysis_support": {
+        "default": 100000,
+        "hard_maximum": 1000000,
+        "unit": "outcomes"
+      },
+      "analysis_operations": {
+        "default": 1000000,
+        "hard_maximum": 100000000,
+        "unit": "operations"
+      },
+      "analysis_bytes": {
+        "default": 67108864,
+        "hard_maximum": 536870912,
+        "unit": "bytes"
+      },
+      "analysis_rational_bits": {
+        "default": 4096,
+        "hard_maximum": 65536,
+        "unit": "bits"
+      }
+    }
+  },
+  "cancellation": {
+    "shared_token": "RFC-0004 CancellationToken",
+    "shared_deadline": true,
+    "check_boundary": "between-monotonic-work-units",
+    "atomic": true,
+    "partial_result": "never"
+  },
+  "error_phase": "analysis",
+  "error_codes": {
+    "analysis.unsupported_construct": {
+      "fields": ["construct", "capability_status", "reason"]
+    },
+    "analysis.unsupported.program_arity": {
+      "fields": ["instructions", "maximum"]
+    },
+    "analysis.possible_runtime_error": {
+      "fields": ["ordinary_code", "span"]
+    },
+    "analysis.state_limit": {
+      "fields": ["limit", "consumed", "requested"]
+    },
+    "analysis.support_limit": {
+      "fields": ["limit", "consumed", "requested"]
+    },
+    "analysis.operation_limit": {
+      "fields": ["limit", "consumed", "requested"]
+    },
+    "analysis.byte_limit": {
+      "fields": ["limit", "consumed", "requested"]
+    },
+    "analysis.rational_limit": {
+      "fields": ["limit", "consumed", "requested"]
+    },
+    "analysis.cancelled": {
+      "fields": ["consumed"]
+    },
+    "analysis.deadline_exceeded": {
+      "fields": ["consumed"]
+    }
+  },
+  "current_compatibility": {
+    "roll_multiple": "sampling-adapter-only",
+    "roll_statistics": "sampling-adapter-only",
+    "exact_analysis": "not-implemented"
+  },
+  "analysis_value_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://oneroll.hydroroll.team/schema/analysis-value-1.0.json",
+    "title": "OneRoll materialized analysis value",
+    "$ref": "#/$defs/AnalysisValue",
+    "$defs": {
+      "AnalysisValue": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/ScalarValue"
+          },
+          {
+            "$ref": "#/$defs/TextValue"
+          },
+          {
+            "$ref": "#/$defs/BooleanValue"
+          },
+          {
+            "$ref": "#/$defs/ValuesValue"
+          },
+          {
+            "$ref": "#/$defs/RollSetValue"
+          }
+        ]
+      },
+      "ScalarValue": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "value"],
+        "properties": {
+          "kind": {
+            "const": "scalar"
+          },
+          "value": {
+            "type": "integer",
+            "minimum": -9223372036854775808,
+            "maximum": 9223372036854775807
+          }
+        }
+      },
+      "TextValue": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "value"],
+        "properties": {
+          "kind": {
+            "const": "text"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      },
+      "BooleanValue": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "value"],
+        "properties": {
+          "kind": {
+            "const": "boolean"
+          },
+          "value": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ValuesValue": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "items"],
+        "properties": {
+          "kind": {
+            "const": "values"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/AnalysisValue"
+            }
+          }
+        }
+      },
+      "RollSetValue": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "item_kind", "items"],
+        "properties": {
+          "kind": {
+            "const": "roll_set"
+          },
+          "item_kind": {
+            "enum": ["scalar", "text"]
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/MaterializedRollItem"
+            }
+          }
+        }
+      },
+      "MaterializedRollItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["value", "annotations"],
+        "properties": {
+          "value": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/ScalarValue"
+              },
+              {
+                "$ref": "#/$defs/TextValue"
+              }
+            ]
+          },
+          "annotations": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "color": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,29 @@
+[package]
+name = "oneroll-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4.13"
+oneroll_core = { path = "..", package = "oneroll" }
+
+[workspace]
+members = ["."]
+
+[[bin]]
+name = "parse_program"
+path = "fuzz_targets/parse_program.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "evaluate_program"
+path = "fuzz_targets/evaluate_program.rs"
+test = false
+doc = false
+bench = false

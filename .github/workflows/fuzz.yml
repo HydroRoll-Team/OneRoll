@@ -1,0 +1,62 @@
+name: Fuzz
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/fuzz.yml"
+      - "Cargo.toml"
+      - "fuzz/**"
+      - "src/**"
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - ".github/workflows/fuzz.yml"
+      - "Cargo.toml"
+      - "fuzz/**"
+      - "src/**"
+  schedule:
+    - cron: "17 2 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  fuzz:
+    name: ${{ matrix.target }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - parse_program
+          - evaluate_program
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install nightly Rust
+        uses: dtolnay/rust-toolchain@nightly
+
+      - name: Install cargo-fuzz
+        run: cargo install cargo-fuzz --version 0.13.2 --locked
+
+      - name: Build fuzz target
+        run: cargo fuzz build ${{ matrix.target }}
+
+      - name: Run bounded fuzz campaign
+        run: >-
+          cargo fuzz run ${{ matrix.target }}
+          -- -max_total_time=120 -timeout=5 -rss_limit_mb=2048
+
+      - name: Upload crash artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fuzz-${{ matrix.target }}-${{ github.run_id }}
+          path: fuzz/artifacts/${{ matrix.target }}/
+          if-no-files-found: ignore

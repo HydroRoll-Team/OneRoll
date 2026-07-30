@@ -11,6 +11,7 @@ fn main() {
     f.write_all(b"use pest_derive::Parser;\n").unwrap();
     f.write_all(b"\n").unwrap();
     f.write_all(b"#[derive(Parser)]\n").unwrap();
-    f.write_all(b"#[grammar = \"src/oneroll/grammar.pest\"]\n").unwrap();
+    f.write_all(b"#[grammar = \"src/oneroll/grammar.pest\"]\n")
+        .unwrap();
     f.write_all(b"pub struct Grammar;\n").unwrap();
 }

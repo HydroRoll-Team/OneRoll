@@ -3,27 +3,8 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
-import os, sys
+import sys
 from pathlib import Path
-
-# from rinoh.frontend.rst import ReStructuredTextReader
-# from rinoh.template import TemplateConfigurationFile
-
-# the parser builds a rinohtype document tree
-# parser = ReStructuredTextReader()
-# with open('index.rst') as file:
-#     document_tree = parser.parse(file)
-
-# load the article template configuration file
-# script_path = Path(sys.path[0]).resolve()
-# config = TemplateConfigurationFile(script_path / 'oneroll.rtt')
-
-# render the document to 'my_document.pdf'
-# document = config.document(document_tree)
-# document.render('my_document')
-
-# rinoh_documents = [dict(doc='index',        # top-level file (index.rst)
-#                         target='manual')]   # output file (manual.pdf)
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -35,25 +16,20 @@ def setup(app):
     app.add_config_value("releaselevel", "", "env")
 
 
-DATA = None
-PYPROJECT = os.path.join("..", "..", "Cargo.toml")
-with open(PYPROJECT, "r", encoding="utf8") as f:
-    pyproject = f.read()
-    DATA = tomllib.loads(pyproject)
-PROJECT_VERSION = DATA["package"]["version"]
-PROJECT_NAME = DATA["package"]["name"]
-AUTHOR_TABLE = DATA["package"]["authors"]
-AUTHORS = ",".join([f"{aut}" for aut in AUTHOR_TABLE])
+CARGO_TOML = Path(__file__).resolve().parents[2] / "Cargo.toml"
+with CARGO_TOML.open("rb") as cargo_file:
+    PACKAGE = tomllib.load(cargo_file)["package"]
+
+PROJECT_VERSION = PACKAGE["version"]
+AUTHORS = ", ".join(PACKAGE["authors"])
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "OneRoll"  # PROJECT_NAME
-release = PROJECT_VERSION  # "latest"
+project = "OneRoll"
+release = PROJECT_VERSION
 copyright = "2023-PRESENT, HydroRoll-Team."
-author = AUTHORS  # "Hsiang Nianian"
-
-# html_title = "HydroRoll Docs"
+author = AUTHORS
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -78,21 +54,18 @@ extensions = [
     "sphinx_click",
 ]
 
+autosectionlabel_prefix_document = True
+
 doctest_global_setup = """
-try:
-    import hydro_roll as hr
-    import hydro_roll_core as hrc
-except ImportError:
-    hr = None
-    hrc = None
+import oneroll
 """
-todo_include_todos = True
-todo_emit_warnings = True
+todo_include_todos = False
+todo_emit_warnings = False
 intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 extlinks = {
-    "issue": ("https://github.com/HydroRoll-Team/HydroRoll/issues/%s", "[issue %s]"),
+    "issue": ("https://github.com/HydroRoll-Team/OneRoll/issues/%s", "[issue %s]"),
 }
 source_suffix = {
     ".rst": "restructuredtext",
@@ -110,26 +83,15 @@ rst_prolog = """
 rst_epilog = """
 .. |psf| replace:: Python Software Foundation
 """
-# locale_dirs = ["../locales/"]  # path is example but recommended.
-# gettext_compact = False  # optional.
-# gettext_uuid = True  # optional.
-numfig = True  # Figures, tables and code blocks are automatically numbered if they have a title
-pygments_style = "rrt"  # default sphinx, change the style of code block
-math_number_all = True  # Number all equations, figures, tables and code blocks
-# html_additional_pages = {
-#     "copy": "copying.html",
-# }
-html_split_index = True  # Split the index page by each alphabet
+numfig = True
+pygments_style = "rrt"
+math_number_all = True
+html_split_index = True
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "furo"
-html_static_path = ["../_static"]
-_html_logo = (
-    "https://cdn.jsdelivr.net/gh/HydroRoll-Team/HydroRoll@main/docs/_static/logo.png"
-)
-# html_logo = _html_logo
-html_favicon = _html_logo
+html_static_path = []
 
 html_css_files = [
     "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/fontawesome.min.css",
@@ -140,34 +102,25 @@ html_copy_source = True
 html_show_sourcelink = True
 
 html_theme_options = {
-    "announcement": "<em><a href='#'>documentation</a> is still under construction now, welcome any <a href='contributing.html'>contribution</a>!</em>",
-    "source_repository": "https://github.com/HydroRoll-Team/HydroRoll/",
+    "source_repository": "https://github.com/HydroRoll-Team/OneRoll/",
     "source_branch": "main",
     "source_directory": "docs/source/",
-    # Toc options
-    # "collapse_navigation": True,
-    # "sticky_navigation": False,
-    # "navigation_depth": 1,
-    # "includehidden": False,
-    # "titles_only": True,
     "footer_icons": [
         {
             "name": "GitHub",
-            "url": "https://github.com/HydroRoll-Team/HydroRoll/",
+            "url": "https://github.com/HydroRoll-Team/OneRoll/",
             "html": "",
             "class": "fa-brands fa-github",
         },
         {
             "name": "Pypi",
-            "url": "https://pypi.org/project/hydro_roll/",
+            "url": "https://pypi.org/project/oneroll/",
             "html": "",
             "class": "fa-brands fa-python",
         },
     ],
 }
 
-# html_sidebars = {
-#    '**': ['globaltoc.html', 'sourcelink.html', 'searchbox.html', 'relations.html'],
-#    'using/windows': ['windowssidebar.html', 'searchbox.html'],
-# }
-latex_documents = {}
+latex_documents = [
+    ("index", "oneroll.tex", "OneRoll Documentation", AUTHORS, "manual"),
+]

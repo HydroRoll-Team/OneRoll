@@ -1,0 +1,506 @@
+{
+  "schema_version": 1,
+  "language": "oneroll-v2",
+  "result_schema_version": "2.0",
+  "cases": [
+    {
+      "id": "program.success.two_instructions",
+      "status": "planned",
+      "tracking_issue": "#38",
+      "features": ["program"],
+      "source": "1; 2",
+      "request": {
+        "compatibility_mode": "strict_v2",
+        "variables": {},
+        "seed": null
+      },
+      "expect": {
+        "outcome": "success",
+        "canonical": "1; 2",
+        "parse": {
+          "instruction_count": 2,
+          "node_kinds": ["program", "instruction", "scalar"]
+        },
+        "value": {
+          "kind": "values",
+          "items": [
+            {
+              "kind": "scalar",
+              "value": 1
+            },
+            {
+              "kind": "scalar",
+              "value": 2
+            }
+          ]
+        },
+        "scalar": 3,
+        "trace": {
+          "root_kind": "program",
+          "kinds": ["literal", "program"]
+        },
+        "random": {
+          "algorithm": null,
+          "seed": null,
+          "rng_words": 0
+        }
+      }
+    },
+    {
+      "id": "program.error.empty_instruction",
+      "status": "planned",
+      "tracking_issue": "#38",
+      "features": ["program"],
+      "source": "1;;2",
+      "request": {
+        "compatibility_mode": "strict_v2",
+        "variables": {},
+        "seed": null
+      },
+      "expect": {
+        "outcome": "error",
+        "phase": "parse",
+        "code": "parse.empty_instruction",
+        "span": {
+          "start_byte": 2,
+          "end_byte": 3
+        },
+        "random_words": 0
+      }
+    },
+    {
+      "id": "instruction.success.scalar",
+      "status": "planned",
+      "tracking_issue": "#38",
+      "features": ["instruction"],
+      "source": "1",
+      "request": {
+        "compatibility_mode": "strict_v2",
+        "variables": {},
+        "seed": null
+      },
+      "expect": {
+        "outcome": "success",
+        "canonical": "1",
+        "parse": {
+          "instruction_count": 1,
+          "node_kinds": ["program", "instruction", "scalar"]
+        },
+        "value": {
+          "kind": "scalar",
+          "value": 1
+        },
+        "scalar": 1,
+        "trace": {
+          "root_kind": "literal",
+          "kinds": ["literal"]
+        },
+        "random": {
+          "algorithm": null,
+          "seed": null,
+          "rng_words": 0
+        }
+      }
+    },
+    {
+      "id": "instruction.error.trailing_separator",
+      "status": "planned",
+      "tracking_issue": "#38",
+      "features": ["instruction"],
+      "source": "1;",
+      "request": {
+        "compatibility_mode": "strict_v2",
+        "variables": {},
+        "seed": null
+      },
+      "expect": {
+        "outcome": "error",
+        "phase": "parse",
+        "code": "parse.missing_instruction",
+        "span": {
+          "start_byte": 1,
+          "end_byte": 2
+        },
+        "random_words": 0
+      }
+    },
+    {
+      "id": "typed_value.success.values",
+      "status": "planned",
+      "tracking_issue": "#39",
+      "features": ["typed_value"],
+      "source": "[1, 2]",
+      "request": {
+        "compatibility_mode": "strict_v2",
+        "variables": {},
+        "seed": null
+      },
+      "expect": {
+        "outcome": "success",
+        "canonical": "[1, 2]",
+        "parse": {
+          "instruction_count": 1,
+          "node_kinds": ["program", "instruction", "values", "scalar"]
+        },
+        "value": {
+          "kind": "values",
+          "items": [
+            {
+              "kind": "scalar",
+              "value": 1
+            },
+            {
+              "kind": "scalar",
+              "value": 2
+            }
+          ]
+        },
+        "scalar": 3,
+        "trace": {
+          "root_kind": "values",
+          "kinds": ["literal", "values"]
+        },
+        "random": {
+          "algorithm": null,
+          "seed": null,
+          "rng_words": 0
+        }
+      }
+    },
+    {
+      "id": "typed_value.error.text_arithmetic",
+      "status": "planned",
+      "tracking_issue": "#39",
+      "features": ["typed_value"],
+      "source": "1 + \"x\"",
+      "request": {
+        "compatibility_mode": "strict_v2",
+        "variables": {},
+        "seed": null
+      },
+      "expect": {
+        "outcome": "error",
+        "phase": "validation",
+        "code": "validation.operator_type",
+        "span": {
+          "start_byte": 2,
+          "end_byte": 3
+        },
+        "random_words": 0
+      }
+    },
+    {
+      "id": "dice_source.success.seeded_d6",
+      "status": "planned",
+      "tracking_issue": "#40",
+      "features": ["dice_source"],
+      "source": "1d6",
+      "request": {
+        "compatibility_mode": "strict_v2",
+        "variables": {},
+        "seed": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "expect": {
+        "outcome": "success",
+        "canonical": "1d6",
+        "parse": {
+          "instruction_count": 1,
+          "node_kinds": ["program", "instruction", "numeric_dice"]
+        },
+        "value": {
+          "kind": "roll_set",
+          "item_kind": "scalar",
+          "items": [
+            {
+              "node_id": "r0",
+              "annotations": {}
+            }
+          ]
+        },
+        "scalar": 4,
+        "trace": {
+          "root_kind": "source.numeric_dice",
+          "kinds": ["source.numeric_dice"]
+        },
+        "random": {
+          "algorithm": "oneroll-chacha12-v1",
+          "seed": "0000000000000000000000000000000000000000000000000000000000000000",
+          "rng_words": 1
+        }
+      }
+    },
+    {
+      "id": "dice_source.error.zero_count",
+      "status": "planned",
+      "tracking_issue": "#40",
+      "features": ["dice_source"],
+      "source": "0d6",
+      "request": {
+        "compatibility_mode": "strict_v2",
+        "variables": {},
+        "seed": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "expect": {
+        "outcome": "error",
+        "phase": "validation",
+        "code": "validation.dice_count",
+        "span": {
+          "start_byte": 0,
+          "end_byte": 1
+        },
+        "random_words": 0
+      }
+    },
+    {
+      "id": "validator.success.filter_values",
+      "status": "planned",
+      "tracking_issue": "#41",
+      "features": ["validator"],
+      "source": "[1, 2]f[>1]",
+      "request": {
+        "compatibility_mode": "strict_v2",
+        "variables": {},
+        "seed": null
+      },
+      "expect": {
+        "outcome": "success",
+        "canonical": "[1, 2]f[>1]",
+        "parse": {
+          "instruction_count": 1,
+          "node_kinds": ["program", "instruction", "values", "filter", "validator"]
+        },
+        "value": {
+          "kind": "values",
+          "items": [
+            {
+              "kind": "scalar",
+              "value": 2
+            }
+          ]
+        },
+        "scalar": 2,
+        "trace": {
+          "root_kind": "option.filter",
+          "kinds": ["literal", "values", "option.filter"]
+        },
+        "random": {
+          "algorithm": null,
+          "seed": null,
+          "rng_words": 0
+        }
+      }
+    },
+    {
+      "id": "validator.error.empty_predicate",
+      "status": "planned",
+      "tracking_issue": "#41",
+      "features": ["validator"],
+      "source": "1d6f[]",
+      "request": {
+        "compatibility_mode": "strict_v2",
+        "variables": {},
+        "seed": null
+      },
+      "expect": {
+        "outcome": "error",
+        "phase": "parse",
+        "code": "parse.empty_validator",
+        "span": {
+          "start_byte": 4,
+          "end_byte": 6
+        },
+        "random_words": 0
+      }
+    },
+    {
+      "id": "option.success.sort_values",
+      "status": "planned",
+      "tracking_issue": "#42",
+      "features": ["option"],
+      "source": "[3, 1, 2]s",
+      "request": {
+        "compatibility_mode": "strict_v2",
+        "variables": {},
+        "seed": null
+      },
+      "expect": {
+        "outcome": "success",
+        "canonical": "[3, 1, 2]s",
+        "parse": {
+          "instruction_count": 1,
+          "node_kinds": ["program", "instruction", "values", "sort"]
+        },
+        "value": {
+          "kind": "values",
+          "items": [
+            {
+              "kind": "scalar",
+              "value": 1
+            },
+            {
+              "kind": "scalar",
+              "value": 2
+            },
+            {
+              "kind": "scalar",
+              "value": 3
+            }
+          ]
+        },
+        "scalar": 6,
+        "trace": {
+          "root_kind": "option.sort",
+          "kinds": ["literal", "values", "option.sort"]
+        },
+        "random": {
+          "algorithm": null,
+          "seed": null,
+          "rng_words": 0
+        }
+      }
+    },
+    {
+      "id": "option.error_scalar_keep",
+      "status": "planned",
+      "tracking_issue": "#42",
+      "features": ["option"],
+      "source": "1k1",
+      "request": {
+        "compatibility_mode": "strict_v2",
+        "variables": {},
+        "seed": null
+      },
+      "expect": {
+        "outcome": "error",
+        "phase": "validation",
+        "code": "validation.option_input",
+        "span": {
+          "start_byte": 1,
+          "end_byte": 3
+        },
+        "random_words": 0
+      }
+    },
+    {
+      "id": "function.success_repeat",
+      "status": "planned",
+      "tracking_issue": "#43",
+      "features": ["function"],
+      "source": "repeat(2; 1)",
+      "request": {
+        "compatibility_mode": "strict_v2",
+        "variables": {},
+        "seed": null
+      },
+      "expect": {
+        "outcome": "success",
+        "canonical": "repeat(2; 1)",
+        "parse": {
+          "instruction_count": 1,
+          "node_kinds": ["program", "instruction", "repeat", "scalar"]
+        },
+        "value": {
+          "kind": "values",
+          "items": [
+            {
+              "kind": "scalar",
+              "value": 1
+            },
+            {
+              "kind": "scalar",
+              "value": 1
+            }
+          ]
+        },
+        "scalar": 2,
+        "trace": {
+          "root_kind": "function.repeat",
+          "kinds": ["literal", "function.repeat"]
+        },
+        "random": {
+          "algorithm": null,
+          "seed": null,
+          "rng_words": 0
+        }
+      }
+    },
+    {
+      "id": "function.error_zero_repeat",
+      "status": "planned",
+      "tracking_issue": "#43",
+      "features": ["function"],
+      "source": "repeat(0; 1)",
+      "request": {
+        "compatibility_mode": "strict_v2",
+        "variables": {},
+        "seed": null
+      },
+      "expect": {
+        "outcome": "error",
+        "phase": "validation",
+        "code": "validation.repeat_count",
+        "span": {
+          "start_byte": 7,
+          "end_byte": 8
+        },
+        "random_words": 0
+      }
+    },
+    {
+      "id": "error.success_no_failure",
+      "status": "planned",
+      "tracking_issue": "#12",
+      "features": ["error"],
+      "source": "1",
+      "request": {
+        "compatibility_mode": "strict_v2",
+        "variables": {},
+        "seed": null
+      },
+      "expect": {
+        "outcome": "success",
+        "canonical": "1",
+        "parse": {
+          "instruction_count": 1,
+          "node_kinds": ["program", "instruction", "scalar"]
+        },
+        "value": {
+          "kind": "scalar",
+          "value": 1
+        },
+        "scalar": 1,
+        "trace": {
+          "root_kind": "literal",
+          "kinds": ["literal"]
+        },
+        "random": {
+          "algorithm": null,
+          "seed": null,
+          "rng_words": 0
+        }
+      }
+    },
+    {
+      "id": "error.error_division_by_zero",
+      "status": "planned",
+      "tracking_issue": "#12",
+      "features": ["error"],
+      "source": "1 / 0",
+      "request": {
+        "compatibility_mode": "strict_v2",
+        "variables": {},
+        "seed": null
+      },
+      "expect": {
+        "outcome": "error",
+        "phase": "evaluation",
+        "code": "evaluation.division_by_zero",
+        "span": {
+          "start_byte": 2,
+          "end_byte": 3
+        },
+        "random_words": 0
+      }
+    }
+  ]
+}

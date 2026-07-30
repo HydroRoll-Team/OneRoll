@@ -23,8 +23,8 @@ pub enum Expression {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DiceResult {
     pub expression: String,
-    pub total: i32,
-    pub rolls: Vec<Vec<i32>>,
+    pub total: i64,
+    pub rolls: Vec<Vec<i64>>,
     pub details: String,
     pub comment: Option<String>,  // 新增字段
 }
@@ -155,7 +155,7 @@ RUST_LOG=debug maturin develop
 ```rust
 // 在相应的模块中修复问题
 impl DiceCalculator {
-    pub fn roll_dice(&mut self, dice: &DiceRoll) -> Result<Vec<Vec<i32>>, DiceError> {
+    pub fn roll_dice(&mut self, dice: &DiceRoll) -> Result<Vec<Vec<i64>>, DiceError> {
         // 修复逻辑
         if dice.count <= 0 || dice.sides <= 0 {
             return Err(DiceError::InvalidExpression(
@@ -242,7 +242,7 @@ impl DiceCalculator {
         Self { config }
     }
     
-    pub fn roll_dice(&mut self, dice: &DiceRoll) -> Result<Vec<Vec<i32>>, DiceError> {
+    pub fn roll_dice(&mut self, dice: &DiceRoll) -> Result<Vec<Vec<i64>>, DiceError> {
         if dice.count > self.config.max_dice_count {
             return Err(DiceError::InvalidExpression(
                 format!("骰子数量不能超过{}", self.config.max_dice_count),
@@ -338,18 +338,30 @@ cargo doc --open
 
 ## 版本管理
 
+### 唯一版本源
+
+`Cargo.toml` 的 `[package].version` 是 OneRoll 唯一需要手工维护的版本号。
+`pyproject.toml` 将版本声明为 dynamic，因此 maturin 会用 Cargo 版本生成
+wheel/sdist 元数据；Rust 扩展通过 `CARGO_PKG_VERSION` 暴露同一个值，
+`oneroll.__version__` 和 CLI `--version` 再从扩展读取它。
+
+发布时不要在 Python 源码、CLI 或文档配置中复制版本号。
+
 ### 语义化版本
 - **主版本号**: 不兼容的 API 修改
 - **次版本号**: 向下兼容的功能性新增
 - **修订号**: 向下兼容的问题修正
 
 ### 发布流程
-1. 更新版本号
+1. 只更新 `Cargo.toml` 中的 `[package].version`
 2. 更新 CHANGELOG.md
-3. 运行测试
-4. 构建发布版本
-5. 创建 Git 标签
-6. 发布到 PyPI
+3. 运行 `uv run --frozen maturin develop`
+4. 运行 `uv run --frozen python -m unittest discover -s tests -p 'test_package_version.py' -v`
+5. 运行完整质量门禁并构建发布版本
+6. 创建与 Cargo 版本严格一致的 `vX.Y.Z` Git 标签
+7. 发布到 PyPI
+
+完整检查命令与版本派生关系见 `docs/source/releasing.rst`。
 
 ## 贡献指南
 

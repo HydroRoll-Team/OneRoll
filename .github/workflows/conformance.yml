@@ -1,0 +1,59 @@
+name: V1 Conformance
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - Cargo.toml
+      - pyproject.toml
+      - src/**
+      - tests/conformance/**
+      - tests/test_v1_conformance.py
+      - uv.lock
+      - .github/workflows/conformance.yml
+  pull_request:
+    paths:
+      - Cargo.toml
+      - pyproject.toml
+      - src/**
+      - tests/conformance/**
+      - tests/test_v1_conformance.py
+      - uv.lock
+      - .github/workflows/conformance.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: true
+          version: "0.11.32"
+
+      - name: Install project
+        run: uv sync --frozen
+
+      - name: Verify Rust corpus
+        run: cargo test rust_engine_matches_v1_conformance_corpus
+
+      - name: Verify Python corpus
+        run: uv run --frozen python -m unittest tests.test_v1_conformance -v

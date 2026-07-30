@@ -15,7 +15,7 @@ requires-python = ">=3.9"
 readme.content-type = "text/markdown"
 readme.file = "README.md"
 license = { text = "AGPL-3.0" }
-keywords = ["hydroroll", "dice", "expression", "parser", "roll", "peg", "rust"]
+keywords = ["dice", "expression", "parser", "roll", "peg", "rust", "tabletop"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Framework :: Robot Framework",
@@ -28,8 +28,8 @@ classifiers = [
 ]
 
 [project.urls]
-homepage = "https://hydroroll.team/"
-repository = "https://github.com/HydroRoll-Team/oneroll"
+homepage = "https://oneroll.hydroroll.team/"
+repository = "https://github.com/HydroRoll-Team/OneRoll"
 documentation = "https://oneroll.hydroroll.team/"
 
 [project.scripts]
@@ -109,7 +109,11 @@ line-ending = "auto"
 dev = [
     "docutils>=0.21.2",
     "furo>=2024.8.6",
+    "jsonschema>=4.23.0,<4.26",
+    "maturin>=1.4,<2.0",
     "myst-parser>=3.0.1",
+    "mypy>=1.14.1",
+    "pyyaml>=6.0.2",
     "ruff>=0.9.6",
     "sphinx>=7.4.7",
     "sphinx-autobuild>=2024.10.3",
