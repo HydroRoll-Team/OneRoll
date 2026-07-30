@@ -73,7 +73,11 @@ The final job is protected by the ``pypi`` environment.  It downloads only the
 sealed candidate and runs no checked-out project code or build command.  It
 creates a new immutable GitHub Release and, when ``publish_pypi`` is true, uses
 PyPI Trusted Publishing through the short-lived GitHub OIDC identity.  Existing
-GitHub Releases and registry files are never updated or skipped silently.
+GitHub Releases and registry files are never updated or skipped silently.  A
+retry may reuse an existing GitHub Release only after downloading every asset,
+matching the exact sealed-candidate filename set and ``SHA256SUMS``, verifying
+all package hashes, and confirming the draft and prerelease state.  Any drift
+fails closed before the registry step.
 
 Repository and PyPI prerequisites
 ---------------------------------
