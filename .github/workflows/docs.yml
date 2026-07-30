@@ -14,6 +14,8 @@ jobs:
   build:
     needs: quality
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -34,7 +36,7 @@ jobs:
         if: github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.BOT_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/_build/html
           publish_branch: gh-pages
           user_name: "hydroroll-bot"

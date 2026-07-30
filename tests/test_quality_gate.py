@@ -63,6 +63,19 @@ class QualityGateContractTests(unittest.TestCase):
         self.assertIn("quality", job_needs(changelog["jobs"]["verify"]))
         self.assertIn("verify", job_needs(changelog["jobs"]["publish"]))
 
+    def test_docs_deployment_uses_scoped_github_token(self):
+        workflow = load_workflow("docs.yml")
+        build = workflow["jobs"]["build"]
+        self.assertEqual(build["permissions"]["contents"], "write")
+
+        deploy = next(
+            step for step in build["steps"] if step["name"] == "Deploy to GitHub Pages"
+        )
+        self.assertEqual(
+            deploy["with"]["github_token"],
+            "${{ secrets.GITHUB_TOKEN }}",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
