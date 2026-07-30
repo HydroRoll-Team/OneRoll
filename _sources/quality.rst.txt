@@ -1,0 +1,63 @@
+Quality gate
+============
+
+``.github/workflows/quality.yml`` is the reusable release gate for OneRoll.  It
+runs directly for pull requests and pushes to ``main`` or ``dev`` and is also
+called by the wheel, documentation, and changelog workflows.  Their build,
+deploy, and release jobs declare an explicit dependency on this gate.
+
+Run the gate locally
+--------------------
+
+Use Python 3.11 or newer and a stable Rust toolchain, then run these commands
+from the repository root:
+
+.. code-block:: console
+
+   uv sync --all-groups --frozen
+   cargo fmt --all -- --check
+   cargo test --all-targets --all-features
+   cargo test --release checked_i64_
+   cargo test --release rfc_0002_
+   cargo test --release property_
+   cargo clippy --all-targets --all-features -- -D warnings -A non-local-definitions
+   uv run --frozen ruff check .
+   uv run --frozen ruff format --check .
+   uv run --frozen mypy --strict src/oneroll docs/rfcs/0004-target-api.pyi
+   uv run --frozen python -m unittest discover -s tests -v
+   uv run --frozen sphinx-build -W --keep-going -b html docs/source docs/_build/html
+
+The release-mode focused gates freeze checked arithmetic, the deterministic
+random protocol, and engine properties independently from the complete debug
+suite.  Longer parser/evaluator campaigns run through :doc:`fuzzing` on a
+weekly schedule.
+
+The single Rust lint allowance is limited to ``non-local-definitions`` emitted
+by the PyO3 0.19 attribute macro.  All other Clippy and compiler warnings fail
+the gate.  Removing this compatibility allowance belongs with the planned PyO3
+upgrade rather than with unrelated language changes.
+
+Delivery dependency
+-------------------
+
+Wheel and source-distribution jobs cannot begin until the quality workflow
+succeeds.  The manual publication workflow also runs that gate, then verifies
+that its signed tag and sealed files match one successful manual candidate-build
+run for the same protected-main SHA.  Documentation deployment uses the same
+reusable workflow.  The focused :doc:`conformance` workflow remains a separate,
+fast semantic-drift signal, while the quality gate runs the complete Rust and
+installed-Python suites.  See :doc:`releasing` for the approval and Trusted
+Publishing boundary.
+
+The RFC-0005 contract tests also validate the v2 corpus format, representative
+success/error coverage, and milestone release mapping.  Planned cases validate
+their contract shape without claiming implementation; an implementation issue
+must activate them as required Rust and installed-Python cases in the same
+vertical change.  See :ref:`rfc-0005`.
+
+The RFC-0006 contract tests validate the provisional sampling/exact API split,
+complete capability classification, self-contained AnalysisValue schema, and
+exact rational example tables.  Passing these checks freezes a reviewable
+design surface; it does not claim that sampling or exact analysis is implemented.
+Prototype issue 32 must reproduce the tables and justify limits before the RFC
+can leave Draft.  See :ref:`rfc-0006`.

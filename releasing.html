@@ -2,10 +2,12 @@
 <html class="no-js" lang="en" data-content_root="./">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" />
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Production roadmap" href="roadmap.html" /><link rel="prev" title="Quality gate" href="quality.html" />
 
-    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 --><title>Index - OneRoll 1.3.5 documentation</title>
-<link rel="stylesheet" type="text/css" href="_static/pygments.css?v=290f1236" />
+    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>Release versioning - OneRoll 1.3.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=290f1236" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
@@ -179,7 +181,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -199,14 +201,14 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
+  <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="language.html">Language guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="limits.html">Resource limits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="randomness.html">Deterministic randomness</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fuzzing.html">Fuzzing and property gates</a></li>
 <li class="toctree-l1"><a class="reference internal" href="conformance.html">v1 conformance corpus</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quality.html">Quality gate</a></li>
-<li class="toctree-l1"><a class="reference internal" href="releasing.html">Release versioning</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Release versioning</a></li>
 <li class="toctree-l1"><a class="reference internal" href="roadmap.html">Production roadmap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rfc-0001.html">RFC-0001: OneRoll Program Language v2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rfc-0002.html">RFC-0002: Execution Safety, Budgets, and Randomness</a></li>
@@ -233,7 +235,17 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          <div class="theme-toggle-container theme-toggle-content">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/HydroRoll-Team/OneRoll/blob/main/docs/source/releasing.rst?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/HydroRoll-Team/OneRoll/edit/main/docs/source/releasing.rst" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
@@ -242,16 +254,118 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          
-<section class="genindex-section">
-  <h1 id="index">Index</h1>
-  <div class="genindex-jumpbox"></div>
+          <section id="release-versioning">
+<h1>Release versioning<a class="headerlink" href="#release-versioning" title="Link to this heading">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">Cargo.toml</span></code> is the only authoritative package-version source.  A release
+changes <code class="docutils literal notranslate"><span class="pre">[package].version</span></code> exactly once; no Python file or CLI source should
+contain a separately maintained OneRoll version.</p>
+<p>The remaining version surfaces are derived automatically:</p>
+<ul class="simple">
+<li><p>maturin reads the Cargo package version for wheel and source-distribution
+metadata because <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> declares <code class="docutils literal notranslate"><span class="pre">version</span></code> as dynamic;</p></li>
+<li><p>the <code class="docutils literal notranslate"><span class="pre">oneroll._core</span></code> extension exports Rust’s compile-time
+<code class="docutils literal notranslate"><span class="pre">CARGO_PKG_VERSION</span></code>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">oneroll.__version__</span></code> re-exports the extension value; and</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">oneroll</span> <span class="pre">--version</span></code> reads <code class="docutils literal notranslate"><span class="pre">oneroll.__version__</span></code>.</p></li>
+</ul>
+<section id="version-update-path">
+<h2>Version update path<a class="headerlink" href="#version-update-path" title="Link to this heading">¶</a></h2>
+<ol class="arabic">
+<li><p>Edit only <code class="docutils literal notranslate"><span class="pre">[package].version</span></code> in <code class="docutils literal notranslate"><span class="pre">Cargo.toml</span></code>.</p></li>
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">CHANGELOG.md</span></code> for the release.</p></li>
+<li><p>Rebuild the installed extension and run the version contract:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">uv run --frozen maturin develop</span>
+<span class="go">uv run --no-sync python -m unittest discover -s tests -p &#39;test_package_version.py&#39; -v</span>
+<span class="go">uv run --no-sync python -m oneroll --version</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">--no-sync</span></code> is intentional after <code class="docutils literal notranslate"><span class="pre">maturin</span> <span class="pre">develop</span></code>: it verifies the
+freshly rebuilt editable distribution instead of allowing a subsequent
+environment sync to restore stale cached metadata from the previous version.</p>
+</li>
+<li><p>Run the complete <a class="reference internal" href="quality.html"><span class="doc">Quality gate</span></a> gate and merge the release commit to protected
+<code class="docutils literal notranslate"><span class="pre">main</span></code>.</p></li>
+<li><p>Manually run the <code class="docutils literal notranslate"><span class="pre">Build</span> <span class="pre">distributions</span></code> workflow for that exact <code class="docutils literal notranslate"><span class="pre">main</span></code>
+commit and retain its run ID.  This workflow has read-only repository
+permission and cannot publish.</p></li>
+<li><p>After the version, push, and publication choices receive explicit human
+confirmation, create and push a signed annotated <code class="docutils literal notranslate"><span class="pre">vX.Y.Z</span></code> tag for that
+commit.</p></li>
+<li><p>Manually run <code class="docutils literal notranslate"><span class="pre">Publish</span> <span class="pre">Release</span></code> from <code class="docutils literal notranslate"><span class="pre">main</span></code> with the tag, candidate build
+run ID, PyPI choice, and prerelease choice.  Approve the protected <code class="docutils literal notranslate"><span class="pre">pypi</span></code>
+environment only after its verification job identifies the expected source
+and artifacts.</p></li>
+</ol>
+<p>The version-contract test compares Cargo metadata, installed distribution
+metadata, Python runtime metadata, and CLI output.  This prevents a wheel from
+passing the release gate when any of those public surfaces drift.</p>
+</section>
+<section id="protected-publication-boundary">
+<h2>Protected publication boundary<a class="headerlink" href="#protected-publication-boundary" title="Link to this heading">¶</a></h2>
+<p>Pushing a tag does not invoke a build, GitHub Release, or registry write.  The
+two manual workflows deliberately separate unprivileged construction from
+privileged publication:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">Build</span> <span class="pre">distributions</span></code></dt><dd><p>Runs the reusable quality gate, builds the supported wheels and sdist, and
+retains them for 14 days.  It does not receive <code class="docutils literal notranslate"><span class="pre">contents:</span> <span class="pre">write</span></code> or an OIDC
+token.  Free-threaded wheels are not built while PyO3 0.19 is installed and
+the RFC-0004 concurrency contract is unfinished.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">Publish</span> <span class="pre">Release</span></code></dt><dd><p>Accepts a signed tag and one manual build run ID.  Before an approval prompt,
+it proves that the tag is annotated and GitHub-verified, targets protected
+<code class="docutils literal notranslate"><span class="pre">main</span></code>, matches <code class="docutils literal notranslate"><span class="pre">Cargo.toml</span></code> and a non-empty dated changelog section, and
+names a successful manual <code class="docutils literal notranslate"><span class="pre">Build</span> <span class="pre">distributions</span></code> run for the same SHA.  It
+downloads those prebuilt files, rejects version drift and free-threaded
+artifacts, writes <code class="docutils literal notranslate"><span class="pre">SHA256SUMS</span></code>, and seals one candidate artifact.</p>
+</dd>
+</dl>
+<p>The final job is protected by the <code class="docutils literal notranslate"><span class="pre">pypi</span></code> environment.  It downloads only the
+sealed candidate and runs no checked-out project code or build command.  It
+creates a new immutable GitHub Release and, when <code class="docutils literal notranslate"><span class="pre">publish_pypi</span></code> is true, uses
+PyPI Trusted Publishing through the short-lived GitHub OIDC identity.  Existing
+GitHub Releases and registry files are never updated or skipped silently.  A
+retry may reuse an existing GitHub Release only after downloading every asset,
+matching the exact sealed-candidate filename set and <code class="docutils literal notranslate"><span class="pre">SHA256SUMS</span></code>, verifying
+all package hashes, and confirming the draft and prerelease state.  Any drift
+fails closed before the registry step.</p>
+</section>
+<section id="repository-and-pypi-prerequisites">
+<h2>Repository and PyPI prerequisites<a class="headerlink" href="#repository-and-pypi-prerequisites" title="Link to this heading">¶</a></h2>
+<p>Before the first publication, repository administrators must configure:</p>
+<ul class="simple">
+<li><p>a GitHub environment named <code class="docutils literal notranslate"><span class="pre">pypi</span></code> with required reviewers and deployment
+restricted to protected <code class="docutils literal notranslate"><span class="pre">main</span></code>; and</p></li>
+<li><p>the <code class="docutils literal notranslate"><span class="pre">oneroll</span></code> PyPI Trusted Publisher for owner <code class="docutils literal notranslate"><span class="pre">HydroRoll-Team</span></code>, repository
+<code class="docutils literal notranslate"><span class="pre">OneRoll</span></code>, workflow <code class="docutils literal notranslate"><span class="pre">changelog.yml</span></code>, and environment <code class="docutils literal notranslate"><span class="pre">pypi</span></code>.</p></li>
+</ul>
+<p>If either external control is missing, publication must fail.  A long-lived API
+token is not a supported fallback.  Issue 34 retains the remaining M4 provenance,
+SBOM, audit, and incident-response work.</p>
+</section>
+<section id="command-sequence">
+<h2>Command sequence<a class="headerlink" href="#command-sequence" title="Link to this heading">¶</a></h2>
+<p>After the release commit is on <code class="docutils literal notranslate"><span class="pre">main</span></code> and all human confirmations are recorded:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">gh workflow run build.yml --ref main</span>
+<span class="go">gh run list --workflow build.yml --event workflow_dispatch --limit 1</span>
+<span class="go">git tag -s vX.Y.Z -F RELEASE_NOTES.md &lt;verified-main-sha&gt;</span>
+<span class="go">git push origin vX.Y.Z</span>
+<span class="go">gh workflow run changelog.yml --ref main \</span>
+<span class="go">  -f tag=vX.Y.Z \</span>
+<span class="go">  -f build_run_id=&lt;successful-run-id&gt; \</span>
+<span class="go">  -f publish_pypi=true \</span>
+<span class="go">  -f prerelease=false</span>
+</pre></div>
+</div>
+<p>The M1 specification prerelease uses <code class="docutils literal notranslate"><span class="pre">publish_pypi=false</span></code> and
+<code class="docutils literal notranslate"><span class="pre">prerelease=true</span></code>.  The milestone/version/channel mapping remains normative in
+<a class="reference internal" href="rfc-0005.html#rfc-0005"><span class="std std-ref">RFC-0005: Verification, Documentation, and Release</span></a>.</p>
+</section>
 </section>
 
         </article>
@@ -259,8 +373,26 @@
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="roadmap.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Production roadmap</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="quality.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Quality gate</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -283,8 +415,30 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Release versioning</a><ul>
+<li><a class="reference internal" href="#version-update-path">Version update path</a></li>
+<li><a class="reference internal" href="#protected-publication-boundary">Protected publication boundary</a></li>
+<li><a class="reference internal" href="#repository-and-pypi-prerequisites">Repository and PyPI prerequisites</a></li>
+<li><a class="reference internal" href="#command-sequence">Command sequence</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

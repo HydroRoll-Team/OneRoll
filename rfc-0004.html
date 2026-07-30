@@ -1,0 +1,1209 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="RFC-0005: Verification, Documentation, and Release" href="rfc-0005.html" /><link rel="prev" title="RFC-0003: Typed Program Results, Roll Traces, and Errors" href="rfc-0003.html" />
+
+    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>RFC-0004: Python Engine API and Package Boundary - OneRoll 1.3.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=290f1236" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/fontawesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/brands.min.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #000000;
+  --color-code-foreground: #dddddd;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">OneRoll 1.3.5 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  
+  <span class="sidebar-brand-text">OneRoll 1.3.5 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="language.html">Language guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="limits.html">Resource limits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="randomness.html">Deterministic randomness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fuzzing.html">Fuzzing and property gates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conformance.html">v1 conformance corpus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quality.html">Quality gate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasing.html">Release versioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Production roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rfc-0001.html">RFC-0001: OneRoll Program Language v2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rfc-0002.html">RFC-0002: Execution Safety, Budgets, and Randomness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rfc-0003.html">RFC-0003: Typed Program Results, Roll Traces, and Errors</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">RFC-0004: Python Engine API and Package Boundary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rfc-0005.html">RFC-0005: Verification, Documentation, and Release</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rfc-0006.html">RFC-0006: Program Sampling and Exact Analysis Scope</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/HydroRoll-Team/OneRoll/blob/main/docs/source/rfc-0004.rst?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/HydroRoll-Team/OneRoll/edit/main/docs/source/rfc-0004.rst" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="rfc-0004-python-engine-api-and-package-boundary">
+<span id="rfc-0004"></span><h1>RFC-0004: Python Engine API and Package Boundary<a class="headerlink" href="#rfc-0004-python-engine-api-and-package-boundary" title="Link to this heading">¶</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">Status<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Review</p>
+</dd>
+<dt class="field-even">Target<span class="colon">:</span></dt>
+<dd class="field-even"><p>OneRoll 2.0</p>
+</dd>
+<dt class="field-odd">Discussion<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://github.com/HydroRoll-Team/OneRoll/issues/5">https://github.com/HydroRoll-Team/OneRoll/issues/5</a></p>
+</dd>
+<dt class="field-even">Last updated<span class="colon">:</span></dt>
+<dd class="field-even"><p>2026-07-29</p>
+</dd>
+</dl>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
+<p>OneRoll 2.0 exposes one immutable, shareable <code class="docutils literal notranslate"><span class="pre">Engine</span></code> as the primary Python
+API.  Every parse, validation, evaluation, and batch call crosses the Python/
+Rust boundary once for its CPU work, creates a fresh request context, and
+returns immutable Rust-backed Python objects matching RFC-0003.  Compatibility
+helpers remain adapters over that Engine throughout 2.x.</p>
+<p>The core wheel has no Rich or Textual dependency.  Human CLI and TUI features
+are optional extras and use a thin standard-library entry point.  This keeps
+<code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">oneroll</span></code> suitable for libraries, services, notebooks, worker pools,
+and minimal containers.</p>
+</section>
+<section id="current-baseline">
+<h2>Current baseline<a class="headerlink" href="#current-baseline" title="Link to this heading">¶</a></h2>
+<p>The 1.x package currently exports a Python <code class="docutils literal notranslate"><span class="pre">OneRoll</span></code> wrapper and dictionary
+helpers over a PyO3 <code class="docutils literal notranslate"><span class="pre">_core</span></code> extension.  It does not yet expose <code class="docutils literal notranslate"><span class="pre">Engine</span></code>,
+typed results, structured exception classes, host variables, stable seeds,
+cancellation, or the RFC-0003 batch envelope.  CPU-bound binding methods also
+execute while attached to the Python interpreter, and Rich and Textual are
+required dependencies even when only the core extension is used.</p>
+<p>This RFC is a target contract, not a claim that those surfaces already exist.
+Its checked stub and manifest prevent implementation issues from inventing
+incompatible signatures independently.</p>
+</section>
+<section id="goals">
+<h2>Goals<a class="headerlink" href="#goals" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Freeze one Python API over the RFC-0001 language, RFC-0002 request model, and
+RFC-0003 typed result/error boundary.</p></li>
+<li><p>Make Engine instances safe to reuse concurrently without request-state
+leakage or scheduling-dependent randomness.</p></li>
+<li><p>Release the GIL around Rust-only CPU work while keeping cancellation callable
+from another Python thread.</p></li>
+<li><p>Define deterministic, bounded, atomic batch execution before parallelism.</p></li>
+<li><p>Keep the core install free of presentation dependencies.</p></li>
+<li><p>Provide an explicit 1.x-to-2.x migration and deprecation window.</p></li>
+</ul>
+</section>
+<section id="non-goals">
+<h2>Non-goals<a class="headerlink" href="#non-goals" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Exposing parser AST nodes as a stable public API.</p></li>
+<li><p>Accepting a parsed object as executable input and bypassing request charges.</p></li>
+<li><p>Adding Python callbacks or progress hooks inside detached Rust execution.</p></li>
+<li><p>Parallelizing samples inside <code class="docutils literal notranslate"><span class="pre">run_batch</span></code> in 2.0.</p></li>
+<li><p>Promising free-threaded CPython wheels before the binding dependency and
+concurrency suite support them.</p></li>
+<li><p>Removing the v1 dictionary adapters in 2.0.</p></li>
+</ul>
+</section>
+<section id="primary-engine-surface">
+<h2>Primary Engine surface<a class="headerlink" href="#primary-engine-surface" title="Link to this heading">¶</a></h2>
+<p>The normative signatures are in <code class="docutils literal notranslate"><span class="pre">0004-target-api.pyi</span></code>.  The primary surface
+is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">engine</span> <span class="o">=</span> <span class="n">oneroll</span><span class="o">.</span><span class="n">Engine</span><span class="p">(</span>
+    <span class="n">resource_policy</span><span class="o">=</span><span class="n">oneroll</span><span class="o">.</span><span class="n">ResourcePolicy</span><span class="p">(),</span>
+    <span class="n">compatibility_mode</span><span class="o">=</span><span class="s2">&quot;strict_v2&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">parsed</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+<span class="n">validated</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">variables</span><span class="o">=</span><span class="n">variables</span><span class="p">)</span>
+<span class="n">instruction</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">expression</span><span class="p">,</span> <span class="n">variables</span><span class="o">=</span><span class="n">variables</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+<span class="n">program</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">variables</span><span class="o">=</span><span class="n">variables</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+<span class="n">batch</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">run_batch</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">variables</span><span class="o">=</span><span class="n">variables</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The constructor arguments are keyword-only.  <code class="docutils literal notranslate"><span class="pre">resource_policy=None</span></code> selects
+RFC-0002 safe defaults and <code class="docutils literal notranslate"><span class="pre">compatibility_mode</span></code> defaults to <code class="docutils literal notranslate"><span class="pre">strict_v2</span></code>.
+An Engine stores only accepted immutable configuration.  It never stores host
+variables, an effective seed, an RNG cursor, counters, a deadline, or a
+cancellation token.</p>
+<p>Each method creates one new RFC-0002 <code class="docutils literal notranslate"><span class="pre">ExecutionContext</span></code>.  The Rust Engine is
+<code class="docutils literal notranslate"><span class="pre">Send</span> <span class="pre">+</span> <span class="pre">Sync</span></code> and the Python class is frozen.  Concurrent calls on one Engine
+are independent: equal source, variables, seed, and policy produce equal
+results regardless of scheduling.</p>
+</section>
+<section id="parse-and-validation-boundaries">
+<h2>Parse and validation boundaries<a class="headerlink" href="#parse-and-validation-boundaries" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">parse(source)</span></code> performs source charging and syntax construction only.  It
+returns immutable <code class="docutils literal notranslate"><span class="pre">ParsedProgram</span></code> introspection data and never initializes
+randomness.  <code class="docutils literal notranslate"><span class="pre">validate(source,</span> <span class="pre">variables=...)</span></code> additionally resolves names,
+types, cardinalities, compatibility rules, and static policy checks, then
+returns immutable <code class="docutils literal notranslate"><span class="pre">ValidatedProgram</span></code> introspection data.  It also never
+initializes randomness and does not retain caller-owned variable values.</p>
+<p>Parsed and validated objects are not accepted by <code class="docutils literal notranslate"><span class="pre">roll</span></code>, <code class="docutils literal notranslate"><span class="pre">run</span></code>, or
+<code class="docutils literal notranslate"><span class="pre">run_batch</span></code>.  Evaluation always accepts source text so a caller cannot reuse
+an object to bypass per-request source, parse, AST, environment, or output
+charges.  A future compiled-program API requires its own cache-accounting and
+compatibility RFC.</p>
+<p><code class="docutils literal notranslate"><span class="pre">roll</span></code> accepts exactly one Instruction and returns its
+<code class="docutils literal notranslate"><span class="pre">InstructionResult</span></code>.  A separator or second instruction fails validation.
+<code class="docutils literal notranslate"><span class="pre">run</span></code> accepts a complete Program and returns <code class="docutils literal notranslate"><span class="pre">ProgramResult</span></code>.  Neither
+method contains a Python-side parser or evaluator.</p>
+</section>
+<section id="request-inputs">
+<h2>Request inputs<a class="headerlink" href="#request-inputs" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">variables</span></code> is copied and converted before Rust execution begins.  A key is
+either a QML-compatible identifier string or a non-negative integer.  A value
+is a signed 64-bit integer, string, Boolean, or recursively nested finite
+sequence of those values.  Boolean conversion is checked before integer
+conversion.  Floats, bytes, mappings as values, custom objects, mutable views,
+and host-created RollSets are rejected with structured validation errors.</p>
+<p>The copied environment is immutable for the request.  Caller mutation after a
+method starts cannot affect validation or evaluation.  RFC-0002 environment
+item and byte limits are charged before retaining the converted values.</p>
+<p><code class="docutils literal notranslate"><span class="pre">seed</span></code> accepts a Python integer in the unsigned 64-bit range or exactly 64
+hexadecimal digits.  Integer expansion, hexadecimal normalization, entropy,
+and replay metadata follow RFC-0002.  Python’s <code class="docutils literal notranslate"><span class="pre">random</span></code> module is never part
+of the execution path.</p>
+</section>
+<section id="cancellation-and-timeout">
+<h2>Cancellation and timeout<a class="headerlink" href="#cancellation-and-timeout" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">CancellationToken</span></code> is thread-safe and one-shot.  <code class="docutils literal notranslate"><span class="pre">cancel()</span></code> changes it
+from active to cancelled at most once; <code class="docutils literal notranslate"><span class="pre">cancelled</span></code> is a read-only Boolean.
+The token contains no reference to an Engine or Python callback.</p>
+<p><code class="docutils literal notranslate"><span class="pre">timeout</span></code> is an optional finite positive number of relative seconds.  The
+binding converts it once to a monotonic Rust deadline before detaching.  Zero,
+negative, NaN, and infinite values fail validation.  The core Engine has no
+default timeout; the reference CLI and TUI apply the RFC-0002 five-second
+client policy.</p>
+</section>
+<section id="typed-objects-and-serialization">
+<h2>Typed objects and serialization<a class="headerlink" href="#typed-objects-and-serialization" title="Link to this heading">¶</a></h2>
+<p>Engine methods return frozen Rust-backed classes.  Sequences are tuples and
+maps are read-only views, so result data cannot be mutated across consumers or
+threads.  Every public result, value, diagnostic, and descriptor exposes
+read-only attributes and <code class="docutils literal notranslate"><span class="pre">to_dict()</span></code>.  <code class="docutils literal notranslate"><span class="pre">to_dict()</span></code> returns a detached deep
+copy conforming to the RFC-0003 schema; mutating that dictionary never mutates
+the original object.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ParsedProgram</span></code> and <code class="docutils literal notranslate"><span class="pre">ValidatedProgram</span></code> are also frozen, but are
+introspection objects rather than RFC-0003 result envelopes.  Their serialized
+shape is informational and is not accepted as evaluation input.</p>
+</section>
+<section id="exception-hierarchy">
+<h2>Exception hierarchy<a class="headerlink" href="#exception-hierarchy" title="Link to this heading">¶</a></h2>
+<p>Python exceptions retain RFC-0003’s fields and codes:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>OneRollError(ValueError)
++-- ParseError
++-- ValidationError
++-- EvaluationError
+|   +-- ResourceLimitError
+|   +-- RandomError
+|   +-- ArithmeticEvaluationError
++-- CancellationError
+    +-- DeadlineExceededError
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">OneRollError</span></code> subclasses <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> so existing broad handlers continue
+to catch invalid input during the 2.x migration.  Its attributes expose
+<code class="docutils literal notranslate"><span class="pre">phase</span></code>, <code class="docutils literal notranslate"><span class="pre">code</span></code>, <code class="docutils literal notranslate"><span class="pre">span</span></code>, resource counters, random metadata,
+<code class="docutils literal notranslate"><span class="pre">expected</span></code>, and <code class="docutils literal notranslate"><span class="pre">replacement</span></code> as applicable.  <code class="docutils literal notranslate"><span class="pre">to_dict()</span></code> returns the
+inner RFC-0003 error object, not the outer error envelope.</p>
+<p>The subclass is selected by stable meaning, while <code class="docutils literal notranslate"><span class="pre">code</span></code> remains the
+programmatic compatibility key.  Adding a narrower subclass does not change a
+code or field.  Explicit cancellation maps to <code class="docutils literal notranslate"><span class="pre">CancellationError</span></code> and an
+expired deadline maps to <code class="docutils literal notranslate"><span class="pre">DeadlineExceededError</span></code>.</p>
+</section>
+<section id="gil-and-thread-safety-contract">
+<h2>GIL and thread-safety contract<a class="headerlink" href="#gil-and-thread-safety-contract" title="Link to this heading">¶</a></h2>
+<p>The binding follows a three-stage boundary:</p>
+<ol class="arabic simple">
+<li><p>While attached to Python, validate scalar arguments and copy source,
+variables, seed, policy, token handle, and timeout into Rust-owned values.</p></li>
+<li><p>Release the GIL with the supported PyO3 equivalent of <code class="docutils literal notranslate"><span class="pre">allow_threads</span></code> for
+all parser, validator, evaluator, serializer-charge, and batch CPU work.</p></li>
+<li><p>Reacquire it only to create immutable result objects or raise the structured
+exception.</p></li>
+</ol>
+<p>The detached closure must not retain or access <code class="docutils literal notranslate"><span class="pre">PyObject</span></code>, invoke Python,
+format through Rich, or call a user callback.  Another Python thread can call
+<code class="docutils literal notranslate"><span class="pre">CancellationToken.cancel()</span></code> while evaluation is detached.  CLI and TUI
+progress is client-side polling of worker completion and token state; it is not
+a core callback protocol.</p>
+<p>The repository currently uses PyO3 0.19.  Free-threaded CPython wheels must not
+be advertised or published until PyO3 is upgraded to a release with explicit
+free-threaded support (at least 0.23), all exposed classes satisfy that model,
+and the concurrency suite passes on a free-threaded interpreter.  Ordinary GIL
+release on supported CPython versions is an earlier, independent requirement.</p>
+</section>
+<section id="batch-contract">
+<h2>Batch contract<a class="headerlink" href="#batch-contract" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">run_batch(program,</span> <span class="pre">samples,</span> <span class="pre">...)</span></code> requires a positive sample count.  It
+crosses into Rust once, parses and validates once, and evaluates samples in
+increasing index order.  One request policy, cancellation token, timeout, and
+set of counters applies to the complete batch.  No <code class="docutils literal notranslate"><span class="pre">workers</span></code> parameter,
+progress callback, or per-sample Python crossing exists in 2.0.</p>
+<p>A root seed is accepted or generated once.  Sample <code class="docutils literal notranslate"><span class="pre">i</span></code> receives:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>SHA-256(
+    b&quot;OneRoll batch seed v1\0&quot;
+    || root_seed_32_bytes
+    || uint64_le(i)
+)
+</pre></div>
+</div>
+<p>The protocol identifier is <code class="docutils literal notranslate"><span class="pre">oneroll-sha256-batch-v1</span></code>.  For an all-zero root
+seed, the first two derived seeds are:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>1f6bac00ab7392f2573c212d426bae43bd25654c58c2473a7b264d7d085dfa8d
+8edeea3ef906166ba806febfe5db1936e623009947ef040e0ef5cfd860465b2c
+</pre></div>
+</div>
+<p>The sequential rule is normative for 2.0 and makes profiling and failure order
+unambiguous.  Independent Engine calls may execute concurrently.  A future
+internally parallel batch implementation may ship only if it preserves exact
+sample order, sub-seeds, shared budget semantics, failure selection, and wire
+output.</p>
+<p><code class="docutils literal notranslate"><span class="pre">BatchResult</span></code> retains the root seed and ordered <code class="docutils literal notranslate"><span class="pre">ProgramResult</span></code> children.
+The complete batch is atomic.  A failure returns only the RFC-0003 error with
+batch root context and the failing sample index; previously completed children
+are discarded.</p>
+</section>
+<section id="package-and-entry-point-boundary">
+<h2>Package and entry-point boundary<a class="headerlink" href="#package-and-entry-point-boundary" title="Link to this heading">¶</a></h2>
+<p>OneRoll 2.0 declares no required Python dependencies for its core wheel:</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="n">dependencies</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[]</span>
+
+<span class="k">[project.optional-dependencies]</span>
+<span class="n">cli</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;rich&gt;=14.1.0&quot;</span><span class="p">]</span>
+<span class="n">tui</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;rich&gt;=14.1.0&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;textual&gt;=6.1.0&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">oneroll</span></code> provides <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">oneroll</span></code> and the Engine without
+importing Rich or Textual.  <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">oneroll[cli]</span></code> provides rich human
+CLI rendering; <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">oneroll[tui]</span></code> provides both CLI and Textual TUI
+support.  This follows the PyPA optional-dependency model.  Entry-point extras
+are not encoded in script declarations because that mechanism is discouraged
+for new publishing metadata.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">oneroll</span></code> and <code class="docutils literal notranslate"><span class="pre">1roll</span></code> scripts remain installed for compatibility and
+point to a thin standard-library module.  Core-safe options may execute there.
+When a requested renderer is unavailable, it exits with an actionable message
+such as <code class="docutils literal notranslate"><span class="pre">install</span> <span class="pre">oneroll[cli]</span></code> or <code class="docutils literal notranslate"><span class="pre">install</span> <span class="pre">oneroll[tui]</span></code>; importing the
+package never triggers that check.  Core, CLI, and TUI wheel installs each have
+an isolated smoke test.</p>
+<p>Cargo remains the single package-version source.  Splitting optional
+dependencies must not reintroduce a second static Python version.</p>
+</section>
+<section id="compatibility-and-migration">
+<h2>Compatibility and migration<a class="headerlink" href="#compatibility-and-migration" title="Link to this heading">¶</a></h2>
+<p>The module-level <code class="docutils literal notranslate"><span class="pre">roll</span></code> and <code class="docutils literal notranslate"><span class="pre">run</span></code> helpers keep their existing v1 dictionary
+shapes throughout 2.x.  They are compatibility adapters over a default Engine,
+not a second parser or evaluator.  <code class="docutils literal notranslate"><span class="pre">OneRoll</span></code> is deprecated in 2.0 and is
+removed no earlier than 3.0.</p>
+<p><code class="docutils literal notranslate"><span class="pre">roll_simple</span></code>, <code class="docutils literal notranslate"><span class="pre">roll_multiple</span></code>, <code class="docutils literal notranslate"><span class="pre">roll_statistics</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">OneRoll.roll_with_modifiers</span></code> are also deprecated in 2.0.  <code class="docutils literal notranslate"><span class="pre">Engine.roll</span></code>
+replaces single-instruction typed use, <code class="docutils literal notranslate"><span class="pre">Engine.run_batch</span></code> replaces repeated
+execution, and clients calculate presentation statistics from typed batch
+results.  Deprecations use Python warnings and migration documentation; they
+do not silently change return shapes.</p>
+<p>The 2.x compatibility adapter uses <code class="docutils literal notranslate"><span class="pre">compatibility_mode=&quot;v1&quot;</span></code> and the
+RFC-0003 mapping.  New Engine instances default to <code class="docutils literal notranslate"><span class="pre">strict_v2</span></code>.  A
+compatibility mode selected at construction applies to every call and is
+recorded in result metadata.</p>
+</section>
+<section id="normative-machine-readable-contract">
+<h2>Normative machine-readable contract<a class="headerlink" href="#normative-machine-readable-contract" title="Link to this heading">¶</a></h2>
+<p>This stub freezes public names, inheritance, method signatures, keyword-only
+request arguments, and return types before implementation:</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-number">Listing 5 </span><span class="caption-text">docs/rfcs/0004-target-api.pyi</span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="n">CompatibilityMode</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;strict_v2&quot;</span><span class="p">,</span> <span class="s2">&quot;v1&quot;</span><span class="p">]</span>
+<span class="n">Seed</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+<span class="n">VariableKey</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+<span class="n">HostValue</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="s2">&quot;HostValue&quot;</span><span class="p">]]</span>
+<span class="n">Variables</span> <span class="o">=</span> <span class="n">Mapping</span><span class="p">[</span><span class="n">VariableKey</span><span class="p">,</span> <span class="n">HostValue</span><span class="p">]</span>
+<span class="n">JsonScalar</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+<span class="n">JsonValue</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">JsonScalar</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="s2">&quot;JsonValue&quot;</span><span class="p">],</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;JsonValue&quot;</span><span class="p">]]</span>
+<span class="n">JsonObject</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">JsonValue</span><span class="p">]</span>
+
+<span class="n">__version__</span><span class="p">:</span> <span class="nb">str</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Span</span><span class="p">:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">start_byte</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">end_byte</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonObject</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">RandomDescriptor</span><span class="p">:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">algorithm</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;oneroll-chacha12-v1&quot;</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">seed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rng_words</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonObject</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">BatchRandomDescriptor</span><span class="p">:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">algorithm</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;oneroll-sha256-batch-v1&quot;</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">seed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">samples</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonObject</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">BatchFailureDescriptor</span><span class="p">:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">algorithm</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;oneroll-sha256-batch-v1&quot;</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">seed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">samples</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample_index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonObject</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Diagnostic</span><span class="p">:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">phase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;parse&quot;</span><span class="p">,</span> <span class="s2">&quot;validate&quot;</span><span class="p">,</span> <span class="s2">&quot;evaluate&quot;</span><span class="p">,</span> <span class="s2">&quot;cancel&quot;</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">code</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">message</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">span</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Span</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">replacement</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonObject</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ScalarValue</span><span class="p">:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kind</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;scalar&quot;</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonObject</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TextValue</span><span class="p">:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kind</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonObject</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">BooleanValue</span><span class="p">:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kind</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;boolean&quot;</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonObject</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ValuesValue</span><span class="p">:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kind</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;values&quot;</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">items</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Value</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonObject</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">RollReference</span><span class="p">:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">node_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonObject</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">RollSetValue</span><span class="p">:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kind</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;roll_set&quot;</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">item_kind</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;scalar&quot;</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">items</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">RollReference</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonObject</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="n">Value</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">ScalarValue</span><span class="p">,</span> <span class="n">TextValue</span><span class="p">,</span> <span class="n">BooleanValue</span><span class="p">,</span> <span class="n">ValuesValue</span><span class="p">,</span> <span class="n">RollSetValue</span><span class="p">]</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">NestedExecution</span><span class="p">:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kind</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;repeat_iteration&quot;</span><span class="p">,</span> <span class="s2">&quot;branch&quot;</span><span class="p">,</span> <span class="s2">&quot;function_call&quot;</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">instructions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">InstructionResult</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonObject</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">InstructionResult</span><span class="p">:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">span</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Span</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">canonical</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Value</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">scalar</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trace_root</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">executions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">NestedExecution</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonObject</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">RollSource</span><span class="p">:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kind</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;numeric_die&quot;</span><span class="p">,</span> <span class="s2">&quot;range_die&quot;</span><span class="p">,</span> <span class="s2">&quot;list_die&quot;</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">instruction_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">source_index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">draw_index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">span</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Span</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonObject</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">RollNode</span><span class="p">:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">ScalarValue</span><span class="p">,</span> <span class="n">TextValue</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">source</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RollSource</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parent_node_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cause_trace_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonObject</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TraceAnnotation</span><span class="p">:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">node_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">key</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonObject</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TraceData</span><span class="p">:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">operation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">predicate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">selected_roll_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">discarded_roll_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generated_roll_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">source_instruction_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">branch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">]]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">iteration</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">TraceAnnotation</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonObject</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TraceNode</span><span class="p">:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kind</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span>
+        <span class="s2">&quot;literal&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;variable&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;source&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;arithmetic&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;select&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;filter&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;sort&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;count&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;reroll&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;explode&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;merge&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;bind&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;occurrences&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;paint&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;split&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;group&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;function&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;branch&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;projection&quot;</span><span class="p">,</span>
+    <span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">span</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Span</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Value</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">related_roll_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TraceData</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonObject</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ResultMetadata</span><span class="p">:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compatibility_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CompatibilityMode</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">random</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RandomDescriptor</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">warnings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Diagnostic</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonObject</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ProgramResult</span><span class="p">:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">schema_version</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;2.0&quot;</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kind</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;program_result&quot;</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">source</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">canonical</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">comment</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">instructions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">InstructionResult</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">roll_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">RollNode</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trace_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">TraceNode</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResultMetadata</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonObject</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">BatchResult</span><span class="p">:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">schema_version</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;2.0&quot;</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kind</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;batch_result&quot;</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">source</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">canonical</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">ProgramResult</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">random</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BatchRandomDescriptor</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonObject</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ParsedProgram</span><span class="p">:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">source</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">canonical</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">instruction_count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonObject</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ValidatedProgram</span><span class="p">:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">source</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">canonical</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">instruction_count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">warnings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Diagnostic</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonObject</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ResourcePolicy</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">with_limit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ResourcePolicy</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">limits</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">hard_limits</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CancellationToken</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cancelled</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">OneRollError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">phase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;parse&quot;</span><span class="p">,</span> <span class="s2">&quot;validate&quot;</span><span class="p">,</span> <span class="s2">&quot;evaluate&quot;</span><span class="p">,</span> <span class="s2">&quot;cancel&quot;</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">code</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">message</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">span</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Span</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">resource</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">used</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">requested</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">limit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">random</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RandomDescriptor</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">batch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BatchFailureDescriptor</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">expected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">replacement</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JsonObject</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ParseError</span><span class="p">(</span><span class="n">OneRollError</span><span class="p">):</span> <span class="o">...</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ValidationError</span><span class="p">(</span><span class="n">OneRollError</span><span class="p">):</span> <span class="o">...</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvaluationError</span><span class="p">(</span><span class="n">OneRollError</span><span class="p">):</span> <span class="o">...</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ResourceLimitError</span><span class="p">(</span><span class="n">EvaluationError</span><span class="p">):</span> <span class="o">...</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RandomError</span><span class="p">(</span><span class="n">EvaluationError</span><span class="p">):</span> <span class="o">...</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ArithmeticEvaluationError</span><span class="p">(</span><span class="n">EvaluationError</span><span class="p">):</span> <span class="o">...</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CancellationError</span><span class="p">(</span><span class="n">OneRollError</span><span class="p">):</span> <span class="o">...</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DeadlineExceededError</span><span class="p">(</span><span class="n">CancellationError</span><span class="p">):</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Engine</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">resource_policy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ResourcePolicy</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+        <span class="n">compatibility_mode</span><span class="p">:</span> <span class="n">CompatibilityMode</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ParsedProgram</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">variables</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Variables</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ValidatedProgram</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">roll</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">expression</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">variables</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Variables</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Seed</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+        <span class="n">cancellation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CancellationToken</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InstructionResult</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">program</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">variables</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Variables</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Seed</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+        <span class="n">cancellation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CancellationToken</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProgramResult</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_batch</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">program</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">variables</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Variables</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Seed</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+        <span class="n">cancellation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CancellationToken</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BatchResult</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="n">LegacyDiceResult</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span>
+<span class="n">LegacyProgramResult</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span>
+<span class="n">LegacyStatistics</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">OneRoll</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">policy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ResourcePolicy</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">roll</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expression</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LegacyDiceResult</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">program</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LegacyProgramResult</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">roll_simple</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dice_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">dice_sides</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">roll_multiple</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">expression</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">times</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">LegacyDiceResult</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">roll_statistics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expression</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">times</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LegacyStatistics</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">roll_with_modifiers</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">dice_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">dice_sides</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">modifiers</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LegacyDiceResult</span><span class="p">:</span> <span class="o">...</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CommonRolls</span><span class="p">:</span>
+    <span class="n">D20</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">D20_ADVANTAGE</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">D20_DISADVANTAGE</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">ATTRIBUTE_ROLL</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">D6_DAMAGE</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">D8_DAMAGE</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">D10_DAMAGE</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">D12_DAMAGE</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">HIT_POINTS_D6</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">HIT_POINTS_D8</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">HIT_POINTS_D10</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">HIT_POINTS_D12</span><span class="p">:</span> <span class="nb">str</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">roll</span><span class="p">(</span><span class="n">expression</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LegacyDiceResult</span><span class="p">:</span> <span class="o">...</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="n">program</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LegacyProgramResult</span><span class="p">:</span> <span class="o">...</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">roll_simple</span><span class="p">(</span><span class="n">dice_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">dice_sides</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span> <span class="o">...</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">roll_multiple</span><span class="p">(</span><span class="n">expression</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">times</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">LegacyDiceResult</span><span class="p">]:</span> <span class="o">...</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">roll_statistics</span><span class="p">(</span><span class="n">expression</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">times</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LegacyStatistics</span><span class="p">:</span> <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+<p>This manifest drives drift tests for names, packaging, and batch protocol:</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-number">Listing 6 </span><span class="caption-text">docs/rfcs/0004-api-contract.json</span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;contract_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;oneroll&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;primary_class&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Engine&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;engine_methods&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;parse&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;validate&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;roll&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;run&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;run_batch&quot;</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;result_classes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;Span&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;RandomDescriptor&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;BatchRandomDescriptor&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;BatchFailureDescriptor&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;Diagnostic&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;ScalarValue&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;TextValue&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;BooleanValue&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;ValuesValue&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;RollReference&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;RollSetValue&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;NestedExecution&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;InstructionResult&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;RollSource&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;RollNode&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;TraceAnnotation&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;TraceData&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;TraceNode&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;ResultMetadata&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;ProgramResult&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;BatchResult&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;ParsedProgram&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;ValidatedProgram&quot;</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;support_classes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;ResourcePolicy&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;CancellationToken&quot;</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;exception_bases&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;OneRollError&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ValueError&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;ParseError&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OneRollError&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;ValidationError&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OneRollError&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;EvaluationError&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OneRollError&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;ResourceLimitError&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;EvaluationError&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;RandomError&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;EvaluationError&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;ArithmeticEvaluationError&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;EvaluationError&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;CancellationError&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OneRollError&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;DeadlineExceededError&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CancellationError&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;compatibility_classes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;OneRoll&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;CommonRolls&quot;</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;compatibility_functions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;roll&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;run&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;roll_simple&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;roll_multiple&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;roll_statistics&quot;</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;batch&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;algorithm&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;oneroll-sha256-batch-v1&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;domain_separator&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OneRoll batch seed v1\\0&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;index_encoding&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;uint64_le&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;execution_order&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sequential&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;atomic&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;package&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;core_dependencies&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">    </span><span class="nt">&quot;extras&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;cli&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;rich&gt;=14.1.0&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;tui&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;rich&gt;=14.1.0&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;textual&gt;=6.1.0&quot;</span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;scripts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;oneroll&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;1roll&quot;</span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>The checked stub describes the target public <code class="docutils literal notranslate"><span class="pre">oneroll</span></code> module.  Until the
+implementation lands, it is checked separately from the installed package’s
+current <code class="docutils literal notranslate"><span class="pre">_core.pyi</span></code>.  Implementation issues must move target declarations
+into the installed package rather than weakening this file.</p>
+</section>
+<section id="implementation-sequence">
+<h2>Implementation sequence<a class="headerlink" href="#implementation-sequence" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Issue 19 introduces the immutable Engine shell, parse/validate boundary, and
+typed method signatures over shared Rust domain types.</p></li>
+<li><p>Issues 12, 26, and 39 provide the structured exception and typed result
+objects used by every method.</p></li>
+<li><p>Issue 18 adds deterministic request randomness and accepted seed forms.</p></li>
+<li><p>Issue 22 adds detached execution, cancellation, deterministic batch seeds,
+shared batch budgets, and concurrency tests.</p></li>
+<li><p>Issues 38, 21, 27, and 42 fill out Program execution and trace semantics
+without changing the API boundary.</p></li>
+<li><p>Issues 14 and 28 split packaging and move CLI/TUI work onto worker-plus-token
+client flows.</p></li>
+<li><p>Issues 29 and 30 prove migration compatibility and isolated wheel/runtime
+support, including the explicit free-threaded gate.</p></li>
+</ol>
+<p>Every implementation slice updates Rust tests, installed-Python tests, the
+RFC-0003 schema corpus, typing parity, wheel smoke tests, and user documentation
+in the same change.</p>
+</section>
+<section id="rejected-alternatives">
+<h2>Rejected alternatives<a class="headerlink" href="#rejected-alternatives" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>Mutable Engine state</dt><dd><p>Reusing an RNG cursor, variable map, or counters would make results depend on
+call order and make shared Engine instances unsafe.</p>
+</dd>
+<dt>Executable parsed objects</dt><dd><p>Reuse could bypass per-request resource charging and retain stale policy or
+variable assumptions.  A compiled API needs an explicit cache contract.</p>
+</dd>
+<dt>Python loop for batches</dt><dd><p>Repeated crossings lose atomic shared budgets, increase overhead, and make
+cancellation and seed derivation client-dependent.</p>
+</dd>
+<dt>Bare list batch return</dt><dd><p>A list loses the root seed and replay protocol and cannot describe the
+request that failed.</p>
+</dd>
+<dt>Core progress callbacks</dt><dd><p>Calling arbitrary Python while Rust is detached reintroduces GIL contention,
+reentrancy, and lifetime hazards.  Clients poll a worker instead.</p>
+</dd>
+<dt>Mandatory core timeout</dt><dd><p>Wall-clock limits make deterministic work depend on host speed.  Structural
+limits remain mandatory; clients and deployments supply operational
+deadlines.</p>
+</dd>
+<dt>Required Rich and Textual dependencies</dt><dd><p>Presentation dependencies enlarge library and service installs and make a
+headless core import needlessly fragile.</p>
+</dd>
+</dl>
+</section>
+<section id="acceptance-gate">
+<h2>Acceptance gate<a class="headerlink" href="#acceptance-gate" title="Link to this heading">¶</a></h2>
+<p>RFC-0004 may move from Review to Accepted when:</p>
+<ul class="simple">
+<li><p>the target stub passes strict type checking and agrees with the manifest;</p></li>
+<li><p>the batch schema examples and seed vectors pass the repository quality gate;</p></li>
+<li><p>RFC-0001, RFC-0002, and RFC-0003 contain no conflicting lifecycle, result,
+random, or failure contract;</p></li>
+<li><p>issue 5 and each directly blocked child issue reference the frozen API and
+package boundary; and</p></li>
+<li><p>a human review confirms the public 2.0 Python boundary.</p></li>
+</ul>
+<p>Implementation completion is not an acceptance prerequisite.  Acceptance
+freezes the target that the child issues implement.</p>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://packaging.python.org/en/latest/guides/writing-pyproject-toml/">PyPA: Writing pyproject.toml</a></p></li>
+<li><p><a class="reference external" href="https://pyo3.rs/v0.19.2/">PyO3 0.19 guide</a></p></li>
+<li><p><a class="reference external" href="https://pyo3.rs/main/migration">PyO3 migration guide</a></p></li>
+</ul>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="rfc-0005.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">RFC-0005: Verification, Documentation, and Release</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="rfc-0003.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">RFC-0003: Typed Program Results, Roll Traces, and Errors</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023-PRESENT, HydroRoll-Team.
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link fa-brands fa-github" href="https://github.com/HydroRoll-Team/OneRoll/" aria-label="GitHub"></a>
+              <a class="muted-link fa-brands fa-python" href="https://pypi.org/project/oneroll/" aria-label="Pypi"></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">RFC-0004: Python Engine API and Package Boundary</a><ul>
+<li><a class="reference internal" href="#summary">Summary</a></li>
+<li><a class="reference internal" href="#current-baseline">Current baseline</a></li>
+<li><a class="reference internal" href="#goals">Goals</a></li>
+<li><a class="reference internal" href="#non-goals">Non-goals</a></li>
+<li><a class="reference internal" href="#primary-engine-surface">Primary Engine surface</a></li>
+<li><a class="reference internal" href="#parse-and-validation-boundaries">Parse and validation boundaries</a></li>
+<li><a class="reference internal" href="#request-inputs">Request inputs</a></li>
+<li><a class="reference internal" href="#cancellation-and-timeout">Cancellation and timeout</a></li>
+<li><a class="reference internal" href="#typed-objects-and-serialization">Typed objects and serialization</a></li>
+<li><a class="reference internal" href="#exception-hierarchy">Exception hierarchy</a></li>
+<li><a class="reference internal" href="#gil-and-thread-safety-contract">GIL and thread-safety contract</a></li>
+<li><a class="reference internal" href="#batch-contract">Batch contract</a></li>
+<li><a class="reference internal" href="#package-and-entry-point-boundary">Package and entry-point boundary</a></li>
+<li><a class="reference internal" href="#compatibility-and-migration">Compatibility and migration</a></li>
+<li><a class="reference internal" href="#normative-machine-readable-contract">Normative machine-readable contract</a></li>
+<li><a class="reference internal" href="#implementation-sequence">Implementation sequence</a></li>
+<li><a class="reference internal" href="#rejected-alternatives">Rejected alternatives</a></li>
+<li><a class="reference internal" href="#acceptance-gate">Acceptance gate</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=4720776d"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=5fa4622c"></script>
+    </body>
+</html>

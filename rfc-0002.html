@@ -1,0 +1,893 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="RFC-0003: Typed Program Results, Roll Traces, and Errors" href="rfc-0003.html" /><link rel="prev" title="RFC-0001: OneRoll Program Language v2" href="rfc-0001.html" />
+
+    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>RFC-0002: Execution Safety, Budgets, and Randomness - OneRoll 1.3.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=290f1236" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/fontawesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/brands.min.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #000000;
+  --color-code-foreground: #dddddd;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">OneRoll 1.3.5 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  
+  <span class="sidebar-brand-text">OneRoll 1.3.5 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="language.html">Language guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="limits.html">Resource limits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="randomness.html">Deterministic randomness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fuzzing.html">Fuzzing and property gates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conformance.html">v1 conformance corpus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quality.html">Quality gate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasing.html">Release versioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Production roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rfc-0001.html">RFC-0001: OneRoll Program Language v2</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">RFC-0002: Execution Safety, Budgets, and Randomness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rfc-0003.html">RFC-0003: Typed Program Results, Roll Traces, and Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rfc-0004.html">RFC-0004: Python Engine API and Package Boundary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rfc-0005.html">RFC-0005: Verification, Documentation, and Release</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rfc-0006.html">RFC-0006: Program Sampling and Exact Analysis Scope</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/HydroRoll-Team/OneRoll/blob/main/docs/source/rfc-0002.rst?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/HydroRoll-Team/OneRoll/edit/main/docs/source/rfc-0002.rst" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="rfc-0002-execution-safety-budgets-and-randomness">
+<span id="rfc-0002"></span><h1>RFC-0002: Execution Safety, Budgets, and Randomness<a class="headerlink" href="#rfc-0002-execution-safety-budgets-and-randomness" title="Link to this heading">¶</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">Status<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Accepted</p>
+</dd>
+<dt class="field-even">Target<span class="colon">:</span></dt>
+<dd class="field-even"><p>OneRoll 2.0</p>
+</dd>
+<dt class="field-odd">Discussion<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://github.com/HydroRoll-Team/OneRoll/issues/6">https://github.com/HydroRoll-Team/OneRoll/issues/6</a></p>
+</dd>
+<dt class="field-even">Last updated<span class="colon">:</span></dt>
+<dd class="field-even"><p>2026-07-29</p>
+</dd>
+</dl>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
+<p>Every OneRoll evaluation runs inside one request-scoped <code class="docutils literal notranslate"><span class="pre">ExecutionContext</span></code>.
+The context owns the random stream, immutable variables, resource counters,
+cancellation state, and trace builder for the complete Program.  Public helper
+functions, the Rust Engine, Python, CLI, and TUI must all delegate to this same
+execution path.</p>
+<p>This RFC freezes three safety properties before the v2 implementation expands:</p>
+<ul class="simple">
+<li><p>structural and dynamic work has explicit default limits and hard ceilings;</p></li>
+<li><p>seeded evaluation uses a versioned, portable random protocol with unbiased
+bounded sampling; and</p></li>
+<li><p>any limit, cancellation, entropy, or arithmetic failure atomically returns a
+structured error instead of a partial Program result.</p></li>
+</ul>
+</section>
+<section id="context">
+<h2>Context<a class="headerlink" href="#context" title="Link to this heading">¶</a></h2>
+<p>The v1 compatibility engine has two useful but incomplete protections: a
+10,000 generated-face limit and a 1,000 top-level instruction limit.  It still
+uses <code class="docutils literal notranslate"><span class="pre">random::&lt;u32&gt;()</span> <span class="pre">%</span> <span class="pre">sides</span></code>, which introduces modulo bias, and each Python
+entry point constructs an independent calculator.  There is no stable seed,
+parse-depth limit, AST-node limit, collection/output limit, cancellation
+contract, or machine-readable budget error.</p>
+<p>The v2 language adds weighted lists, validators, option pipelines, repeat,
+conditionals, batches, and traces.  Counting only retained dice faces would let
+discarded values, pure-scalar Programs, nested functions, or expanding
+collections bypass the safety boundary.  The complete request therefore needs
+one shared policy and one shared set of counters.</p>
+</section>
+<section id="goals">
+<h2>Goals<a class="headerlink" href="#goals" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Make every public execution entry point safe for untrusted input by default.</p></li>
+<li><p>Make resource use monotonic across all instructions, branches, functions,
+batches, rerolls, explosions, and renderable outputs in one request.</p></li>
+<li><p>Reproduce seeded results across Rust, Python, CLI, supported architectures,
+and compatible OneRoll releases.</p></li>
+<li><p>Remove modulo bias from numeric and weighted-list sampling.</p></li>
+<li><p>Define stable, spanned errors for policy, budget, entropy, deadline, and
+cancellation failures.</p></li>
+<li><p>Keep an Engine reusable and safe for concurrent calls after success or error.</p></li>
+</ul>
+</section>
+<section id="non-goals">
+<h2>Non-goals<a class="headerlink" href="#non-goals" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Reserving memory or CPU with operating-system-level isolation.  Services may
+add process, container, or platform quotas around the Engine.</p></li>
+<li><p>Treating a wall-clock deadline as a deterministic semantic budget.
+Structural counters remain the hard termination guarantee.</p></li>
+<li><p>Providing cryptographic key generation or a security-sensitive random API.</p></li>
+<li><p>Returning partial Program results in v2.0.</p></li>
+<li><p>Freezing exact probability-analysis limits; RFC-0006 owns that capability.</p></li>
+</ul>
+</section>
+<section id="execution-architecture">
+<h2>Execution architecture<a class="headerlink" href="#execution-architecture" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Engine</span></code> is immutable after construction and contains accepted configuration,
+not mutable request state.  Conceptually, execution has these inputs:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>EngineConfig {
+    resource_policy,
+    random_policy,
+    compatibility_mode,
+}
+
+ExecutionRequest {
+    source,
+    variables,
+    seed?,
+    cancellation?,
+    deadline?,
+}
+</pre></div>
+</div>
+<p>Each call to <code class="docutils literal notranslate"><span class="pre">Engine.roll</span></code>, <code class="docutils literal notranslate"><span class="pre">Engine.run</span></code>, or a bounded batch operation
+creates exactly one internal context:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ExecutionContext {
+    accepted_policy,
+    remaining_budget,
+    rng,
+    effective_seed,
+    variables,
+    cancellation,
+    deadline,
+    trace_builder,
+}
+</pre></div>
+</div>
+<p>Convenience functions construct or reuse a default immutable Engine and still
+create a fresh context per call.  They must not contain a second parser or
+evaluator.  One <code class="docutils literal notranslate"><span class="pre">run</span></code> call uses one context for every instruction.  Repeat,
+conditions, batches, and future functions receive a child scope referencing the
+same counters and RNG rather than constructing a new context.</p>
+<section id="lifecycle-invariants">
+<h3>Lifecycle invariants<a class="headerlink" href="#lifecycle-invariants" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p>Source and host-environment limits are checked before parsing or allocation.</p></li>
+<li><p>Parsing and validation complete before the first random word whenever a
+failure can be detected without evaluation.</p></li>
+<li><p>Budget counters only increase.  A nested scope cannot refund, replace, or
+reset a request counter.</p></li>
+<li><p>Charges are checked with overflow-safe arithmetic before the associated work
+or allocation begins.</p></li>
+<li><p>An Engine stores no random cursor, partial trace, or variable mutation between
+requests.</p></li>
+<li><p>Concurrent requests never share an <code class="docutils literal notranslate"><span class="pre">ExecutionContext</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="resource-policy">
+<h2>Resource policy<a class="headerlink" href="#resource-policy" title="Link to this heading">¶</a></h2>
+<p>Every structural resource has a safe default and a process-level hard ceiling.
+An Engine configuration may choose a value from zero through the hard ceiling.
+The convenience API uses the default column.  A configuration above a hard
+ceiling is rejected before execution with
+<code class="docutils literal notranslate"><span class="pre">policy.limit_above_hard_max</span></code>.  No Python, CLI, or ordinary Rust option
+disables a structural ceiling.</p>
+<p>The initial v2.0 matrix is normative:</p>
+<div class="table-wrapper colwidths-given docutils container" id="id1">
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-number">Table 6 </span><span class="caption-text">Resource matrix</span><a class="headerlink" href="#id1" title="Link to this table">¶</a></caption>
+<colgroup>
+<col style="width: 19.0%" />
+<col style="width: 34.0%" />
+<col style="width: 13.0%" />
+<col style="width: 15.0%" />
+<col style="width: 19.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Resource</p></th>
+<th class="head"><p>Unit and charging point</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Hard maximum</p></th>
+<th class="head"><p>Exhaustion code</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">source_bytes</span></code></p></td>
+<td><p>UTF-8 bytes in the complete Program, before parsing</p></td>
+<td><p>65,536</p></td>
+<td><p>1,048,576</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">limit.source_bytes</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">environment_items</span></code></p></td>
+<td><p>Named plus positional host variables, before validation</p></td>
+<td><p>1,024</p></td>
+<td><p>16,384</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">limit.environment_items</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">environment_bytes</span></code></p></td>
+<td><p>UTF-8 and serialized value bytes supplied by the host</p></td>
+<td><p>1,048,576</p></td>
+<td><p>16,777,216</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">limit.environment_bytes</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">parse_depth</span></code></p></td>
+<td><p>Nested parentheses, lists, validators, calls, and blocks</p></td>
+<td><p>64</p></td>
+<td><p>256</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">limit.parse_depth</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ast_nodes</span></code></p></td>
+<td><p>Every typed Program, Instruction, expression, option, and validator node</p></td>
+<td><p>4,096</p></td>
+<td><p>65,536</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">limit.ast_nodes</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">parsed_instructions</span></code></p></td>
+<td><p>Every top-level or nested Instruction present in source</p></td>
+<td><p>1,000</p></td>
+<td><p>10,000</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">limit.parsed_instructions</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">executed_instructions</span></code></p></td>
+<td><p>Every Instruction activation, including repeats and branches</p></td>
+<td><p>10,000</p></td>
+<td><p>1,000,000</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">limit.executed_instructions</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">nesting_depth</span></code></p></td>
+<td><p>Active expression, function, repeat, or conditional evaluation scopes</p></td>
+<td><p>32</p></td>
+<td><p>128</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">limit.nesting_depth</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">source_items</span></code></p></td>
+<td><p>Requested dice count or declared range/list source cardinality</p></td>
+<td><p>10,000</p></td>
+<td><p>100,000</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">limit.source_items</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">generated_values</span></code></p></td>
+<td><p>Every semantic draw, including discarded, rerolled, and exploded values</p></td>
+<td><p>10,000</p></td>
+<td><p>1,000,000</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">limit.generated_values</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">rng_words</span></code></p></td>
+<td><p>Every raw 64-bit RNG word, including rejection-sampling retries</p></td>
+<td><p>20,000</p></td>
+<td><p>2,000,000</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">limit.rng_words</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">collection_items</span></code></p></td>
+<td><p>Maximum cardinality of any live Values or RollSet collection</p></td>
+<td><p>10,000</p></td>
+<td><p>100,000</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">limit.collection_items</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">trace_nodes</span></code></p></td>
+<td><p>Every source, transform, branch, retained, and discarded trace node</p></td>
+<td><p>20,000</p></td>
+<td><p>200,000</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">limit.trace_nodes</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">output_items</span></code></p></td>
+<td><p>Final externally visible values, results, and trace roots</p></td>
+<td><p>10,000</p></td>
+<td><p>100,000</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">limit.output_items</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">output_bytes</span></code></p></td>
+<td><p>UTF-8 bytes in the stable serialized result before client decoration</p></td>
+<td><p>8,388,608</p></td>
+<td><p>67,108,864</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">limit.output_bytes</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">work_units</span></code></p></td>
+<td><p>AST, predicate, option, collection-item, and function-loop work</p></td>
+<td><p>1,000,000</p></td>
+<td><p>50,000,000</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">limit.work_units</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">batch_samples</span></code></p></td>
+<td><p>Requested executions in one batch or statistical sampling call</p></td>
+<td><p>10,000</p></td>
+<td><p>1,000,000</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">limit.batch_samples</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The hard ceilings are compatibility commitments for OneRoll 2.x, not claims
+that every maximum-sized request is inexpensive.  Lower defaults are allowed in
+patch releases when required to fix a denial-of-service risk.  Raising a hard
+ceiling or changing a charge unit requires an RFC amendment and conformance
+update.</p>
+<section id="charging-rules">
+<h3>Charging rules<a class="headerlink" href="#charging-rules" title="Link to this heading">¶</a></h3>
+<p>The implementation must centralize charging on the context.  A subsystem asks
+to charge <code class="docutils literal notranslate"><span class="pre">n</span></code> units and receives either success or one structured error with
+<code class="docutils literal notranslate"><span class="pre">resource</span></code>, <code class="docutils literal notranslate"><span class="pre">used</span></code>, <code class="docutils literal notranslate"><span class="pre">requested</span></code>, and <code class="docutils literal notranslate"><span class="pre">limit</span></code> fields.  Saturating or
+wrapping a counter is forbidden.</p>
+<p><code class="docutils literal notranslate"><span class="pre">work_units</span></code> closes gaps between specific counters.  At minimum, one unit is
+charged for each AST node evaluation, predicate evaluation, option application
+per input item, collection item scanned or copied, executed instruction, and
+function-loop iteration.  A more specialized counter does not replace the work
+charge: generating one die charges an RNG word, one generated value, applicable
+trace/output work, and ordinary work units.</p>
+<p>The engine pre-charges known cardinality before allocation.  When cardinality is
+data-dependent, it charges incrementally before appending each item.  Selection
+or filtering does not refund values, RNG words, work, or trace nodes already
+consumed.  Splitting equivalent work across semicolons, branches, nested calls,
+or convenience functions inside one request cannot change the available
+budget.</p>
+</section>
+</section>
+<section id="random-protocol">
+<h2>Random protocol<a class="headerlink" href="#random-protocol" title="Link to this heading">¶</a></h2>
+<section id="algorithm-identity">
+<h3>Algorithm identity<a class="headerlink" href="#algorithm-identity" title="Link to this heading">¶</a></h3>
+<p>The v2.0 random protocol identifier is <code class="docutils literal notranslate"><span class="pre">oneroll-chacha12-v1</span></code>.  It uses a
+ChaCha generator with 12 rounds, a 256-bit seed, a zero stream identifier, and
+the raw 64-bit word order defined by <code class="docutils literal notranslate"><span class="pre">ChaCha12Rng</span></code>.  The implementation may
+use <code class="docutils literal notranslate"><span class="pre">rand_chacha</span></code> but must retain reference-vector tests across dependency
+upgrades.</p>
+<p><code class="docutils literal notranslate"><span class="pre">StdRng</span></code> is explicitly rejected for replay because its documentation marks it
+non-portable and permits future algorithm replacement.  The selected ChaCha
+implementation is deterministic and portable and publishes reference vectors.
+Changing rounds, seed expansion, stream identifier, raw-word order, bounded
+sampling, or construct traversal requires a new protocol identifier.  Existing
+identifiers remain readable for replay throughout the 2.x support window.</p>
+</section>
+<section id="seed-contract">
+<h3>Seed contract<a class="headerlink" href="#seed-contract" title="Link to this heading">¶</a></h3>
+<p>The canonical seed is exactly 32 bytes and is rendered as 64 lowercase
+hexadecimal digits in result metadata.</p>
+<ul class="simple">
+<li><p>A Rust 32-byte seed is used unchanged.</p></li>
+<li><p>A Python or CLI unsigned 64-bit integer is encoded little-endian into bytes
+0 through 7; bytes 8 through 31 are zero.</p></li>
+<li><p>A hexadecimal seed must contain exactly 64 hexadecimal digits, with an
+optional <code class="docutils literal notranslate"><span class="pre">0x</span></code> prefix.</p></li>
+<li><p>Negative, oversized, short, or malformed seeds fail with
+<code class="docutils literal notranslate"><span class="pre">random.invalid_seed</span></code> before parsing begins.</p></li>
+<li><p>When no seed is supplied, the engine obtains all 32 bytes from the operating
+system random source.  Entropy failure returns <code class="docutils literal notranslate"><span class="pre">random.entropy_unavailable</span></code>
+and never falls back to time, process identifiers, or a constant.</p></li>
+</ul>
+<p>Every successful result records <code class="docutils literal notranslate"><span class="pre">algorithm</span></code> and the effective canonical
+seed.  An evaluation error after random work begins records the same replay
+descriptor and the number of consumed RNG words, but no partial values.  The
+seed describes replayability, not cryptographic secrecy.</p>
+</section>
+<section id="unbiased-bounded-integers">
+<h3>Unbiased bounded integers<a class="headerlink" href="#unbiased-bounded-integers" title="Link to this heading">¶</a></h3>
+<p>Numeric dice, range dice, weighted-list selection, and without-replacement
+indices use one normative <code class="docutils literal notranslate"><span class="pre">uniform_below(bound)</span></code> primitive.  <code class="docutils literal notranslate"><span class="pre">bound</span></code> must
+be positive.  Arithmetic uses a type able to represent <code class="docutils literal notranslate"><span class="pre">2**64</span></code>:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>zone = floor(2**64 / bound) * bound
+loop:
+    charge rng_words by 1
+    x = rng.next_u64()
+    if x &lt; zone:
+        return x % bound
+</pre></div>
+</div>
+<p>This is rejection sampling: the accepted domain contains an equal number of
+representatives for every output.  The rejected tail is never mapped with
+modulo.  A semantic value is charged only after an index is accepted; each raw
+attempt remains charged as an RNG word.</p>
+<p>A numeric inclusive range first computes its width with checked arithmetic and
+then adds <code class="docutils literal notranslate"><span class="pre">uniform_below(width)</span></code> to its lower bound.  A weighted list uses
+checked unsigned integer weights, draws below their positive total, and selects
+the first item whose cumulative input-order weight exceeds the draw.  Floating
+point sampling is forbidden.</p>
+</section>
+<section id="random-consumption-order">
+<h3>Random consumption order<a class="headerlink" href="#random-consumption-order" title="Link to this heading">¶</a></h3>
+<p>Programs consume randomness in source order: instructions from left to right,
+expression operands in canonical evaluation order, source values in ascending
+draw index, and option-generated values in left-to-right pipeline order.
+Discarded values still occupy their original position in the stream.  Parallel
+batch execution must derive an independent sub-seed from the request seed and
+stable sample index; it may not race on a shared generator.  The exact sub-seed
+derivation is frozen with the batch API in RFC-0004 before parallel batches
+ship.</p>
+</section>
+<section id="reference-vectors">
+<h3>Reference vectors<a class="headerlink" href="#reference-vectors" title="Link to this heading">¶</a></h3>
+<p>For the all-zero 256-bit seed under <code class="docutils literal notranslate"><span class="pre">oneroll-chacha12-v1</span></code>, the first four raw
+words are:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>53f955076a9af49b
+d583265f12ce1f81
+1474e049bbc32904
+5f15ae2ea589007e
+</pre></div>
+</div>
+<p>Using the normative bounded sampler, the first four independent d6 values are
+<code class="docutils literal notranslate"><span class="pre">[4,</span> <span class="pre">4,</span> <span class="pre">3,</span> <span class="pre">3]</span></code> and d20 values are <code class="docutils literal notranslate"><span class="pre">[4,</span> <span class="pre">2,</span> <span class="pre">1,</span> <span class="pre">15]</span></code>.  A fresh request with the
+same seed selecting from <code class="docutils literal notranslate"><span class="pre">[&quot;common&quot;[80%],</span> <span class="pre">&quot;rare&quot;[20%]]</span></code> returns <code class="docutils literal notranslate"><span class="pre">&quot;common&quot;</span></code>.
+Rust and installed Python conformance tests must assert these vectors before a
+random dependency upgrade can merge.</p>
+</section>
+</section>
+<section id="cancellation-and-deadlines">
+<h2>Cancellation and deadlines<a class="headerlink" href="#cancellation-and-deadlines" title="Link to this heading">¶</a></h2>
+<p>Structural budgets guarantee termination even when a caller never provides a
+cancellation token.  Cancellation and deadlines provide responsiveness on top
+of those budgets.</p>
+<p>The core Rust and Python Engine has no default wall-clock deadline.  A mandatory
+semantic timeout would make the same source, seed, and policy succeed or fail
+according to machine speed and system load.  The reference CLI and TUI apply a
+5,000 millisecond client deadline.  Hosted services must set a deployment
+deadline; 5,000 milliseconds is the recommended default and 60,000 milliseconds
+is the recommended deployment maximum.  These client and deployment values are
+operational policy, not part of deterministic language semantics and not a
+replacement for structural hard ceilings.</p>
+<p>The optional cancellation token is thread-safe and monotonic: it changes from
+active to cancelled at most once.  The context checks it before every budget
+charge, RNG word, potentially growing allocation, and instruction boundary.
+The monotonic deadline is checked at request start, at instruction and
+allocation boundaries, and at least every 256 work units.  System wall-clock
+changes cannot extend it.</p>
+<p>Cancellation returns <code class="docutils literal notranslate"><span class="pre">execution.cancelled</span></code>.  Deadline exhaustion returns
+<code class="docutils literal notranslate"><span class="pre">execution.deadline_exceeded</span></code>.  If both are visible at one checkpoint,
+explicit cancellation wins.  Neither condition may be converted to an empty or
+truncated success.  Cancellation latency is bounded in work checkpoints, not in
+wall-clock milliseconds; service operators still need outer process timeouts.</p>
+</section>
+<section id="atomic-failure-and-error-contract">
+<h2>Atomic failure and error contract<a class="headerlink" href="#atomic-failure-and-error-contract" title="Link to this heading">¶</a></h2>
+<p>One Program is the atomic result boundary.  Parse, validation, budget,
+arithmetic, entropy, cancellation, or deadline failure returns no
+<code class="docutils literal notranslate"><span class="pre">ProgramResult</span></code>, no instruction prefix, and no partial trace.  Request-local
+variables, RNG state, counters, and trace nodes are discarded.  The immutable
+Engine remains reusable.</p>
+<p>Safety failures use the structured error vocabulary shared with RFC-0003.  The
+minimum machine-readable fields are:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ExecutionError {
+    phase: parse | validate | evaluate | cancel,
+    code: stable_ascii_identifier,
+    message: human_readable_text,
+    span?: { start_byte, end_byte },
+    resource?: resource_name,
+    used?: integer,
+    requested?: integer,
+    limit?: integer,
+    random?: { algorithm, seed, rng_words },
+}
+</pre></div>
+</div>
+<p>Clients branch on <code class="docutils literal notranslate"><span class="pre">code</span></code>, never localized <code class="docutils literal notranslate"><span class="pre">message</span></code> text.  A resource error
+uses the code in the normative matrix.  Configuration errors use
+<code class="docutils literal notranslate"><span class="pre">policy.limit_above_hard_max</span></code> or <code class="docutils literal notranslate"><span class="pre">policy.invalid_limit</span></code>.  Random setup uses
+<code class="docutils literal notranslate"><span class="pre">random.invalid_seed</span></code> or <code class="docutils literal notranslate"><span class="pre">random.entropy_unavailable</span></code>.  Checked arithmetic
+uses <code class="docutils literal notranslate"><span class="pre">arithmetic.overflow</span></code>, <code class="docutils literal notranslate"><span class="pre">arithmetic.divide_by_zero</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">arithmetic.invalid_exponent</span></code>.  RFC-0003 owns the final serialized envelope,
+exception classes, and trace schema without changing these meanings.</p>
+</section>
+<section id="thread-safety-and-language-bindings">
+<h2>Thread safety and language bindings<a class="headerlink" href="#thread-safety-and-language-bindings" title="Link to this heading">¶</a></h2>
+<p>An immutable configured Engine must be safe to share across threads.  Each call
+owns its context and deterministic generator.  Two concurrent calls using the
+same configuration, source, variables, and seed produce identical results
+independently; scheduling cannot change draw order.</p>
+<p>Python does not use <code class="docutils literal notranslate"><span class="pre">random.Random</span></code> and the CLI does not seed separately.
+Both pass seed and policy data to the Rust Engine.  CPU-bound parsing and
+evaluation should release the GIL once Python-owned inputs have been converted,
+while cancellation remains callable from another thread.  Python exceptions
+expose the same structured fields as Rust errors.</p>
+<p>The CLI accepts a decimal unsigned 64-bit seed or canonical hexadecimal seed
+and prints the effective seed in machine-readable output.  Human output may
+hide it by default but must expose it through an explicit replay/details flag.
+TUI work runs outside the event loop and uses the same cancellation token.</p>
+</section>
+<section id="verification-contract">
+<h2>Verification contract<a class="headerlink" href="#verification-contract" title="Link to this heading">¶</a></h2>
+<p>The implementation issues unblocked by this RFC must add the following shared
+evidence to Rust and the installed Python package:</p>
+<dl class="simple">
+<dt>Boundary tests</dt><dd><p>Exercise zero, immediately below, exactly at, and one above every default and
+configurable limit.  Nested and semicolon-separated forms must prove that a
+counter cannot reset.</p>
+</dd>
+<dt>Adversarial termination tests</dt><dd><p>Cover infinite explosions, impossible reroll-until predicates, deeply nested
+parentheses/functions/blocks, enormous pure-scalar Programs, expanding
+repeats, option pipelines, output-heavy traces, and cancellation during each
+dynamic construct.</p>
+</dd>
+<dt>Determinism tests</dt><dd><p>Assert the reference vectors, identical Rust/Python results, repeatable
+errors at the same RNG word, and independence from thread scheduling.</p>
+</dd>
+<dt>Bias tests</dt><dd><p>Test <code class="docutils literal notranslate"><span class="pre">uniform_below</span></code> exhaustively with a reduced-width fake RNG for bounds
+1 through 16 so every accepted output has equal preimages and rejected tails
+are retried.  Run fixed-seed distribution smoke tests for d2, d3, d6, d20,
+numeric ranges, weighted lists, and unique draws.  Statistical smoke tests
+use predeclared sample counts and thresholds and run in scheduled CI; the
+exhaustive algorithmic test remains the non-flaky merge gate.</p>
+</dd>
+<dt>Property and fuzz tests</dt><dd><p>Assert no panic, hang, wraparound, out-of-range face, budget increase, hidden
+partial success, or post-cancellation mutation.  Every discovered failure is
+retained as a regression seed.</p>
+</dd>
+</dl>
+</section>
+<section id="implementation-sequence">
+<h2>Implementation sequence<a class="headerlink" href="#implementation-sequence" title="Link to this heading">¶</a></h2>
+<p>This RFC unlocks vertical implementation issues rather than landing all changes
+in one patch:</p>
+<ol class="arabic simple">
+<li><p>Issue 13 introduces <code class="docutils literal notranslate"><span class="pre">ResourcePolicy</span></code>, request-scoped counters, defaults,
+hard ceilings, and shared entry-point enforcement.</p></li>
+<li><p>Issue 18 introduces <code class="docutils literal notranslate"><span class="pre">oneroll-chacha12-v1</span></code>, seed metadata, and the unbiased
+bounded sampler.</p></li>
+<li><p>Issue 17 moves totals and intermediate arithmetic to checked <code class="docutils literal notranslate"><span class="pre">i64</span></code>.</p></li>
+<li><p>Issue 12 exposes the stable structured error and span contract with RFC-0003.</p></li>
+<li><p>Issue 23 adds the permanent fuzz and property gates after those primitives
+exist.</p></li>
+</ol>
+<p>Later dice, validator, option, function, batch, CLI, and TUI issues must charge
+the existing context instead of creating feature-specific limits or random
+sources.</p>
+</section>
+<section id="rejected-alternatives">
+<h2>Rejected alternatives<a class="headerlink" href="#rejected-alternatives" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">rand::random</span></code> or <code class="docutils literal notranslate"><span class="pre">ThreadRng</span></code> per face</dt><dd><p>Neither exposes a replayable request stream, and modulo mapping is biased.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">StdRng</span></code> with an integer seed</dt><dd><p>The Rust Rand documentation explicitly marks <code class="docutils literal notranslate"><span class="pre">StdRng</span></code> non-portable and
+permits algorithm replacement.  Its name is not a replay protocol.</p>
+</dd>
+<dt>Modulo mapping without rejection</dt><dd><p>Unless the bound divides <code class="docutils literal notranslate"><span class="pre">2**64</span></code>, some outcomes receive more raw inputs
+than others.</p>
+</dd>
+<dt>One generated-face counter only</dt><dd><p>It does not bound parsing, pure scalar work, validators, collections,
+functions, output, or discarded trace nodes.</p>
+</dd>
+<dt>Reset budgets per instruction or helper call</dt><dd><p>Attackers could split equivalent work across semicolons, repeats, or public
+convenience functions.</p>
+</dd>
+<dt>Return completed instruction prefixes on error</dt><dd><p>This creates partial hidden state and makes retry, replay, and client logic
+ambiguous.  V2.0 keeps the Program result atomic.</p>
+</dd>
+<dt>Wall-clock timeout as the only limit</dt><dd><p>Timing depends on hardware and load and cannot provide deterministic
+conformance or memory bounds.</p>
+</dd>
+</dl>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.rs/rand/0.9.2/rand/rngs/struct.StdRng.html">rand StdRng portability contract</a></p></li>
+<li><p><a class="reference external" href="https://docs.rs/rand_chacha/0.9.0/rand_chacha/">rand_chacha deterministic portable generators</a></p></li>
+<li><p><a class="reference external" href="https://docs.rs/rand/0.9.2/rand/rngs/struct.OsRng.html">rand OsRng operating-system entropy contract</a></p></li>
+<li><p><a class="reference internal" href="rfc-0001.html#rfc-0001"><span class="std std-ref">RFC-0001: OneRoll Program Language v2</span></a></p></li>
+</ul>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="rfc-0003.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">RFC-0003: Typed Program Results, Roll Traces, and Errors</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="rfc-0001.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">RFC-0001: OneRoll Program Language v2</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023-PRESENT, HydroRoll-Team.
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link fa-brands fa-github" href="https://github.com/HydroRoll-Team/OneRoll/" aria-label="GitHub"></a>
+              <a class="muted-link fa-brands fa-python" href="https://pypi.org/project/oneroll/" aria-label="Pypi"></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">RFC-0002: Execution Safety, Budgets, and Randomness</a><ul>
+<li><a class="reference internal" href="#summary">Summary</a></li>
+<li><a class="reference internal" href="#context">Context</a></li>
+<li><a class="reference internal" href="#goals">Goals</a></li>
+<li><a class="reference internal" href="#non-goals">Non-goals</a></li>
+<li><a class="reference internal" href="#execution-architecture">Execution architecture</a><ul>
+<li><a class="reference internal" href="#lifecycle-invariants">Lifecycle invariants</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#resource-policy">Resource policy</a><ul>
+<li><a class="reference internal" href="#charging-rules">Charging rules</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#random-protocol">Random protocol</a><ul>
+<li><a class="reference internal" href="#algorithm-identity">Algorithm identity</a></li>
+<li><a class="reference internal" href="#seed-contract">Seed contract</a></li>
+<li><a class="reference internal" href="#unbiased-bounded-integers">Unbiased bounded integers</a></li>
+<li><a class="reference internal" href="#random-consumption-order">Random consumption order</a></li>
+<li><a class="reference internal" href="#reference-vectors">Reference vectors</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#cancellation-and-deadlines">Cancellation and deadlines</a></li>
+<li><a class="reference internal" href="#atomic-failure-and-error-contract">Atomic failure and error contract</a></li>
+<li><a class="reference internal" href="#thread-safety-and-language-bindings">Thread safety and language bindings</a></li>
+<li><a class="reference internal" href="#verification-contract">Verification contract</a></li>
+<li><a class="reference internal" href="#implementation-sequence">Implementation sequence</a></li>
+<li><a class="reference internal" href="#rejected-alternatives">Rejected alternatives</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=4720776d"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=5fa4622c"></script>
+    </body>
+</html>

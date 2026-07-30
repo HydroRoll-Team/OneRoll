@@ -2,10 +2,12 @@
 <html class="no-js" lang="en" data-content_root="./">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" />
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="RFC-0001: OneRoll Program Language v2" href="rfc-0001.html" /><link rel="prev" title="Release versioning" href="releasing.html" />
 
-    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 --><title>Index - OneRoll 1.3.5 documentation</title>
-<link rel="stylesheet" type="text/css" href="_static/pygments.css?v=290f1236" />
+    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>Production roadmap - OneRoll 1.3.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=290f1236" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
@@ -179,7 +181,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -199,7 +201,7 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
+  <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="language.html">Language guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="limits.html">Resource limits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="randomness.html">Deterministic randomness</a></li>
@@ -207,7 +209,7 @@
 <li class="toctree-l1"><a class="reference internal" href="conformance.html">v1 conformance corpus</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quality.html">Quality gate</a></li>
 <li class="toctree-l1"><a class="reference internal" href="releasing.html">Release versioning</a></li>
-<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Production roadmap</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Production roadmap</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rfc-0001.html">RFC-0001: OneRoll Program Language v2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rfc-0002.html">RFC-0002: Execution Safety, Budgets, and Randomness</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rfc-0003.html">RFC-0003: Typed Program Results, Roll Traces, and Errors</a></li>
@@ -233,7 +235,17 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          <div class="theme-toggle-container theme-toggle-content">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/HydroRoll-Team/OneRoll/blob/main/docs/source/roadmap.rst?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/HydroRoll-Team/OneRoll/edit/main/docs/source/roadmap.rst" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
@@ -242,16 +254,61 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          
-<section class="genindex-section">
-  <h1 id="index">Index</h1>
-  <div class="genindex-jumpbox"></div>
+          <section id="production-roadmap">
+<h1>Production roadmap<a class="headerlink" href="#production-roadmap" title="Link to this heading">¶</a></h1>
+<p>OneRoll is moving toward a Python-first, deterministic, bounded, and auditable
+dice-language engine.  The CLI is the reference client; M3 makes the Textual
+interface an optional package/client boundary.</p>
+<section id="milestones">
+<h2>Milestones<a class="headerlink" href="#milestones" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>M0 — v1.3.5 Safety Baseline</dt><dd><p>Bound every source of generated faces, capture v1 behavior, and require
+tests, lint, typing, and strict documentation checks.</p>
+</dd>
+<dt>M1 — v2.0 Specification Freeze</dt><dd><p>Accept the language, execution, result/error, Python API, verification, and
+analysis RFCs.  No new syntax enters Core Alpha without a normative example
+and error case.</p>
+</dd>
+<dt>M2 — v2.0 Core Alpha</dt><dd><p>Deliver the typed <code class="docutils literal notranslate"><span class="pre">Program</span> <span class="pre">→</span> <span class="pre">Instruction</span> <span class="pre">→</span> <span class="pre">Expression</span></code> engine, arithmetic
+precedence, typed values and variables, numeric/range/list dice, validators,
+deterministic option pipelines, seeded randomness, and shared budgets.</p>
+</dd>
+<dt>M3 — v2.0 Python Beta</dt><dd><p>Expose one typed Engine API, program execution, functions and conditional
+blocks, bounded batches, CLI integration, and optional TUI dependencies.</p>
+</dd>
+<dt>M4 — v2.0 Release Candidate</dt><dd><p>Complete compatibility diagnostics, migration documentation, wheel coverage,
+fuzz/property gates, and the secure release path.</p>
+</dd>
+<dt>M5 — v2.0 General Availability</dt><dd><p>Publish production artifacts only after all release evidence is reproducible
+from a clean checkout.</p>
+</dd>
+<dt>M6 — v2.1 Probability Analysis</dt><dd><p>Add explicit <code class="docutils literal notranslate"><span class="pre">Engine.sample</span></code> and <code class="docutils literal notranslate"><span class="pre">Engine.analyze_exact</span></code> operations.
+Exact analysis is limited to the RFC-0006 capability matrix and never falls
+back to sampling; deterministic sampling remains available for complete
+Programs and unsupported exact constructs.  The matrix and resource limits
+remain provisional until the issue 32 prototype and issue 33 review provide
+evidence.</p>
+</dd>
+</dl>
+</section>
+<section id="delivery-rule">
+<h2>Delivery rule<a class="headerlink" href="#delivery-rule" title="Link to this heading">¶</a></h2>
+<p>Each implementation issue must be a vertical, executable slice through grammar,
+AST, validation, evaluation, Rust/Python results, CLI behavior where applicable,
+tests, and user documentation.  Parser-only or documentation-only claims do not
+make a language feature complete.</p>
+<p>Each completed milestone also produces an immutable GitHub Release.  The
+version train is <code class="docutils literal notranslate"><span class="pre">v1.3.5</span></code>, <code class="docutils literal notranslate"><span class="pre">v2.0.0-alpha.0</span></code>, <code class="docutils literal notranslate"><span class="pre">v2.0.0-alpha.1</span></code>,
+<code class="docutils literal notranslate"><span class="pre">v2.0.0-beta.1</span></code>, <code class="docutils literal notranslate"><span class="pre">v2.0.0-rc.1</span></code>, <code class="docutils literal notranslate"><span class="pre">v2.0.0</span></code>, and <code class="docutils literal notranslate"><span class="pre">v2.1.0</span></code> for M0 through
+M6 respectively.  M1 is a GitHub-only specification pre-release; registry
+publication and cumulative evidence follow <a class="reference internal" href="rfc-0005.html#rfc-0005"><span class="std std-ref">RFC-0005: Verification, Documentation, and Release</span></a>.</p>
+</section>
 </section>
 
         </article>
@@ -259,8 +316,26 @@
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="rfc-0001.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">RFC-0001: OneRoll Program Language v2</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="releasing.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Release versioning</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -283,8 +358,28 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Production roadmap</a><ul>
+<li><a class="reference internal" href="#milestones">Milestones</a></li>
+<li><a class="reference internal" href="#delivery-rule">Delivery rule</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

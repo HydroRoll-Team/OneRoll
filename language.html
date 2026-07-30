@@ -2,10 +2,12 @@
 <html class="no-js" lang="en" data-content_root="./">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" />
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Resource limits" href="limits.html" /><link rel="prev" title="OneRoll" href="index.html" />
 
-    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 --><title>Index - OneRoll 1.3.5 documentation</title>
-<link rel="stylesheet" type="text/css" href="_static/pygments.css?v=290f1236" />
+    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>Language guide - OneRoll 1.3.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=290f1236" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
@@ -179,7 +181,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -199,8 +201,8 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
-<li class="toctree-l1"><a class="reference internal" href="language.html">Language guide</a></li>
+  <ul class="current">
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Language guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="limits.html">Resource limits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="randomness.html">Deterministic randomness</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fuzzing.html">Fuzzing and property gates</a></li>
@@ -233,7 +235,17 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          <div class="theme-toggle-container theme-toggle-content">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/HydroRoll-Team/OneRoll/blob/main/docs/source/language.rst?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/HydroRoll-Team/OneRoll/edit/main/docs/source/language.rst" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
@@ -242,16 +254,136 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          
-<section class="genindex-section">
-  <h1 id="index">Index</h1>
-  <div class="genindex-jumpbox"></div>
+          <section id="language-guide">
+<h1>Language guide<a class="headerlink" href="#language-guide" title="Link to this heading">¶</a></h1>
+<section id="current-1-x-grammar">
+<h2>Current <code class="docutils literal notranslate"><span class="pre">1.x</span></code> grammar<a class="headerlink" href="#current-1-x-grammar" title="Link to this heading">¶</a></h2>
+<p>The parser and this guide use the same pest grammar.  The file embedded below
+is the normative source for accepted <code class="docutils literal notranslate"><span class="pre">1.x</span></code> syntax; it is not a copy that can
+drift away from the engine.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-number">Listing 1 </span><span class="caption-text">src/oneroll/grammar.pest</span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>WHITESPACE = _{ &quot; &quot; | &quot;\t&quot; | &quot;\n&quot; | &quot;\r&quot; }
+number = @{ &quot;-&quot;? ~ (&quot;0&quot; | (&#39;1&#39;..&#39;9&#39; ~ (&#39;0&#39;..&#39;9&#39;)*)) }
+comment = @{ &quot;#&quot; ~ (!&quot;\n&quot; ~ ANY)* }
+program = { SOI ~ instruction ~ (instruction_separator ~ instruction)* ~ comment? ~ EOI }
+instruction = { dice_expr }
+instruction_separator = _{ &quot;;&quot; }
+dice_expr = { dice_term ~ (op ~ dice_term)* }
+dice_term = { 
+    dice_roll 
+    | paren_expr 
+    | number 
+}
+paren_expr = { &quot;(&quot; ~ dice_expr ~ &quot;)&quot; }
+dice_roll = { 
+    number ~ &quot;d&quot; ~ dice_sides ~ modifiers?
+}
+dice_sides = @{ number }
+modifiers = { modifier+ }
+modifier = { 
+    explode
+    | explode_alias
+    | explode_keep_high
+    | reroll
+    | reroll_once
+    | reroll_until
+    | reroll_add
+    | keep_alias
+    | keep_high
+    | keep_low
+    | drop_high
+    | drop_low
+    | unique
+    | sort
+    | count
+}
+explode = { &quot;!&quot; }
+explode_alias = { &quot;e&quot; }
+explode_keep_high = { &quot;K&quot; ~ number }
+reroll = { &quot;r&quot; ~ number }
+reroll_once = { &quot;ro&quot; ~ number }
+reroll_until = { &quot;R&quot; ~ number }
+reroll_add = { &quot;a&quot; ~ number }
+keep_alias = { &quot;k&quot; ~ number }
+keep_high = { &quot;kh&quot; ~ number }
+keep_low = { &quot;kl&quot; ~ number }
+drop_high = { &quot;dh&quot; ~ number }
+drop_low = { &quot;dl&quot; ~ number }
+unique = { &quot;u&quot; }
+sort = { &quot;s&quot; }
+count = { &quot;c&quot; ~ number }
+op = { &quot;+&quot; | &quot;-&quot; | &quot;*&quot; | &quot;/&quot; | &quot;^&quot; }
+</pre></div>
+</div>
+</div>
+<p>Syntax acceptance is only one part of the language contract.  The executable
+examples and behavior classifications in <a class="reference internal" href="conformance.html"><span class="doc">v1 conformance corpus</span></a> define current
+semantics, including compatibility-sensitive modifier behavior and the known
+flat arithmetic precedence defect.</p>
+</section>
+<section id="current-arithmetic">
+<h2>Current arithmetic<a class="headerlink" href="#current-arithmetic" title="Link to this heading">¶</a></h2>
+<p>Scalar literals, dice values, intermediate totals, and collection sums use
+signed 64-bit integers.  Addition, subtraction, multiplication, division,
+exponentiation, and aggregation are checked: they never wrap and never expose
+a Rust panic through Python.  Integer division truncates toward zero.</p>
+<p>The current v1 exponent token remains <code class="docutils literal notranslate"><span class="pre">^</span></code>.  A negative exponent or one above
+<code class="docutils literal notranslate"><span class="pre">u32::MAX</span></code> fails with <code class="docutils literal notranslate"><span class="pre">arithmetic.invalid_exponent</span></code>; division by zero uses
+<code class="docutils literal notranslate"><span class="pre">arithmetic.divide_by_zero</span></code>; every checked overflow uses
+<code class="docutils literal notranslate"><span class="pre">arithmetic.overflow</span></code>.  <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">^</span> <span class="pre">0</span></code> is defined as <code class="docutils literal notranslate"><span class="pre">1</span></code>.  RFC-0001 changes the
+strict-v2 exponent token to <code class="docutils literal notranslate"><span class="pre">**</span></code> without changing these numeric boundaries.</p>
+</section>
+<section id="programs">
+<h2>Programs<a class="headerlink" href="#programs" title="Link to this heading">¶</a></h2>
+<p>A program contains one or more instructions separated by <code class="docutils literal notranslate"><span class="pre">;</span></code> and may have
+one trailing comment:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>1d20 + 5; 2d6; 1d8 # encounter
+</pre></div>
+</div>
+<p>Python exposes programs separately so the legacy single-result API remains
+stable:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">oneroll</span>
+
+<span class="n">single</span> <span class="o">=</span> <span class="n">oneroll</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="s2">&quot;1d20 + 5 # attack&quot;</span><span class="p">)</span>
+<span class="n">program</span> <span class="o">=</span> <span class="n">oneroll</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;1d20 + 5; 2d6 # encounter&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">run</span></code> returns <code class="docutils literal notranslate"><span class="pre">{&quot;results&quot;:</span> <span class="pre">[...],</span> <span class="pre">&quot;comment&quot;:</span> <span class="pre">&quot;...&quot;}</span></code>.  Empty
+instructions such as <code class="docutils literal notranslate"><span class="pre">1d6;</span></code> or <code class="docutils literal notranslate"><span class="pre">1d6;;2d6</span></code> are invalid.  All instructions
+share one generated-face budget, so splitting an expensive calculation across
+<code class="docutils literal notranslate"><span class="pre">;</span></code> does not bypass resource limits.  The current safe default also rejects
+programs containing more than 1,000 instructions; configurable workload limits
+are part of the production engine work.</p>
+</section>
+<section id="target-2-0-language">
+<h2>Target <code class="docutils literal notranslate"><span class="pre">2.0</span></code> language<a class="headerlink" href="#target-2-0-language" title="Link to this heading">¶</a></h2>
+<p>The target language adds typed values, ranges, weighted-list dice, variables,
+validators, transformation options, functions, and conditional blocks.  Its
+normative review contract and migration decisions live in <a class="reference internal" href="rfc-0001.html"><span class="doc">RFC-0001: OneRoll Program Language v2</span></a>.
+Syntax shown there is a target contract unless its implementation-status table
+marks a feature implemented.</p>
+<p>The versioned <code class="docutils literal notranslate"><span class="pre">ProgramResult</span></code>, typed Value union, normalized RollNode pool,
+trace DAG, and structured error envelope are frozen for review in
+<a class="reference internal" href="rfc-0003.html"><span class="doc">RFC-0003: Typed Program Results, Roll Traces, and Errors</span></a>.  They are target v2 contracts; the current <code class="docutils literal notranslate"><span class="pre">roll</span></code> and <code class="docutils literal notranslate"><span class="pre">run</span></code>
+dictionaries remain the compatibility API until their implementation issues
+land.</p>
+<p>Important compatibility decisions are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">**</span></code> is the v2 exponent operator; <code class="docutils literal notranslate"><span class="pre">^</span></code> is reserved for validator XOR.</p></li>
+<li><p>Strings are quoted and escaped rather than parsed with a greedy wildcard.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">help</span></code> and <code class="docutils literal notranslate"><span class="pre">la</span></code> are CLI commands, not core-language expressions.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&#64;</span></code> is reserved until bounded, auditable jump semantics are accepted.</p></li>
+<li><p>A trailing comment describes the whole program.  Per-instruction metadata is
+a future explicit construct rather than an ambiguous inline comment.</p></li>
+</ul>
+</section>
 </section>
 
         </article>
@@ -259,8 +391,26 @@
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="limits.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Resource limits</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="index.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Home</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -283,8 +433,30 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Language guide</a><ul>
+<li><a class="reference internal" href="#current-1-x-grammar">Current <code class="docutils literal notranslate"><span class="pre">1.x</span></code> grammar</a></li>
+<li><a class="reference internal" href="#current-arithmetic">Current arithmetic</a></li>
+<li><a class="reference internal" href="#programs">Programs</a></li>
+<li><a class="reference internal" href="#target-2-0-language">Target <code class="docutils literal notranslate"><span class="pre">2.0</span></code> language</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

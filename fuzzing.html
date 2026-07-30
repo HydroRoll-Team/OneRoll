@@ -2,10 +2,12 @@
 <html class="no-js" lang="en" data-content_root="./">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" />
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="v1 conformance corpus" href="conformance.html" /><link rel="prev" title="Deterministic randomness" href="randomness.html" />
 
-    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 --><title>Index - OneRoll 1.3.5 documentation</title>
-<link rel="stylesheet" type="text/css" href="_static/pygments.css?v=290f1236" />
+    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>Fuzzing and property gates - OneRoll 1.3.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=290f1236" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
@@ -179,7 +181,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -199,11 +201,11 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
+  <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="language.html">Language guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="limits.html">Resource limits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="randomness.html">Deterministic randomness</a></li>
-<li class="toctree-l1"><a class="reference internal" href="fuzzing.html">Fuzzing and property gates</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Fuzzing and property gates</a></li>
 <li class="toctree-l1"><a class="reference internal" href="conformance.html">v1 conformance corpus</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quality.html">Quality gate</a></li>
 <li class="toctree-l1"><a class="reference internal" href="releasing.html">Release versioning</a></li>
@@ -233,7 +235,17 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          <div class="theme-toggle-container theme-toggle-content">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/HydroRoll-Team/OneRoll/blob/main/docs/source/fuzzing.rst?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/HydroRoll-Team/OneRoll/edit/main/docs/source/fuzzing.rst" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
@@ -242,16 +254,73 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          
-<section class="genindex-section">
-  <h1 id="index">Index</h1>
-  <div class="genindex-jumpbox"></div>
+          <section id="fuzzing-and-property-gates">
+<h1>Fuzzing and property gates<a class="headerlink" href="#fuzzing-and-property-gates" title="Link to this heading">¶</a></h1>
+<p>OneRoll treats panic freedom, termination, deterministic replay, bounded work,
+and valid dice ranges as release properties.  Example-based conformance tests
+remain the semantic source of truth; property tests and fuzzing search the
+larger input space around that contract.</p>
+<section id="merge-gate-properties">
+<h2>Merge-gate properties<a class="headerlink" href="#merge-gate-properties" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">proptest</span></code> suite exercises the public Rust parser and calculator with 256
+cases per property.  It covers:</p>
+<ul class="simple">
+<li><p>numeric face ranges and aggregate totals;</p></li>
+<li><p>exact replay for equal policy, seed, and request;</p></li>
+<li><p>monotonic behavior when <code class="docutils literal notranslate"><span class="pre">generated_values</span></code> is relaxed;</p></li>
+<li><p>arbitrary bounded UTF-8 parser inputs; and</p></li>
+<li><p>modifier combinations under shared generation, RNG, and work limits.</p></li>
+</ul>
+<p>Run the same optimized gate used by CI:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cargo test --release property_</span>
+</pre></div>
+</div>
+<p>Set <code class="docutils literal notranslate"><span class="pre">PROPTEST_CASES</span></code> to increase the local case count.  A failing case is
+automatically shrunk; retain the minimal input as an example regression or a
+fuzz corpus entry before fixing it.</p>
+</section>
+<section id="fuzz-targets">
+<h2>Fuzz targets<a class="headerlink" href="#fuzz-targets" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">parse_program</span></code> sends bounded UTF-8 Programs and varying parser limits
+through <code class="docutils literal notranslate"><span class="pre">DiceParser::parse_program_with_policy</span></code>.  <code class="docutils literal notranslate"><span class="pre">evaluate_program</span></code> also
+derives a seed and resource-policy values from each input, then executes any
+accepted Program through one seeded <code class="docutils literal notranslate"><span class="pre">DiceCalculator</span></code> request.</p>
+<p>Both targets reject inputs above 4 KiB of source.  Generated values, RNG words,
+collections, work, and output are capped inside the evaluator harness, so an
+explosion or reroll sequence cannot create an unbounded fuzz iteration.</p>
+<p>Install the pinned runner and use a nightly Rust toolchain:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cargo install cargo-fuzz --version 0.13.2 --locked</span>
+<span class="go">cargo +nightly fuzz run parse_program -- -max_total_time=60 -timeout=5</span>
+<span class="go">cargo +nightly fuzz run evaluate_program -- -max_total_time=60 -timeout=5</span>
+</pre></div>
+</div>
+<p>Intel macOS Command Line Tools installations that do not discover the SDK’s
+libc++ headers may need the SDK include paths for the build command:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">CXX=/Library/Developer/CommandLineTools/usr/bin/clang++ \</span>
+<span class="go">CXXFLAGS=&quot;-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1&quot; \</span>
+<span class="go">cargo +nightly fuzz build</span>
+</pre></div>
+</div>
+</section>
+<section id="scheduled-campaign-and-regressions">
+<h2>Scheduled campaign and regressions<a class="headerlink" href="#scheduled-campaign-and-regressions" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">Fuzz</span></code> GitHub Actions workflow runs both targets when parser, evaluator,
+fuzz harness, or Rust manifest changes reach <code class="docutils literal notranslate"><span class="pre">dev</span></code>/<code class="docutils literal notranslate"><span class="pre">main</span></code> or a pull request.
+It also runs every Monday at 02:17 UTC and on manual dispatch.  Each target runs
+for 120 seconds, each generated case has a five-second timeout, RSS is capped at
+2 GiB, and the complete job is limited to ten minutes.  Failure artifacts are
+uploaded from <code class="docutils literal notranslate"><span class="pre">fuzz/artifacts/&lt;target&gt;</span></code>.</p>
+<p>Every distinct crash, timeout, or invariant failure must be minimized and
+copied into <code class="docutils literal notranslate"><span class="pre">fuzz/corpus/&lt;target&gt;/</span></code> with a descriptive name in the fixing
+commit.  The repository starts with regressions for empty instructions, deep
+parentheses, unbounded explode/reroll forms, and checked arithmetic overflow.</p>
+</section>
 </section>
 
         </article>
@@ -259,8 +328,26 @@
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="conformance.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">v1 conformance corpus</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="randomness.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Deterministic randomness</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -283,8 +370,29 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Fuzzing and property gates</a><ul>
+<li><a class="reference internal" href="#merge-gate-properties">Merge-gate properties</a></li>
+<li><a class="reference internal" href="#fuzz-targets">Fuzz targets</a></li>
+<li><a class="reference internal" href="#scheduled-campaign-and-regressions">Scheduled campaign and regressions</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

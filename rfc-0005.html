@@ -1,0 +1,1779 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="RFC-0006: Program Sampling and Exact Analysis Scope" href="rfc-0006.html" /><link rel="prev" title="RFC-0004: Python Engine API and Package Boundary" href="rfc-0004.html" />
+
+    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>RFC-0005: Verification, Documentation, and Release - OneRoll 1.3.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=290f1236" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/fontawesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/brands.min.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #000000;
+  --color-code-foreground: #dddddd;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">OneRoll 1.3.5 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  
+  <span class="sidebar-brand-text">OneRoll 1.3.5 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="language.html">Language guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="limits.html">Resource limits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="randomness.html">Deterministic randomness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fuzzing.html">Fuzzing and property gates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="conformance.html">v1 conformance corpus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quality.html">Quality gate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasing.html">Release versioning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="roadmap.html">Production roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rfc-0001.html">RFC-0001: OneRoll Program Language v2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rfc-0002.html">RFC-0002: Execution Safety, Budgets, and Randomness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rfc-0003.html">RFC-0003: Typed Program Results, Roll Traces, and Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rfc-0004.html">RFC-0004: Python Engine API and Package Boundary</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">RFC-0005: Verification, Documentation, and Release</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rfc-0006.html">RFC-0006: Program Sampling and Exact Analysis Scope</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/HydroRoll-Team/OneRoll/blob/main/docs/source/rfc-0005.rst?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/HydroRoll-Team/OneRoll/edit/main/docs/source/rfc-0005.rst" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="rfc-0005-verification-documentation-and-release">
+<span id="rfc-0005"></span><h1>RFC-0005: Verification, Documentation, and Release<a class="headerlink" href="#rfc-0005-verification-documentation-and-release" title="Link to this heading">¶</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">Status<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Review</p>
+</dd>
+<dt class="field-even">Target<span class="colon">:</span></dt>
+<dd class="field-even"><p>OneRoll 2.0</p>
+</dd>
+<dt class="field-odd">Discussion<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://github.com/HydroRoll-Team/OneRoll/issues/2">https://github.com/HydroRoll-Team/OneRoll/issues/2</a></p>
+</dd>
+<dt class="field-even">Last updated<span class="colon">:</span></dt>
+<dd class="field-even"><p>2026-07-29</p>
+</dd>
+</dl>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
+<p>OneRoll releases one source revision only after that revision has produced a
+machine-readable conformance result, installed-package evidence, strict public
+documentation, and immutable release metadata.  Building a wheel, creating a
+tag, publishing to PyPI, and publishing a GitHub Release are distinct actions;
+success in one is not evidence that the others are correct.</p>
+<p>This RFC freezes three contracts:</p>
+<ul class="simple">
+<li><p>one versioned corpus format records parsing, canonical text, typed values,
+traces, errors, and seeded execution for Rust and installed Python;</p></li>
+<li><p>documentation distinguishes implemented, experimental, and planned behavior
+and derives normative syntax from checked sources; and</p></li>
+<li><p>every milestone has an immutable GitHub Release, while registry publication
+is a separately approved, least-privileged action over previously verified
+artifacts.</p></li>
+</ul>
+<p>The machine-readable corpus schema, representative cases, and release contract
+are normative.  They define the target gates without claiming that every v2
+feature or production publishing control is implemented today.</p>
+</section>
+<section id="current-baseline">
+<h2>Current baseline<a class="headerlink" href="#current-baseline" title="Link to this heading">¶</a></h2>
+<p>The repository already has several parts of the target system:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tests/conformance/v1.json</span></code> runs the same compatibility cases through Rust
+and the installed Python package;</p></li>
+<li><p>the reusable <code class="docutils literal notranslate"><span class="pre">Quality</span></code> workflow runs Rust and Python tests, formatting,
+linting, strict typing, and Sphinx with warnings as errors;</p></li>
+<li><p>property tests and bounded parser/evaluator fuzz targets are versioned;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Cargo.toml</span></code> is the only manually maintained package-version source; and</p></li>
+<li><p>manual candidate builds produce wheels and an sdist only after the reusable
+quality gate succeeds.</p></li>
+</ul>
+<p>The baseline is not the final v2 release system.  It does not yet execute a v2
+corpus against real typed results, install every advertised wheel, produce an
+SBOM, or emit the complete M4 provenance record.  Publication is now separated
+from candidate construction: arbitrary tag pushes cannot publish, free-threaded
+wheels are excluded, and the manual path consumes one verified build through a
+reviewer-protected <code class="docutils literal notranslate"><span class="pre">pypi</span></code> environment and PyPI Trusted Publishing OIDC.  The
+environment protection and PyPI publisher are external controls that must be
+configured before the first release.  Issues 20, 30, 34, and 37 close the
+remaining gaps; this RFC defines the contract they must satisfy.</p>
+</section>
+<section id="goals">
+<h2>Goals<a class="headerlink" href="#goals" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Make every supported behavior reviewable as a stable case rather than an
+implementation-specific snapshot.</p></li>
+<li><p>Exercise the same semantic expectations through Rust, the installed Python
+wheel, and CLI JSON where that surface applies.</p></li>
+<li><p>Prevent roadmap syntax or target APIs from appearing as current behavior.</p></li>
+<li><p>Preserve enough evidence to reproduce why a particular commit was released.</p></li>
+<li><p>Publish exactly the artifacts that passed installation and smoke tests.</p></li>
+<li><p>Require an explicit protected approval before any production registry write.</p></li>
+<li><p>Give every completed milestone a durable GitHub Release and release note.</p></li>
+</ul>
+</section>
+<section id="non-goals">
+<h2>Non-goals<a class="headerlink" href="#non-goals" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Replacing RFC-0001 language semantics, RFC-0002 resource and randomness
+semantics, RFC-0003 result/error shapes, or RFC-0004 Python signatures.</p></li>
+<li><p>Requiring statistical fuzz campaigns to be bit-for-bit reproducible.</p></li>
+<li><p>Promising that every buildable target is supported.</p></li>
+<li><p>Treating a GitHub Actions success badge as permanent release evidence.</p></li>
+<li><p>Automatically deciding that a human-reviewed RFC or release candidate is
+acceptable.</p></li>
+</ul>
+</section>
+<section id="evidence-model">
+<h2>Evidence model<a class="headerlink" href="#evidence-model" title="Link to this heading">¶</a></h2>
+<p>One release is identified by all of the following values:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">source_sha</span></code></dt><dd><p>The full commit SHA on protected <code class="docutils literal notranslate"><span class="pre">main</span></code>.  A release never targets a moving
+branch name.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">cargo_version</span></code></dt><dd><p>The SemVer value from <code class="docutils literal notranslate"><span class="pre">Cargo.toml</span></code>.  The signed annotated tag is
+<code class="docutils literal notranslate"><span class="pre">v{cargo_version}</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">python_version</span></code></dt><dd><p>The canonical PEP 440 form embedded in Python distribution metadata.  Final
+versions are textually identical to the Cargo version.  Pre-release forms
+are derived, for example <code class="docutils literal notranslate"><span class="pre">2.0.0-alpha.1</span></code> becomes <code class="docutils literal notranslate"><span class="pre">2.0.0a1</span></code>; the two are
+one version decision, not independently edited values.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">artifact_digest</span></code></dt><dd><p>A SHA-256 digest for every wheel, source distribution, SBOM, and evidence
+manifest.  Publication downloads by immutable workflow run and verifies
+these digests before uploading.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">evidence</span></code></dt><dd><p>Links and machine-readable summaries for each gate applicable to the
+milestone.  Evidence records command, toolchain, source SHA, conclusion,
+and artifact digest where applicable.</p>
+</dd>
+</dl>
+<p>A release is incomplete if its tag, Cargo version, Python metadata, source SHA,
+or artifact digest disagree.  Retrying publication may reuse the exact verified
+artifacts; rebuilding under the same version requires a new candidate and may
+not overwrite files already accepted by a registry.</p>
+</section>
+<section id="conformance-corpus">
+<h2>Conformance corpus<a class="headerlink" href="#conformance-corpus" title="Link to this heading">¶</a></h2>
+<p>One corpus format covers syntax and execution.  The schema is independent of
+the package and result-schema versions so the harness can evolve without
+silently changing language behavior.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-number">Listing 7 </span><span class="caption-text">docs/rfcs/0005-conformance.schema.json</span><a class="headerlink" href="#id1" title="Link to this code">¶</a></div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;$schema&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://json-schema.org/draft/2020-12/schema&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;$id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://oneroll.hydroroll.team/schemas/conformance-corpus-1.json&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;OneRoll conformance corpus&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;schema_version&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;language&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;result_schema_version&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;cases&quot;</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;schema_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;const&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;language&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;const&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;oneroll-v2&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;result_schema_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;const&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.0&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;cases&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;minItems&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/case&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;case&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">&quot;id&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;status&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;tracking_issue&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;features&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;source&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;request&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;expect&quot;</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;pattern&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;^[a-z][a-z0-9_.-]+$&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;planned&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;required&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;legacy&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;tracking_issue&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;pattern&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;^#[0-9]+$&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;minItems&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;uniqueItems&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">              </span><span class="s2">&quot;program&quot;</span><span class="p">,</span>
+<span class="w">              </span><span class="s2">&quot;instruction&quot;</span><span class="p">,</span>
+<span class="w">              </span><span class="s2">&quot;typed_value&quot;</span><span class="p">,</span>
+<span class="w">              </span><span class="s2">&quot;dice_source&quot;</span><span class="p">,</span>
+<span class="w">              </span><span class="s2">&quot;validator&quot;</span><span class="p">,</span>
+<span class="w">              </span><span class="s2">&quot;option&quot;</span><span class="p">,</span>
+<span class="w">              </span><span class="s2">&quot;function&quot;</span><span class="p">,</span>
+<span class="w">              </span><span class="s2">&quot;error&quot;</span>
+<span class="w">            </span><span class="p">]</span>
+<span class="w">          </span><span class="p">}</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;minLength&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/request&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;expect&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;oneOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">              </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/success&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">              </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/error&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">          </span><span class="p">]</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;compatibility_mode&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;variables&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;seed&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;compatibility_mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;strict_v2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;v1&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;seed&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;oneOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">              </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">              </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">              </span><span class="nt">&quot;pattern&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;^[0-9a-f]{64}$&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">          </span><span class="p">]</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;success&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">&quot;outcome&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;canonical&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;parse&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;value&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;scalar&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;trace&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;random&quot;</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;outcome&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;const&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;success&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;canonical&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;minLength&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;parse&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/parse&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://oneroll.hydroroll.team/schema/result-2.0.json#/$defs/Value&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;scalar&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;integer&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;null&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;trace&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/trace_summary&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;random&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/random_summary&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;parse&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;instruction_count&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;node_kinds&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;instruction_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;minimum&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;node_kinds&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;minItems&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;uniqueItems&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;minLength&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">          </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;trace_summary&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;root_kind&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;kinds&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;root_kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;minLength&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;kinds&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;minItems&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;uniqueItems&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;minLength&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">          </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;random_summary&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;algorithm&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;seed&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;rng_words&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;algorithm&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;string&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;null&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;seed&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;oneOf&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">              </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;null&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">              </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">              </span><span class="nt">&quot;pattern&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;^[0-9a-f]{64}$&quot;</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">          </span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;rng_words&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;minimum&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;error&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;outcome&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;phase&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;code&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;span&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;random_words&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;outcome&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;const&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;error&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;phase&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;parse&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;validation&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;evaluation&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;serialization&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;pattern&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;span&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/span&quot;</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;random_words&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;minimum&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;span&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;additionalProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;start_byte&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;end_byte&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;start_byte&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;minimum&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;end_byte&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;minimum&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>Each case has a globally unique ID, one tracking issue, one or more feature
+families, a source Program, request inputs, and exactly one success or error
+expectation.  The feature families are <code class="docutils literal notranslate"><span class="pre">program</span></code>, <code class="docutils literal notranslate"><span class="pre">instruction</span></code>,
+<code class="docutils literal notranslate"><span class="pre">typed_value</span></code>, <code class="docutils literal notranslate"><span class="pre">dice_source</span></code>, <code class="docutils literal notranslate"><span class="pre">validator</span></code>, <code class="docutils literal notranslate"><span class="pre">option</span></code>, <code class="docutils literal notranslate"><span class="pre">function</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">error</span></code>.</p>
+<section id="case-lifecycle">
+<h3>Case lifecycle<a class="headerlink" href="#case-lifecycle" title="Link to this heading">¶</a></h3>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">planned</span></code></dt><dd><p>A normative RFC case whose schema and cross-RFC references are checked, but
+whose feature is not presented as implemented and is not executed against
+the production engine.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">required</span></code></dt><dd><p>An implemented contract.  Every applicable adapter must execute the case in
+pull-request and release CI.  A required case may not be skipped because a
+platform or binding disagrees.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">legacy</span></code></dt><dd><p>A frozen compatibility case.  It continues to run through the v1 adapter and
+records whether the behavior is intended, compatibility-sensitive, or a
+known defect with a migration target.</p>
+</dd>
+</dl>
+<p>An implementation issue activates cases vertically.  It changes the relevant
+cases from <code class="docutils literal notranslate"><span class="pre">planned</span></code> to <code class="docutils literal notranslate"><span class="pre">required</span></code> in the same change that implements the
+Rust behavior, installed-Python behavior, error path, and documentation.  No
+feature status can become implemented until its success and failure cases are
+both required and green.</p>
+</section>
+<section id="success-expectations">
+<h3>Success expectations<a class="headerlink" href="#success-expectations" title="Link to this heading">¶</a></h3>
+<p>A success case records:</p>
+<ul class="simple">
+<li><p>the canonical Program;</p></li>
+<li><p>a parser summary sufficient to detect instruction and node-kind drift;</p></li>
+<li><p>the RFC-0003 typed value and scalar projection;</p></li>
+<li><p>required trace kinds and stable provenance references;</p></li>
+<li><p>the compatibility mode; and</p></li>
+<li><p>the random algorithm, effective seed, and consumed-word count.</p></li>
+</ul>
+<p>The full RFC-0003 payload remains the result source of truth.  Corpus summaries
+make failures readable; they do not authorize a second result vocabulary.
+Seeded cases use the canonical 32-byte seed.  Unseeded cases assert only
+invariants and the returned effective seed, never a particular random value.</p>
+</section>
+<section id="error-expectations">
+<h3>Error expectations<a class="headerlink" href="#error-expectations" title="Link to this heading">¶</a></h3>
+<p>An error case records phase, stable code, UTF-8 byte span, and any structured
+fields required by RFC-0002 or RFC-0003.  Static parse or validation failures
+also assert that zero random words were consumed.  Atomic execution failures
+must not expose a success result or partial trace.</p>
+</section>
+<section id="normative-format-examples">
+<h3>Normative format examples<a class="headerlink" href="#normative-format-examples" title="Link to this heading">¶</a></h3>
+<p>The representative corpus below covers success and failure for every required
+feature family.  It validates the format and vocabulary before the related v2
+features are activated.</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-number">Listing 8 </span><span class="caption-text">docs/rfcs/0005-conformance-examples.json</span><a class="headerlink" href="#id2" title="Link to this code">¶</a></div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;schema_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;language&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;oneroll-v2&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;result_schema_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;cases&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;program.success.two_instructions&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;planned&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;tracking_issue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#38&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;program&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1; 2&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;compatibility_mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;strict_v2&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">        </span><span class="nt">&quot;seed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;expect&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;outcome&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;success&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;canonical&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1; 2&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;parse&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;instruction_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;node_kinds&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;program&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;instruction&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;scalar&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;values&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">              </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scalar&quot;</span><span class="p">,</span>
+<span class="w">              </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">              </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scalar&quot;</span><span class="p">,</span>
+<span class="w">              </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">          </span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;scalar&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;trace&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;root_kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;program&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;kinds&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;literal&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;program&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;random&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;algorithm&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;seed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;rng_words&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;program.error.empty_instruction&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;planned&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;tracking_issue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#38&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;program&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1;;2&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;compatibility_mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;strict_v2&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">        </span><span class="nt">&quot;seed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;expect&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;outcome&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;phase&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;parse&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;parse.empty_instruction&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;span&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;start_byte&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;end_byte&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;random_words&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;instruction.success.scalar&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;planned&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;tracking_issue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#38&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;instruction&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;compatibility_mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;strict_v2&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">        </span><span class="nt">&quot;seed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;expect&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;outcome&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;success&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;canonical&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;parse&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;instruction_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;node_kinds&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;program&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;instruction&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;scalar&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scalar&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;scalar&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;trace&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;root_kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;literal&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;kinds&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;literal&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;random&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;algorithm&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;seed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;rng_words&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;instruction.error.trailing_separator&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;planned&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;tracking_issue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#38&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;instruction&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1;&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;compatibility_mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;strict_v2&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">        </span><span class="nt">&quot;seed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;expect&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;outcome&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;phase&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;parse&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;parse.missing_instruction&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;span&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;start_byte&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;end_byte&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;random_words&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;typed_value.success.values&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;planned&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;tracking_issue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#39&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;typed_value&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;[1, 2]&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;compatibility_mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;strict_v2&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">        </span><span class="nt">&quot;seed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;expect&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;outcome&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;success&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;canonical&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;[1, 2]&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;parse&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;instruction_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;node_kinds&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;program&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;instruction&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;values&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;scalar&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;values&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">              </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scalar&quot;</span><span class="p">,</span>
+<span class="w">              </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">              </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scalar&quot;</span><span class="p">,</span>
+<span class="w">              </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">          </span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;scalar&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;trace&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;root_kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;values&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;kinds&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;literal&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;values&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;random&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;algorithm&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;seed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;rng_words&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;typed_value.error.text_arithmetic&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;planned&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;tracking_issue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#39&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;typed_value&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1 + \&quot;x\&quot;&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;compatibility_mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;strict_v2&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">        </span><span class="nt">&quot;seed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;expect&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;outcome&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;phase&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;validation&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;validation.operator_type&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;span&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;start_byte&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;end_byte&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;random_words&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;dice_source.success.seeded_d6&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;planned&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;tracking_issue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#40&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;dice_source&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1d6&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;compatibility_mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;strict_v2&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">        </span><span class="nt">&quot;seed&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0000000000000000000000000000000000000000000000000000000000000000&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;expect&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;outcome&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;success&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;canonical&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1d6&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;parse&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;instruction_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;node_kinds&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;program&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;instruction&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;numeric_dice&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;roll_set&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;item_kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scalar&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">              </span><span class="nt">&quot;node_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;r0&quot;</span><span class="p">,</span>
+<span class="w">              </span><span class="nt">&quot;annotations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">          </span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;scalar&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;trace&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;root_kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;source.numeric_dice&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;kinds&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;source.numeric_dice&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;random&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;algorithm&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;oneroll-chacha12-v1&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;seed&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0000000000000000000000000000000000000000000000000000000000000000&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;rng_words&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;dice_source.error.zero_count&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;planned&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;tracking_issue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#40&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;dice_source&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0d6&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;compatibility_mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;strict_v2&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">        </span><span class="nt">&quot;seed&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0000000000000000000000000000000000000000000000000000000000000000&quot;</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;expect&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;outcome&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;phase&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;validation&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;validation.dice_count&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;span&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;start_byte&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;end_byte&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;random_words&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;validator.success.filter_values&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;planned&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;tracking_issue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#41&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;validator&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;[1, 2]f[&gt;1]&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;compatibility_mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;strict_v2&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">        </span><span class="nt">&quot;seed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;expect&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;outcome&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;success&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;canonical&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;[1, 2]f[&gt;1]&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;parse&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;instruction_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;node_kinds&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;program&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;instruction&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;values&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;filter&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;validator&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;values&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">              </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scalar&quot;</span><span class="p">,</span>
+<span class="w">              </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">          </span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;scalar&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;trace&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;root_kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;option.filter&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;kinds&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;literal&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;values&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;option.filter&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;random&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;algorithm&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;seed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;rng_words&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;validator.error.empty_predicate&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;planned&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;tracking_issue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#41&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;validator&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1d6f[]&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;compatibility_mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;strict_v2&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">        </span><span class="nt">&quot;seed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;expect&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;outcome&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;phase&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;parse&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;parse.empty_validator&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;span&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;start_byte&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;end_byte&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;random_words&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;option.success.sort_values&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;planned&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;tracking_issue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#42&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;option&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;[3, 1, 2]s&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;compatibility_mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;strict_v2&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">        </span><span class="nt">&quot;seed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;expect&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;outcome&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;success&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;canonical&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;[3, 1, 2]s&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;parse&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;instruction_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;node_kinds&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;program&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;instruction&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;values&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;sort&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;values&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">              </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scalar&quot;</span><span class="p">,</span>
+<span class="w">              </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">              </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scalar&quot;</span><span class="p">,</span>
+<span class="w">              </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">              </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scalar&quot;</span><span class="p">,</span>
+<span class="w">              </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">          </span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;scalar&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;trace&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;root_kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;option.sort&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;kinds&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;literal&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;values&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;option.sort&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;random&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;algorithm&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;seed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;rng_words&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;option.error_scalar_keep&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;planned&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;tracking_issue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#42&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;option&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1k1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;compatibility_mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;strict_v2&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">        </span><span class="nt">&quot;seed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;expect&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;outcome&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;phase&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;validation&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;validation.option_input&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;span&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;start_byte&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;end_byte&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;random_words&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;function.success_repeat&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;planned&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;tracking_issue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#43&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;function&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;repeat(2; 1)&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;compatibility_mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;strict_v2&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">        </span><span class="nt">&quot;seed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;expect&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;outcome&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;success&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;canonical&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;repeat(2; 1)&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;parse&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;instruction_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;node_kinds&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;program&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;instruction&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;repeat&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;scalar&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;values&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">              </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scalar&quot;</span><span class="p">,</span>
+<span class="w">              </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">              </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scalar&quot;</span><span class="p">,</span>
+<span class="w">              </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">          </span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;scalar&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;trace&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;root_kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;function.repeat&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;kinds&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;literal&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;function.repeat&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;random&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;algorithm&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;seed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;rng_words&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;function.error_zero_repeat&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;planned&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;tracking_issue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#43&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;function&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;repeat(0; 1)&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;compatibility_mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;strict_v2&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">        </span><span class="nt">&quot;seed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;expect&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;outcome&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;phase&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;validation&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;validation.repeat_count&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;span&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;start_byte&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;end_byte&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;random_words&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;error.success_no_failure&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;planned&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;tracking_issue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#12&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;error&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;compatibility_mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;strict_v2&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">        </span><span class="nt">&quot;seed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;expect&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;outcome&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;success&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;canonical&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;parse&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;instruction_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;node_kinds&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;program&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;instruction&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;scalar&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;scalar&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;scalar&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;trace&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;root_kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;literal&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;kinds&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;literal&quot;</span><span class="p">]</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;random&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;algorithm&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;seed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;rng_words&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;error.error_division_by_zero&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;planned&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;tracking_issue&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#12&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;error&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1 / 0&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;compatibility_mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;strict_v2&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">        </span><span class="nt">&quot;seed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">      </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;expect&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;outcome&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;error&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;phase&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;evaluation&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;code&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;evaluation.division_by_zero&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;span&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;start_byte&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;end_byte&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;random_words&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="verification-gates">
+<h2>Verification gates<a class="headerlink" href="#verification-gates" title="Link to this heading">¶</a></h2>
+<section id="pull-request-gate">
+<h3>Pull-request gate<a class="headerlink" href="#pull-request-gate" title="Link to this heading">¶</a></h3>
+<p>Every change to the engine, bindings, public documentation, packaging, corpus,
+or release automation must pass:</p>
+<ul class="simple">
+<li><p>Rust formatting, tests in debug and release where overflow or randomness can
+differ, and Clippy with warnings denied;</p></li>
+<li><p>installed-package Python tests, strict typing, Ruff lint and format checks;</p></li>
+<li><p>active v1 and v2 conformance cases through Rust and installed Python;</p></li>
+<li><p>deterministic property tests and bounded fuzz smoke campaigns for changed
+parser/evaluator surfaces;</p></li>
+<li><p>strict Sphinx HTML plus doctests for executable public examples; and</p></li>
+<li><p>repository contract tests for workflows, package metadata, normative
+includes, feature status, and unsupported claims.</p></li>
+</ul>
+<p>Mandatory jobs cannot use <code class="docutils literal notranslate"><span class="pre">continue-on-error</span></code>.  A skipped job is success only
+when a checked path classifier proves that the job is inapplicable; release
+evidence lists the classifier result.</p>
+</section>
+<section id="scheduled-gate">
+<h3>Scheduled gate<a class="headerlink" href="#scheduled-gate" title="Link to this heading">¶</a></h3>
+<p>Scheduled CI extends, but never replaces, deterministic merge gates.  It runs
+longer fuzz campaigns, fixed-threshold distribution smoke tests, dependency and
+license audits, and external-link checking.  A discovered crash, hang, bias
+failure, or broken supported link becomes a versioned regression input or
+tracked issue before the next release candidate.</p>
+</section>
+<section id="candidate-gate">
+<h3>Candidate gate<a class="headerlink" href="#candidate-gate" title="Link to this heading">¶</a></h3>
+<p>Release-candidate evidence is produced from a clean checkout of one full SHA.
+It adds:</p>
+<ul class="simple">
+<li><p>isolated installation of every advertised wheel and the sdist;</p></li>
+<li><p>core-only, <code class="docutils literal notranslate"><span class="pre">[cli]</span></code>, and <code class="docutils literal notranslate"><span class="pre">[tui]</span></code> dependency-boundary checks;</p></li>
+<li><p>runtime/stub export parity, shared-Engine concurrency, GIL release, and
+cross-thread cancellation tests where implemented;</p></li>
+<li><p>strict documentation builds from the candidate version;</p></li>
+<li><p>an SPDX SBOM, dependency audit, provenance attestations, and digests; and</p></li>
+<li><p>clean-room upgrade, CLI, SDK, and rollback smoke tests for a GA candidate.</p></li>
+</ul>
+<p>The release workflow consumes these artifacts by digest.  It does not rebuild
+source after approval.</p>
+</section>
+</section>
+<section id="supported-artifact-matrix">
+<h2>Supported artifact matrix<a class="headerlink" href="#supported-artifact-matrix" title="Link to this heading">¶</a></h2>
+<p>Support means an artifact was installed and its exact smoke suite passed.  A
+successful cross-build without installation is build coverage, not user-facing
+support.</p>
+<p>The v2.0 required matrix is:</p>
+<ul class="simple">
+<li><p>CPython 3.9 through the newest minor explicitly listed in the release
+contract, using the <code class="docutils literal notranslate"><span class="pre">abi3-py39</span></code> core where supported;</p></li>
+<li><p>manylinux x86_64 and aarch64;</p></li>
+<li><p>musllinux x86_64 and aarch64;</p></li>
+<li><p>macOS x86_64 and arm64; and</p></li>
+<li><p>Windows x86_64.</p></li>
+</ul>
+<p>Other Linux architectures and Windows x86 may remain build-only until an
+isolated install result is available.  They must not appear in the supported
+matrix merely because the wheel builder emitted a file.</p>
+<p>Free-threaded CPython artifacts are not published or advertised until PyO3 is
+at least 0.23, exposed classes satisfy the free-threaded model, and the
+dedicated concurrency and cancellation suite passes on every published target.
+Issue 30 owns the executable matrix and removes targets that cannot meet it.</p>
+</section>
+<section id="documentation-contract">
+<h2>Documentation contract<a class="headerlink" href="#documentation-contract" title="Link to this heading">¶</a></h2>
+<p>Public documentation has three kinds of source:</p>
+<dl class="simple">
+<dt>Normative</dt><dd><p>Accepted RFCs, checked Pest grammar, JSON Schemas, API stubs, and active
+conformance cases.  These define behavior.</p>
+</dd>
+<dt>Operational</dt><dd><p>Quickstarts, API guides, CLI/TUI guides, migration instructions, and release
+runbooks.  Their examples execute against the installed package and link to
+the normative decision they explain.</p>
+</dd>
+<dt>Planning</dt><dd><p>Review RFCs, roadmap pages, and planned corpus cases.  They are visibly
+labelled and cannot be worded as current package behavior.</p>
+</dd>
+</dl>
+<p>The engine grammar is included directly; documentation cannot maintain a
+second syntax copy.  Result fields and Python signatures come from their
+checked RFC artifacts until implementation, then from installed public
+surfaces checked against those artifacts.  Broken internal references,
+unknown lexers, warnings, stale grammar copies, and unsupported feature claims
+fail CI.  External links run on the scheduled and candidate gates so temporary
+network failure does not make local semantic tests flaky.</p>
+<p>Feature status uses exactly <code class="docutils literal notranslate"><span class="pre">implemented</span></code>, <code class="docutils literal notranslate"><span class="pre">experimental</span></code>, or <code class="docutils literal notranslate"><span class="pre">planned</span></code>.
+<code class="docutils literal notranslate"><span class="pre">implemented</span></code> requires active conformance and user documentation.
+<code class="docutils literal notranslate"><span class="pre">experimental</span></code> requires executable tests but may change before the next
+accepted contract.  <code class="docutils literal notranslate"><span class="pre">planned</span></code> is never shown in a quickstart without an
+explicit warning.</p>
+</section>
+<section id="release-train">
+<h2>Release train<a class="headerlink" href="#release-train" title="Link to this heading">¶</a></h2>
+<p>Every completed milestone produces one immutable GitHub Release.  The release
+contract fixes the intended version, channel, registry policy, and cumulative
+evidence:</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-number">Listing 9 </span><span class="caption-text">docs/rfcs/0005-release-contract.json</span><a class="headerlink" href="#id3" title="Link to this code">¶</a></div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;schema_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;version_source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Cargo.toml:package.version&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;python_version_derivation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;stable&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;identity&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;prerelease&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;alpha&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;X.Y.Z-alpha.N -&gt; X.Y.ZaN&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;beta&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;X.Y.Z-beta.N -&gt; X.Y.ZbN&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;rc&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;X.Y.Z-rc.N -&gt; X.Y.ZrcN&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;tag_template&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;v{cargo_version}&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;tag_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;signed-annotated&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;release_branch&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;main&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;publication_approval&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;explicit&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;event&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;workflow_dispatch&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;environment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pypi&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;required_reviewers&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;credential&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pypi-trusted-publisher-oidc&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;source_identity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;immutable-candidate-sha-or-signed-tag&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;publish_prebuilt_artifacts_only&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;required_evidence&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;source&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;required_from&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;M0&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;proves&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Protected main SHA, Cargo version, Python version, and signed tag agree.&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;quality&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;required_from&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;M0&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;proves&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Rust/Python tests, formatting, lint, typing, and repository contracts pass.&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;conformance&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;required_from&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;M0&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;proves&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Every active shared corpus case passes through Rust and installed Python.&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fuzz_property&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;required_from&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;M2&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;proves&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Deterministic properties and bounded parser/evaluator fuzz campaigns pass.&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;docs&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;required_from&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;M0&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;proves&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Strict public documentation and executable examples match implemented status.&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;wheel_smoke&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;required_from&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;M4&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;proves&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Every advertised wheel and the sdist install and pass their isolated smoke suites.&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;provenance&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;required_from&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;M4&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;proves&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Artifact digests and build provenance resolve to the release source SHA.&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sbom_audit&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;required_from&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;M4&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;proves&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The SPDX SBOM is attached and dependency/license/security audits pass policy.&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;release_notes&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;required_from&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;M0&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;proves&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The changelog names behavior, compatibility, security, and migration impact.&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;milestone_releases&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;milestone&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;M0&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Safety Baseline&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;cargo_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.3.5&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;python_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.3.5&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;channel&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;final&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;github_release&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;publish_pypi&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;required_evidence&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;quality&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;conformance&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;docs&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;release_notes&quot;</span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;milestone&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;M1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Specification Freeze&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;cargo_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.0.0-alpha.0&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;python_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.0.0a0&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;channel&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;prerelease&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;github_release&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;publish_pypi&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;required_evidence&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;quality&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;conformance&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;docs&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;release_notes&quot;</span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;milestone&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;M2&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Core Alpha&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;cargo_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.0.0-alpha.1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;python_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.0.0a1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;channel&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;prerelease&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;github_release&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;publish_pypi&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;required_evidence&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">&quot;source&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;quality&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;conformance&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;fuzz_property&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;docs&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;release_notes&quot;</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;milestone&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;M3&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Python Beta&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;cargo_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.0.0-beta.1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;python_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.0.0b1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;channel&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;prerelease&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;github_release&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;publish_pypi&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;required_evidence&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">&quot;source&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;quality&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;conformance&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;fuzz_property&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;docs&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;release_notes&quot;</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;milestone&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;M4&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Release Candidate&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;cargo_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.0.0-rc.1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;python_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.0.0rc1&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;channel&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;prerelease&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;github_release&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;publish_pypi&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;required_evidence&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">&quot;source&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;quality&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;conformance&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;fuzz_property&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;docs&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;wheel_smoke&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;provenance&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;sbom_audit&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;release_notes&quot;</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;milestone&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;M5&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;General Availability&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;cargo_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.0.0&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;python_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.0.0&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;channel&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;final&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;github_release&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;publish_pypi&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;required_evidence&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">&quot;source&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;quality&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;conformance&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;fuzz_property&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;docs&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;wheel_smoke&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;provenance&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;sbom_audit&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;release_notes&quot;</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;milestone&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;M6&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Probability Analysis&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;cargo_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.1.0&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;python_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.1.0&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;channel&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;final&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;github_release&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;publish_pypi&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;required_evidence&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">&quot;source&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;quality&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;conformance&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;fuzz_property&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;docs&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;wheel_smoke&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;provenance&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;sbom_audit&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;release_notes&quot;</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;supported_matrix&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;python&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;3.9&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;3.10&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;3.11&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;3.12&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;3.13&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;3.14&quot;</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;manylinux-x86_64&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;manylinux-aarch64&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;musllinux-x86_64&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;musllinux-aarch64&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;macos-x86_64&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;macos-arm64&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;windows-x86_64&quot;</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;build_only_until_installed&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;manylinux-x86&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;manylinux-armv7&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;manylinux-s390x&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;manylinux-ppc64le&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;musllinux-x86&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;musllinux-armv7&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;windows-x86&quot;</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">&quot;free_threaded&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;published&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;minimum_pyo3&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.23&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;requires&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;free-threaded-runtime-smoke&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;concurrency&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;cancellation&quot;</span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;publication_order&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;freeze-milestone&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;release-commit-on-main&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;candidate-evidence-and-digests&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;explicit-environment-approval&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;signed-annotated-tag&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;github-release&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;trusted-pypi-publication-when-enabled&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;public-endpoint-verification&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;observation-and-rollback-owner&quot;</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;incident_response&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;yank-defective-files-when-appropriate&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;retain-and-warn-on-github-release&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;publish-a-new-version-never-overwrite&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;notify-users-and-record-impact&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;rotate-or-remove-compromised-publisher-configuration&quot;</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>The train is:</p>
+<ul class="simple">
+<li><p>M0: <code class="docutils literal notranslate"><span class="pre">v1.3.5</span></code>, the final 1.x safety baseline;</p></li>
+<li><p>M1: <code class="docutils literal notranslate"><span class="pre">v2.0.0-alpha.0</span></code>, a GitHub-only specification pre-release;</p></li>
+<li><p>M2: <code class="docutils literal notranslate"><span class="pre">v2.0.0-alpha.1</span></code>, the first Core Alpha package candidate;</p></li>
+<li><p>M3: <code class="docutils literal notranslate"><span class="pre">v2.0.0-beta.1</span></code>, the Python Beta;</p></li>
+<li><p>M4: <code class="docutils literal notranslate"><span class="pre">v2.0.0-rc.1</span></code>, the release candidate;</p></li>
+<li><p>M5: <code class="docutils literal notranslate"><span class="pre">v2.0.0</span></code>, general availability; and</p></li>
+<li><p>M6: <code class="docutils literal notranslate"><span class="pre">v2.1.0</span></code>, probability analysis.</p></li>
+</ul>
+<p>Additional alpha, beta, or RC versions are allowed when a milestone requires a
+replacement candidate.  Existing tags and registry files are never moved or
+overwritten.  The milestone’s final successful candidate is the release linked
+from the milestone; superseded pre-releases remain auditable.</p>
+<p>M1 is GitHub-only because it freezes contracts rather than claiming the typed
+engine is usable.  Later pre-releases may be published to PyPI only after the
+evidence applicable to their stage passes.  Python installers normally exclude
+pre-releases unless explicitly requested, which keeps the stable 1.x line the
+default until M5.</p>
+</section>
+<section id="publication-workflow">
+<h2>Publication workflow<a class="headerlink" href="#publication-workflow" title="Link to this heading">¶</a></h2>
+<p>Publication is a separate workflow with the minimum permissions needed for its
+job.  It is invoked with <code class="docutils literal notranslate"><span class="pre">workflow_dispatch</span></code> for one immutable candidate SHA
+or signed tag and enters the protected <code class="docutils literal notranslate"><span class="pre">pypi</span></code> environment.  A required human
+reviewer verifies version, changelog, milestone state, evidence digests, and
+rollback owner before approval.</p>
+<p>PyPI authentication uses Trusted Publishing OIDC, not a stored long-lived API
+token.  The publish job receives <code class="docutils literal notranslate"><span class="pre">id-token:</span> <span class="pre">write</span></code> only after environment
+approval.  GitHub Release permissions and PyPI publication permissions are
+separate jobs.  Pull requests, branch pushes, arbitrary tags, scheduled runs,
+and unapproved workflow dispatches cannot write to a registry.</p>
+<p>The ordered release protocol is:</p>
+<ol class="arabic simple">
+<li><p>Freeze the milestone and resolve every required P0/P1 issue.</p></li>
+<li><p>Create a release commit on protected <code class="docutils literal notranslate"><span class="pre">main</span></code> containing the Cargo version,
+changelog, and evidence manifest.</p></li>
+<li><p>Run candidate gates from that exact commit and record artifact digests.</p></li>
+<li><p>Obtain explicit publication approval.</p></li>
+<li><p>Create and verify a signed annotated tag.</p></li>
+<li><p>Publish the GitHub Release and, when enabled for the milestone, upload the
+already verified artifacts through the protected Trusted Publisher.</p></li>
+<li><p>Verify the public tag, release, attestations, PyPI metadata, clean-room
+installs, CLI/SDK behavior, documentation, and milestone linkage.</p></li>
+<li><p>Record the observation and rollback owner.</p></li>
+</ol>
+<p>If publication partially fails, do not rebuild or reuse the version with
+different bytes.  Retry only missing identical files, otherwise increment the
+candidate version.  A compromised or defective release follows the runbook:
+yank on PyPI when appropriate, preserve the GitHub Release with a warning,
+publish a fixed version, notify affected users, and rotate or remove any
+credential or publisher configuration involved.</p>
+</section>
+<section id="implementation-sequence">
+<h2>Implementation sequence<a class="headerlink" href="#implementation-sequence" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Issue 2 lands this RFC, schema, examples, release contract, and drift tests.</p></li>
+<li><p>Issues 39, 12, 40, 41, 42, and 43 activate vertical v2 corpus families as
+their runtime behavior ships.</p></li>
+<li><p>Issue 20 builds task-oriented production documentation and executes every
+public example.</p></li>
+<li><p>Issue 30 reduces the advertised wheel matrix to installed, tested targets
+and adds package-boundary and concurrency evidence.</p></li>
+<li><p>Issue 34 separates candidate build from approval-protected Trusted
+Publishing, then adds SBOM, audits, attestations, and incident runbooks.</p></li>
+<li><p>Issue 37 executes the complete candidate-to-GA protocol from public
+artifacts and records post-release ownership.</p></li>
+</ol>
+</section>
+<section id="rejected-alternatives">
+<h2>Rejected alternatives<a class="headerlink" href="#rejected-alternatives" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>One snapshot suite per binding</dt><dd><p>Rust and Python could silently disagree while each snapshot remains green.
+One semantic corpus with adapter-specific execution keeps the contract
+shared.</p>
+</dd>
+<dt>Treat every RFC example as implemented</dt><dd><p>Normative target examples must exist before implementation.  The explicit
+planned-to-required lifecycle prevents them from becoming false product
+claims.</p>
+</dd>
+<dt>Publish directly on any tag</dt><dd><p>Tag creation alone does not prove review, artifact identity, supported-wheel
+installation, or rollback readiness.  It is a source identity, not a
+production approval.</p>
+</dd>
+<dt>Rebuild during publication</dt><dd><p>The reviewed candidate and published bytes could differ.  Publishing by
+digest preserves the tested artifact identity.</p>
+</dd>
+<dt>Long-lived PyPI token</dt><dd><p>A stored credential remains useful after theft.  Trusted Publishing narrows
+identity to the repository, workflow, and environment and mints a
+short-lived token.</p>
+</dd>
+<dt>Advertise every generated wheel</dt><dd><p>Cross-compilation can emit an artifact that cannot import or satisfy the
+package boundary.  Support starts with isolated installation evidence.</p>
+</dd>
+</dl>
+</section>
+<section id="acceptance-gate">
+<h2>Acceptance gate<a class="headerlink" href="#acceptance-gate" title="Link to this heading">¶</a></h2>
+<p>RFC-0005 may move from Review to Accepted when:</p>
+<ul class="simple">
+<li><p>the corpus schema accepts the normative examples and every feature family has
+both a success and error case;</p></li>
+<li><p>the release contract has one GitHub Release mapping for M0 through M6 and an
+explicit protected publication boundary;</p></li>
+<li><p>RFC-0001 through RFC-0004 contain no conflicting syntax, random, result,
+error, or Python version meaning;</p></li>
+<li><p>issues 20, 30, 34, and 37 reference this verification and publication
+boundary; and</p></li>
+<li><p>a human review confirms the supported matrix, milestone release train, and
+production approval model.</p></li>
+</ul>
+<p>Implementation completion is not an acceptance prerequisite.  Acceptance
+freezes the evidence format and release target; the mapped implementation
+issues make each gate real before its milestone can close.</p>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.pypi.org/trusted-publishers/">PyPI Trusted Publishing</a></p></li>
+<li><p><a class="reference external" href="https://docs.pypi.org/trusted-publishers/security-model/">PyPI Trusted Publisher security model</a></p></li>
+<li><p><a class="reference external" href="https://packaging.python.org/en/latest/specifications/version-specifiers/">Python version specifiers</a></p></li>
+<li><p><a class="reference external" href="https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations">GitHub artifact attestations</a></p></li>
+<li><p><a class="reference external" href="https://semver.org/">Semantic Versioning 2.0.0</a></p></li>
+<li><p><a class="reference internal" href="rfc-0001.html#rfc-0001"><span class="std std-ref">RFC-0001: OneRoll Program Language v2</span></a></p></li>
+<li><p><a class="reference internal" href="rfc-0002.html#rfc-0002"><span class="std std-ref">RFC-0002: Execution Safety, Budgets, and Randomness</span></a></p></li>
+<li><p><a class="reference internal" href="rfc-0003.html#rfc-0003"><span class="std std-ref">RFC-0003: Typed Program Results, Roll Traces, and Errors</span></a></p></li>
+<li><p><a class="reference internal" href="rfc-0004.html#rfc-0004"><span class="std std-ref">RFC-0004: Python Engine API and Package Boundary</span></a></p></li>
+</ul>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="rfc-0006.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">RFC-0006: Program Sampling and Exact Analysis Scope</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="rfc-0004.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">RFC-0004: Python Engine API and Package Boundary</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2023-PRESENT, HydroRoll-Team.
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link fa-brands fa-github" href="https://github.com/HydroRoll-Team/OneRoll/" aria-label="GitHub"></a>
+              <a class="muted-link fa-brands fa-python" href="https://pypi.org/project/oneroll/" aria-label="Pypi"></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">RFC-0005: Verification, Documentation, and Release</a><ul>
+<li><a class="reference internal" href="#summary">Summary</a></li>
+<li><a class="reference internal" href="#current-baseline">Current baseline</a></li>
+<li><a class="reference internal" href="#goals">Goals</a></li>
+<li><a class="reference internal" href="#non-goals">Non-goals</a></li>
+<li><a class="reference internal" href="#evidence-model">Evidence model</a></li>
+<li><a class="reference internal" href="#conformance-corpus">Conformance corpus</a><ul>
+<li><a class="reference internal" href="#case-lifecycle">Case lifecycle</a></li>
+<li><a class="reference internal" href="#success-expectations">Success expectations</a></li>
+<li><a class="reference internal" href="#error-expectations">Error expectations</a></li>
+<li><a class="reference internal" href="#normative-format-examples">Normative format examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#verification-gates">Verification gates</a><ul>
+<li><a class="reference internal" href="#pull-request-gate">Pull-request gate</a></li>
+<li><a class="reference internal" href="#scheduled-gate">Scheduled gate</a></li>
+<li><a class="reference internal" href="#candidate-gate">Candidate gate</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#supported-artifact-matrix">Supported artifact matrix</a></li>
+<li><a class="reference internal" href="#documentation-contract">Documentation contract</a></li>
+<li><a class="reference internal" href="#release-train">Release train</a></li>
+<li><a class="reference internal" href="#publication-workflow">Publication workflow</a></li>
+<li><a class="reference internal" href="#implementation-sequence">Implementation sequence</a></li>
+<li><a class="reference internal" href="#rejected-alternatives">Rejected alternatives</a></li>
+<li><a class="reference internal" href="#acceptance-gate">Acceptance gate</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=4720776d"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=5fa4622c"></script>
+    </body>
+</html>

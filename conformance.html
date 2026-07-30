@@ -2,10 +2,12 @@
 <html class="no-js" lang="en" data-content_root="./">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" />
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Quality gate" href="quality.html" /><link rel="prev" title="Fuzzing and property gates" href="fuzzing.html" />
 
-    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 --><title>Index - OneRoll 1.3.5 documentation</title>
-<link rel="stylesheet" type="text/css" href="_static/pygments.css?v=290f1236" />
+    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>v1 conformance corpus - OneRoll 1.3.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=290f1236" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
@@ -179,7 +181,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -199,12 +201,12 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
+  <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="language.html">Language guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="limits.html">Resource limits</a></li>
 <li class="toctree-l1"><a class="reference internal" href="randomness.html">Deterministic randomness</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fuzzing.html">Fuzzing and property gates</a></li>
-<li class="toctree-l1"><a class="reference internal" href="conformance.html">v1 conformance corpus</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">v1 conformance corpus</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quality.html">Quality gate</a></li>
 <li class="toctree-l1"><a class="reference internal" href="releasing.html">Release versioning</a></li>
 <li class="toctree-l1"><a class="reference internal" href="roadmap.html">Production roadmap</a></li>
@@ -233,7 +235,17 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          <div class="theme-toggle-container theme-toggle-content">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/HydroRoll-Team/OneRoll/blob/main/docs/source/conformance.rst?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/HydroRoll-Team/OneRoll/edit/main/docs/source/conformance.rst" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
@@ -242,16 +254,63 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          
-<section class="genindex-section">
-  <h1 id="index">Index</h1>
-  <div class="genindex-jumpbox"></div>
+          <section id="v1-conformance-corpus">
+<h1>v1 conformance corpus<a class="headerlink" href="#v1-conformance-corpus" title="Link to this heading">¶</a></h1>
+<p>OneRoll records the observable <code class="docutils literal notranslate"><span class="pre">1.x</span></code> language contract in
+<code class="docutils literal notranslate"><span class="pre">tests/conformance/v1.json</span></code>.  This file is the shared source of truth for the
+Rust engine and the installed Python package; a behavior change cannot silently
+pass in one binding while failing in the other.</p>
+<p>The corpus covers every syntax family in the grammar embedded by
+<a class="reference internal" href="language.html"><span class="doc">Language guide</span></a>, including literals, numeric dice, arithmetic, parentheses,
+comments, every v1 modifier, modifier composition, semicolon-separated
+programs, resource-limit failures, and representative parse and evaluation
+errors.  Arithmetic cases include both signed 64-bit boundaries, every checked
+binary operation, division sign behavior, invalid exponents, and overflow.</p>
+<section id="behavior-classifications">
+<h2>Behavior classifications<a class="headerlink" href="#behavior-classifications" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">intended</span></code></dt><dd><p>Behavior that the current implementation deliberately guarantees.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">compatibility_sensitive</span></code></dt><dd><p>Observable v1 behavior that a v2 design may change only with an explicit
+migration decision.  Every such case links to a tracking issue.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">known_defect</span></code></dt><dd><p>Reproducible current behavior that is deliberately captured but must not be
+interpreted as the target design.  Examples include flat operator
+precedence (<a class="extlink-issue reference external" href="https://github.com/HydroRoll-Team/OneRoll/issues/16">[issue 16]</a>) and incomplete <code class="docutils literal notranslate"><span class="pre">K</span></code> semantics (<a class="extlink-issue reference external" href="https://github.com/HydroRoll-Team/OneRoll/issues/24">[issue 24]</a>).</p>
+</dd>
+</dl>
+<p>The corpus uses deterministic expressions such as <code class="docutils literal notranslate"><span class="pre">d1</span></code>.  It compares totals,
+the number of generated values, comments, and stable error fragments rather
+than random face values or presentation text.</p>
+</section>
+<section id="run-the-contract-locally">
+<h2>Run the contract locally<a class="headerlink" href="#run-the-contract-locally" title="Link to this heading">¶</a></h2>
+<p>From the repository root:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cargo test rust_engine_matches_v1_conformance_corpus</span>
+<span class="go">cargo test --release checked_i64_</span>
+<span class="go">cargo test --release rfc_0002_</span>
+<span class="go">uv run --frozen maturin develop</span>
+<span class="go">uv run --frozen python -m unittest tests.test_v1_conformance -v</span>
+</pre></div>
+</div>
+<p>The dedicated <code class="docutils literal notranslate"><span class="pre">V1</span> <span class="pre">Conformance</span></code> workflow runs the same focused checks for pull
+requests and changes on <code class="docutils literal notranslate"><span class="pre">main</span></code> or <code class="docutils literal notranslate"><span class="pre">dev</span></code>.  Failure output includes the case
+identifier, classification, and expression so semantic drift can be reviewed
+without comparing two opaque test logs.</p>
+</section>
+<section id="changing-the-corpus">
+<h2>Changing the corpus<a class="headerlink" href="#changing-the-corpus" title="Link to this heading">¶</a></h2>
+<p>Add or update a case in the same change as its implementation and user
+documentation.  A non-<code class="docutils literal notranslate"><span class="pre">intended</span></code> case must include <code class="docutils literal notranslate"><span class="pre">tracking_issue</span></code>.  Do
+not reclassify or delete a compatibility-sensitive or known-defect case without
+recording the language decision in its linked issue or RFC.</p>
+</section>
 </section>
 
         </article>
@@ -259,8 +318,26 @@
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="quality.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Quality gate</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="fuzzing.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Fuzzing and property gates</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -283,8 +360,29 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">v1 conformance corpus</a><ul>
+<li><a class="reference internal" href="#behavior-classifications">Behavior classifications</a></li>
+<li><a class="reference internal" href="#run-the-contract-locally">Run the contract locally</a></li>
+<li><a class="reference internal" href="#changing-the-corpus">Changing the corpus</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
