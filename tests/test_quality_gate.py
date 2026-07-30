@@ -63,18 +63,66 @@ class QualityGateContractTests(unittest.TestCase):
         self.assertIn("quality", job_needs(changelog["jobs"]["verify"]))
         self.assertIn("verify", job_needs(changelog["jobs"]["publish"]))
 
-    def test_docs_deployment_uses_scoped_github_token(self):
+    def test_docs_changes_build_and_deploy_to_cloudflare(self):
         workflow = load_workflow("docs.yml")
-        build = workflow["jobs"]["build"]
-        self.assertEqual(build["permissions"]["contents"], "write")
+        push = workflow["on"]["push"]
+        pull_request = workflow["on"]["pull_request"]
 
-        deploy = next(
-            step for step in build["steps"] if step["name"] == "Deploy to GitHub Pages"
+        self.assertEqual(push["branches"], ["main"])
+        for changed_paths in (push["paths"], pull_request["paths"]):
+            self.assertIn("docs/**", changed_paths)
+            self.assertIn("wrangler.docs.jsonc", changed_paths)
+
+        build = workflow["jobs"]["build"]
+        deploy = workflow["jobs"]["deploy"]
+        build_docs = next(
+            step
+            for step in build["steps"]
+            if step["name"] == "Build Furo documentation"
+        )
+        self.assertEqual(build_docs["run"], "npm run docs:build")
+        self.assertEqual(job_needs(deploy), {"build"})
+        self.assertEqual(deploy["environment"]["name"], "docs-production")
+        self.assertEqual(
+            deploy["if"],
+            "github.ref == 'refs/heads/main' && github.event_name != 'pull_request'",
+        )
+
+        upload = next(
+            step for step in build["steps"] if step["name"] == "Upload documentation"
+        )
+        self.assertIn("actions/upload-artifact@", upload["uses"])
+
+        cloudflare = next(
+            step
+            for step in deploy["steps"]
+            if step["name"] == "Deploy to Cloudflare Workers"
         )
         self.assertEqual(
-            deploy["with"]["github_token"],
-            "${{ secrets.GITHUB_TOKEN }}",
+            cloudflare["uses"],
+            "cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0",
         )
+        self.assertEqual(
+            cloudflare["with"]["apiToken"],
+            "${{ secrets.CLOUDFLARE_API_TOKEN }}",
+        )
+        self.assertEqual(
+            cloudflare["with"]["accountId"],
+            "${{ vars.CLOUDFLARE_ACCOUNT_ID }}",
+        )
+        self.assertEqual(cloudflare["with"]["wranglerVersion"], "4.116.0")
+        self.assertEqual(
+            cloudflare["with"]["command"],
+            "deploy --config wrangler.docs.jsonc --strict",
+        )
+
+        smoke = next(
+            step
+            for step in deploy["steps"]
+            if step["name"] == "Verify production documentation"
+        )
+        self.assertIn("https://oneroll.hydroroll.team", smoke["run"])
+        self.assertIn('test "${missing_status}" = "404"', smoke["run"])
 
 
 if __name__ == "__main__":

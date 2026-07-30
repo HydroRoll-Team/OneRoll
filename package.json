@@ -1,0 +1,14 @@
+{
+  "name": "oneroll-docs-deployment",
+  "private": true,
+  "scripts": {
+    "docs:clean": "uv run --frozen sphinx-build -M clean docs/source docs/_build",
+    "docs:build": "npm run docs:clean && uv run --frozen sphinx-build -W --keep-going -d docs/_build/doctrees -b html docs/source docs/_build/html",
+    "docs:dev": "uv run --frozen sphinx-autobuild docs/source docs/_build/html",
+    "docs:deploy": "npm run docs:build && wrangler deploy --config wrangler.docs.jsonc --strict",
+    "docs:deploy:dry-run": "npm run docs:build && wrangler deploy --config wrangler.docs.jsonc --dry-run --strict"
+  },
+  "devDependencies": {
+    "wrangler": "4.116.0"
+  }
+}

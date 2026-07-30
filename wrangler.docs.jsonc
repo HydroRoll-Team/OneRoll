@@ -1,0 +1,18 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "oneroll-docs",
+  "compatibility_date": "2026-07-31",
+  "workers_dev": true,
+  "preview_urls": true,
+  "assets": {
+    "directory": "./docs/_build/html",
+    "not_found_handling": "none",
+    "html_handling": "auto-trailing-slash"
+  },
+  "routes": [
+    {
+      "pattern": "oneroll.hydroroll.team/*",
+      "zone_name": "hydroroll.team"
+    }
+  ]
+}
