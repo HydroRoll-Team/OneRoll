@@ -13,9 +13,10 @@ M0 — v1.3.5 Safety Baseline
    tests, lint, typing, and strict documentation checks.
 
 M1 — v2.0 Specification Freeze
-   Accept the language, execution, result/error, Python API, verification, and
-   analysis RFCs.  No new syntax enters Core Alpha without a normative example
-   and error case.
+   Accept the language, execution, result/error, Python API, and
+   verification/release RFCs.  No new syntax enters Core Alpha without a
+   normative example and error case.  Probability analysis remains the M6
+   RFC-0006 scope.
 
 M2 — v2.0 Core Alpha
    Deliver the typed ``Program → Instruction → Expression`` engine, arithmetic

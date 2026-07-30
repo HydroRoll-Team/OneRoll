@@ -3,10 +3,10 @@
 RFC-0004: Python Engine API and Package Boundary
 ================================================
 
-:Status: Review
+:Status: Accepted
 :Target: OneRoll 2.0
 :Discussion: https://github.com/HydroRoll-Team/OneRoll/issues/5
-:Last updated: 2026-07-29
+:Last updated: 2026-07-31
 
 Summary
 -------
@@ -374,7 +374,7 @@ Required Rich and Textual dependencies
 Acceptance gate
 ---------------
 
-RFC-0004 may move from Review to Accepted when:
+RFC-0004 was accepted after:
 
 * the target stub passes strict type checking and agrees with the manifest;
 * the batch schema examples and seed vectors pass the repository quality gate;
@@ -383,6 +383,8 @@ RFC-0004 may move from Review to Accepted when:
 * issue 5 and each directly blocked child issue reference the frozen API and
   package boundary; and
 * a human review confirms the public 2.0 Python boundary.
+
+Human acceptance was recorded on 2026-07-31 through the discussion issue.
 
 Implementation completion is not an acceptance prerequisite.  Acceptance
 freezes the target that the child issues implement.

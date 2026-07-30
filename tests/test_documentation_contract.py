@@ -16,6 +16,8 @@ V2_TARGET_GRAMMAR = REPOSITORY_ROOT / "docs" / "rfcs" / "0001-v2-target.pest"
 RESULT_RFC = REPOSITORY_ROOT / "docs" / "rfcs" / "0003-typed-results-traces-errors.rst"
 RESULT_SCHEMA = REPOSITORY_ROOT / "docs" / "rfcs" / "0003-result.schema.json"
 RESULT_EXAMPLES = REPOSITORY_ROOT / "docs" / "rfcs" / "0003-examples.json"
+RFC_DIRECTORY = REPOSITORY_ROOT / "docs" / "rfcs"
+ROADMAP = REPOSITORY_ROOT / "docs" / "source" / "roadmap.rst"
 SPHINX_SOURCE = REPOSITORY_ROOT / "docs" / "source"
 PUBLIC_TEXT_FILES = (
     REPOSITORY_ROOT / "README.md",
@@ -264,6 +266,34 @@ class DocumentationContractTests(unittest.TestCase):
         validator.validate(batch)
         with self.assertRaises(AssertionError):
             self._assert_batch_result(batch)
+
+    def test_m1_rfc_set_is_accepted_without_absorbing_m6_analysis(self):
+        rfc_paths = {
+            1: RFC_DIRECTORY / "0001-dice-program-language-v2.rst",
+            2: RFC_DIRECTORY / "0002-execution-safety-budgets-randomness.rst",
+            3: RFC_DIRECTORY / "0003-typed-results-traces-errors.rst",
+            4: RFC_DIRECTORY / "0004-python-engine-api-package-boundary.rst",
+            5: RFC_DIRECTORY / "0005-verification-documentation-release.rst",
+            6: RFC_DIRECTORY / "0006-program-sampling-exact-analysis.rst",
+        }
+
+        for number in range(1, 6):
+            with self.subTest(rfc=number):
+                self.assertIn(
+                    ":Status: Accepted",
+                    rfc_paths[number].read_text(encoding="utf-8"),
+                )
+        self.assertIn(
+            ":Status: Draft",
+            rfc_paths[6].read_text(encoding="utf-8"),
+        )
+
+        roadmap = ROADMAP.read_text(encoding="utf-8")
+        m1 = roadmap.split("M1 — v2.0 Specification Freeze", 1)[1].split(
+            "M2 — v2.0 Core Alpha", 1
+        )[0]
+        self.assertIn("verification/release RFCs", m1)
+        self.assertIn("Probability analysis remains the M6", m1)
 
     def test_public_project_references_do_not_use_legacy_names(self):
         forbidden = (
