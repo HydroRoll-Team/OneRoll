@@ -1,6 +1,7 @@
 import copy
 import hashlib
 import json
+import re
 import unittest
 from pathlib import Path
 
@@ -268,32 +269,35 @@ class DocumentationContractTests(unittest.TestCase):
             self._assert_batch_result(batch)
 
     def test_m1_rfc_set_is_accepted_without_absorbing_m6_analysis(self):
-        rfc_paths = {
-            1: RFC_DIRECTORY / "0001-dice-program-language-v2.rst",
-            2: RFC_DIRECTORY / "0002-execution-safety-budgets-randomness.rst",
-            3: RFC_DIRECTORY / "0003-typed-results-traces-errors.rst",
-            4: RFC_DIRECTORY / "0004-python-engine-api-package-boundary.rst",
-            5: RFC_DIRECTORY / "0005-verification-documentation-release.rst",
-            6: RFC_DIRECTORY / "0006-program-sampling-exact-analysis.rst",
-        }
+        statuses = {}
+        for path in RFC_DIRECTORY.glob("[0-9][0-9][0-9][0-9]-*.rst"):
+            number = int(path.name[:4])
+            status = re.search(
+                r"^:Status: (?P<status>[A-Za-z]+)$",
+                path.read_text(encoding="utf-8"),
+                re.MULTILINE,
+            )
+            self.assertIsNotNone(status, path)
+            assert status is not None
+            self.assertNotIn(number, statuses)
+            statuses[number] = status.group("status")
 
-        for number in range(1, 6):
-            with self.subTest(rfc=number):
-                self.assertIn(
-                    ":Status: Accepted",
-                    rfc_paths[number].read_text(encoding="utf-8"),
-                )
-        self.assertIn(
-            ":Status: Draft",
-            rfc_paths[6].read_text(encoding="utf-8"),
+        self.assertEqual(
+            {number: statuses[number] for number in range(1, 6)},
+            {number: "Accepted" for number in range(1, 6)},
         )
+        self.assertEqual(statuses[6], "Draft")
 
-        roadmap = ROADMAP.read_text(encoding="utf-8")
-        m1 = roadmap.split("M1 — v2.0 Specification Freeze", 1)[1].split(
-            "M2 — v2.0 Core Alpha", 1
-        )[0]
-        self.assertIn("verification/release RFCs", m1)
-        self.assertIn("Probability analysis remains the M6", m1)
+        roadmap = " ".join(ROADMAP.read_text(encoding="utf-8").split())
+        self.assertIn(
+            "M1 — v2.0 Specification Freeze Accept the language, execution, "
+            "result/error, Python API, and verification/release RFCs.",
+            roadmap,
+        )
+        self.assertIn(
+            "Probability analysis remains the M6 RFC-0006 scope.",
+            roadmap,
+        )
 
     def test_public_project_references_do_not_use_legacy_names(self):
         forbidden = (
