@@ -3,10 +3,10 @@
 RFC-0003: Typed Program Results, Roll Traces, and Errors
 ========================================================
 
-:Status: Review
+:Status: Accepted
 :Target: OneRoll 2.0
 :Discussion: https://github.com/HydroRoll-Team/OneRoll/issues/4
-:Last updated: 2026-07-29
+:Last updated: 2026-07-31
 
 Summary
 -------
@@ -611,7 +611,7 @@ Use package version as schema version
 Acceptance gate
 ---------------
 
-RFC-0003 may move from Review to Accepted when:
+RFC-0003 was accepted after:
 
 * the checked schema and all normative examples pass the repository quality
   gate;
@@ -620,6 +620,8 @@ RFC-0003 may move from Review to Accepted when:
 * issue 4 and each directly blocked child issue reference the frozen field and
   provenance contract; and
 * a human review confirms the public 2.0 serialization boundary.
+
+Human acceptance was recorded on 2026-07-31 through the discussion issue.
 
 Implementation completion is deliberately not an RFC acceptance prerequisite.
 The accepted RFC unblocks those implementation issues; their executable engine

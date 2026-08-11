@@ -3,10 +3,10 @@
 RFC-0005: Verification, Documentation, and Release
 ==================================================
 
-:Status: Review
+:Status: Accepted
 :Target: OneRoll 2.0
 :Discussion: https://github.com/HydroRoll-Team/OneRoll/issues/2
-:Last updated: 2026-07-29
+:Last updated: 2026-07-31
 
 Summary
 -------
@@ -413,7 +413,7 @@ Advertise every generated wheel
 Acceptance gate
 ---------------
 
-RFC-0005 may move from Review to Accepted when:
+RFC-0005 was accepted after:
 
 * the corpus schema accepts the normative examples and every feature family has
   both a success and error case;
@@ -425,6 +425,8 @@ RFC-0005 may move from Review to Accepted when:
   boundary; and
 * a human review confirms the supported matrix, milestone release train, and
   production approval model.
+
+Human acceptance was recorded on 2026-07-31 through the discussion issue.
 
 Implementation completion is not an acceptance prerequisite.  Acceptance
 freezes the evidence format and release target; the mapped implementation

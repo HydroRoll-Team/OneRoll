@@ -1,6 +1,7 @@
 import copy
 import hashlib
 import json
+import re
 import unittest
 from pathlib import Path
 
@@ -16,6 +17,8 @@ V2_TARGET_GRAMMAR = REPOSITORY_ROOT / "docs" / "rfcs" / "0001-v2-target.pest"
 RESULT_RFC = REPOSITORY_ROOT / "docs" / "rfcs" / "0003-typed-results-traces-errors.rst"
 RESULT_SCHEMA = REPOSITORY_ROOT / "docs" / "rfcs" / "0003-result.schema.json"
 RESULT_EXAMPLES = REPOSITORY_ROOT / "docs" / "rfcs" / "0003-examples.json"
+RFC_DIRECTORY = REPOSITORY_ROOT / "docs" / "rfcs"
+ROADMAP = REPOSITORY_ROOT / "docs" / "source" / "roadmap.rst"
 SPHINX_SOURCE = REPOSITORY_ROOT / "docs" / "source"
 PUBLIC_TEXT_FILES = (
     REPOSITORY_ROOT / "README.md",
@@ -264,6 +267,37 @@ class DocumentationContractTests(unittest.TestCase):
         validator.validate(batch)
         with self.assertRaises(AssertionError):
             self._assert_batch_result(batch)
+
+    def test_m1_rfc_set_is_accepted_without_absorbing_m6_analysis(self):
+        statuses = {}
+        for path in RFC_DIRECTORY.glob("[0-9][0-9][0-9][0-9]-*.rst"):
+            number = int(path.name[:4])
+            status = re.search(
+                r"^:Status: (?P<status>[A-Za-z]+)$",
+                path.read_text(encoding="utf-8"),
+                re.MULTILINE,
+            )
+            self.assertIsNotNone(status, path)
+            assert status is not None
+            self.assertNotIn(number, statuses)
+            statuses[number] = status.group("status")
+
+        self.assertEqual(
+            {number: statuses[number] for number in range(1, 6)},
+            {number: "Accepted" for number in range(1, 6)},
+        )
+        self.assertEqual(statuses[6], "Draft")
+
+        roadmap = " ".join(ROADMAP.read_text(encoding="utf-8").split())
+        self.assertIn(
+            "M1 — v2.0 Specification Freeze Accept the language, execution, "
+            "result/error, Python API, and verification/release RFCs.",
+            roadmap,
+        )
+        self.assertIn(
+            "Probability analysis remains the M6 RFC-0006 scope.",
+            roadmap,
+        )
 
     def test_public_project_references_do_not_use_legacy_names(self):
         forbidden = (

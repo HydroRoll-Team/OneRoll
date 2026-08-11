@@ -3,10 +3,10 @@
 RFC-0001: OneRoll Program Language v2
 =====================================
 
-:Status: Review
+:Status: Accepted
 :Target: OneRoll 2.0
 :Discussion: https://github.com/HydroRoll-Team/OneRoll/issues/7
-:Last updated: 2026-07-29
+:Last updated: 2026-07-31
 
 Summary
 -------
@@ -645,22 +645,22 @@ Cross-RFC dependencies
 ----------------------
 
 RFC-0002 is accepted and owns the shared budget, random, cancellation, and
-atomic-failure contract used here.  RFC-0003 must preserve this RFC's Value
-kinds, nested Values, stable RollNode identity, instruction history, selected
-and discarded provenance, color annotations, and structured migration errors.
-RFC-0004 must expose strict-v2 ``Engine.run``, v1-compatible ``roll``, immutable
-variables, compatibility mode, and the one-context execution boundary.
+atomic-failure contract used here.  Accepted RFC-0003 preserves this RFC's
+Value kinds, nested Values, stable RollNode identity, instruction history,
+selected and discarded provenance, color annotations, and structured migration
+errors.  Accepted RFC-0004 exposes strict-v2 ``Engine.run``, v1-compatible
+``roll``, immutable variables, compatibility mode, and the one-context
+execution boundary.
 
-Those two RFCs may choose serialization and API shapes, but may not change this
-language's accepted strings or option effects without amending RFC-0001.  Issue
-#7 therefore remains in Review until RFC-0003 (#4) and RFC-0004 (#5) are
-accepted; v2 implementation issues no longer need to wait for executable v2
-cases to exist before the contract itself can be accepted.
+Those two RFCs choose serialization and API shapes, but may not change this
+language's accepted strings or option effects without amending RFC-0001.  The
+combined human decision is recorded in issue #7; v2 implementation issues do
+not need executable v2 cases to exist before implementing this accepted target.
 
 Acceptance criteria
 -------------------
 
-This RFC can move from Review to Accepted only when:
+This RFC was accepted after:
 
 * the checked target pest grammar and normative cases remain valid;
 * option input/output kinds and composition semantics remain complete;
@@ -670,4 +670,7 @@ This RFC can move from Review to Accepted only when:
 * accepted RFC-0002 and RFC-0003 agree on budgets, randomness, trace, and
   errors; and
 * accepted RFC-0004 agrees on ``Engine.run``, compatibility mode, variables,
-  and result typing.
+  and result typing; and
+* human review confirms the complete language boundary.
+
+Human acceptance was recorded on 2026-07-31 through the discussion issue.
