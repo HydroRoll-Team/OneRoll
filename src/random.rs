@@ -40,10 +40,11 @@ impl RandomSeed {
         }
 
         let mut bytes = [0; 32];
-        for (index, pair) in digits.as_bytes().chunks_exact(2).enumerate() {
-            let high = Self::hex_value(pair[0]);
-            let low = Self::hex_value(pair[1]);
-            bytes[index] = (high << 4) | low;
+        for (index, byte) in bytes.iter_mut().enumerate() {
+            let offset = index * 2;
+            let high = Self::hex_value(digits.as_bytes()[offset]);
+            let low = Self::hex_value(digits.as_bytes()[offset + 1]);
+            *byte = (high << 4) | low;
         }
         Ok(Self(bytes))
     }
