@@ -12,9 +12,10 @@ Project status
 The package is under active hardening.  Basic numeric dice, arithmetic,
 parentheses, comments, a subset of modifiers, checked signed 64-bit arithmetic,
 and the request-scoped ChaCha12 random core work today.  The complete v2
-language, Python ``Engine`` seed surface, structured error objects, and final
+language, Python ``Engine`` seed surface, typed result graph, and final
 production release gates are planned work and must not be treated as current
-behavior.
+behavior.  RFC-0003 structured exceptions work today across Rust, Python, and
+CLI JSON while preserving ``ValueError`` compatibility.
 
 The first forward-compatible v2 slice is available through ``run``:
 

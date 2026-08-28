@@ -1,4 +1,4 @@
-use crate::errors::DiceError;
+use crate::errors::{DiceError, ErrorPhase, SourceSpan};
 use crate::resource::ResourcePolicy;
 use crate::types::{DiceModifier, DiceRoll, Expression, Program};
 
@@ -7,6 +7,7 @@ mod oneroll {
 }
 
 use oneroll::{Grammar, Rule};
+use pest::error::{Error as PestError, ErrorVariant, InputLocation};
 use pest::Parser;
 
 pub struct DiceParser;
@@ -20,28 +21,31 @@ impl DiceParser {
         input: &str,
         policy: &ResourcePolicy,
     ) -> Result<Expression, DiceError> {
-        let program = Self::parse_program_with_policy(input, policy)?;
-        if program.instructions.len() != 1 {
-            return Err(DiceError::ParseError(
-                "roll() 只接受一条指令；多条指令请使用 run()".to_string(),
-            ));
-        }
+        let result = (|| {
+            let program = Self::parse_program_with_policy(input, policy)?;
+            if program.instructions.len() != 1 {
+                return Err(DiceError::ParseError(
+                    "roll() 只接受一条指令；多条指令请使用 run()".to_string(),
+                ));
+            }
 
-        let mut expr = program.instructions.into_iter().next().unwrap();
-        if let Some(comment) = program.comment {
-            expr = Expression::WithComment(Box::new(expr), Some(comment));
-        }
-        let nodes = 2usize.saturating_add(Self::expression_ast_nodes(&expr));
-        let limit = policy.require("ast_nodes");
-        if nodes > limit {
-            return Err(DiceError::ResourceLimitExceeded {
-                resource: "ast_nodes",
-                used: 0,
-                requested: nodes,
-                limit,
-            });
-        }
-        Ok(expr)
+            let mut expr = program.instructions.into_iter().next().unwrap();
+            if let Some(comment) = program.comment {
+                expr = Expression::WithComment(Box::new(expr), Some(comment));
+            }
+            let nodes = 2usize.saturating_add(Self::expression_ast_nodes(&expr));
+            let limit = policy.require("ast_nodes");
+            if nodes > limit {
+                return Err(DiceError::ResourceLimitExceeded {
+                    resource: "ast_nodes",
+                    used: 0,
+                    requested: nodes,
+                    limit,
+                });
+            }
+            Ok(expr)
+        })();
+        result.map_err(|error| error.with_phase(ErrorPhase::Parse))
     }
 
     pub fn parse_program(input: &str) -> Result<Program, DiceError> {
@@ -52,62 +56,101 @@ impl DiceParser {
         input: &str,
         policy: &ResourcePolicy,
     ) -> Result<Program, DiceError> {
-        let source_bytes = policy.require("source_bytes");
-        if input.len() > source_bytes {
-            return Err(DiceError::ResourceLimitExceeded {
-                resource: "source_bytes",
-                used: 0,
-                requested: input.len(),
-                limit: source_bytes,
-            });
-        }
-        Self::validate_parse_depth(input, policy.require("parse_depth"))?;
+        let result = (|| {
+            let source_bytes = policy.require("source_bytes");
+            if input.len() > source_bytes {
+                return Err(DiceError::ResourceLimitExceeded {
+                    resource: "source_bytes",
+                    used: 0,
+                    requested: input.len(),
+                    limit: source_bytes,
+                });
+            }
+            Self::validate_parse_depth(input, policy.require("parse_depth"))?;
 
-        let mut pairs = Grammar::parse(Rule::program, input)
-            .map_err(|e| DiceError::ParseError(e.to_string()))?;
+            let mut pairs = Grammar::parse(Rule::program, input)
+                .map_err(|error| Self::structured_parse_error(input, error))?;
 
-        let pair = pairs
-            .next()
-            .ok_or_else(|| DiceError::ParseError("程序不能为空".to_string()))?;
-        let mut instructions = Vec::new();
-        let mut comment = None;
+            let pair = pairs
+                .next()
+                .ok_or_else(|| DiceError::ParseError("程序不能为空".to_string()))?;
+            let mut instructions = Vec::new();
+            let mut comment = None;
 
-        for inner in pair.into_inner() {
-            match inner.as_rule() {
-                Rule::instruction => {
-                    let instruction_limit = policy.require("parsed_instructions");
-                    if instructions.len() >= instruction_limit {
-                        return Err(DiceError::ProgramInstructionLimitExceeded {
-                            limit: instruction_limit,
-                        });
+            for inner in pair.into_inner() {
+                match inner.as_rule() {
+                    Rule::instruction => {
+                        let instruction_limit = policy.require("parsed_instructions");
+                        if instructions.len() >= instruction_limit {
+                            return Err(DiceError::ProgramInstructionLimitExceeded {
+                                limit: instruction_limit,
+                            });
+                        }
+                        let expression = inner
+                            .into_inner()
+                            .next()
+                            .ok_or_else(|| DiceError::ParseError("指令不能为空".to_string()))?;
+                        instructions.push(Self::parse_dice_expr(expression)?);
                     }
-                    let expression = inner
-                        .into_inner()
-                        .next()
-                        .ok_or_else(|| DiceError::ParseError("指令不能为空".to_string()))?;
-                    instructions.push(Self::parse_dice_expr(expression)?);
-                }
-                Rule::comment => comment = Self::parse_comment(inner)?,
-                Rule::EOI => {}
-                _ => {
-                    return Err(DiceError::ParseError(format!(
-                        "未知的程序节点: {:?}",
-                        inner.as_rule()
-                    )))
+                    Rule::comment => comment = Self::parse_comment(inner)?,
+                    Rule::EOI => {}
+                    _ => {
+                        return Err(DiceError::ParseError(format!(
+                            "未知的程序节点: {:?}",
+                            inner.as_rule()
+                        )))
+                    }
                 }
             }
-        }
 
-        if instructions.is_empty() {
-            return Err(DiceError::ParseError("程序至少需要一条指令".to_string()));
-        }
+            if instructions.is_empty() {
+                return Err(DiceError::ParseError("程序至少需要一条指令".to_string()));
+            }
 
-        let program = Program {
-            instructions,
-            comment,
+            let program = Program {
+                instructions,
+                comment,
+            };
+            Self::validate_ast_nodes(&program, policy.require("ast_nodes"))?;
+            Ok(program)
+        })();
+        result.map_err(|error| error.with_phase(ErrorPhase::Parse))
+    }
+
+    fn structured_parse_error(input: &str, error: PestError<Rule>) -> DiceError {
+        let (start_byte, end_byte) = match error.location {
+            InputLocation::Pos(position) => {
+                let end = input[position..]
+                    .chars()
+                    .next()
+                    .map(|character| position + character.len_utf8())
+                    .unwrap_or(position);
+                (position, end)
+            }
+            InputLocation::Span((start, end)) => (start, end),
         };
-        Self::validate_ast_nodes(&program, policy.require("ast_nodes"))?;
-        Ok(program)
+        let mut expected = match &error.variant {
+            ErrorVariant::ParsingError { positives, .. } => positives
+                .iter()
+                .map(|rule| format!("{rule:?}"))
+                .filter(|rule| rule != "EOI")
+                .collect::<Vec<_>>(),
+            ErrorVariant::CustomError { .. } => Vec::new(),
+        };
+        expected.sort();
+        expected.dedup();
+        if expected.is_empty() {
+            expected.push("expression".to_string());
+        }
+
+        DiceError::ParseSyntax {
+            message: error.to_string(),
+            span: SourceSpan {
+                start_byte,
+                end_byte,
+            },
+            expected,
+        }
     }
 
     fn validate_ast_nodes(program: &Program, limit: usize) -> Result<(), DiceError> {

@@ -26,7 +26,13 @@ from rich.text import Text
 from rich.prompt import Prompt, Confirm
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-from . import CommonRolls, OneRoll, ResourcePolicy
+from . import (
+    CommonRolls,
+    OneRoll,
+    OneRollError,
+    ResourcePolicy,
+    ValidationError,
+)
 import oneroll
 
 console = Console()
@@ -39,6 +45,14 @@ class OneRollCLI:
         self.policy = policy or ResourcePolicy()
         self.roller = OneRoll(self.policy)
         self.history: List[Dict[str, Any]] = []
+
+    def print_error(
+        self, error: Exception, *, json_output: bool, prefix: str = "错误"
+    ) -> None:
+        if json_output and isinstance(error, OneRollError):
+            print(json.dumps(error.to_envelope(), ensure_ascii=False, sort_keys=True))
+            return
+        console.print(f"{prefix}: {error}", style="red", markup=False)
 
     def print_result(
         self, result: Dict[str, Any], expression: Optional[str] = None
@@ -217,7 +231,7 @@ class OneRollCLI:
 
                             self.print_statistics(stats, expression)
                         except Exception as e:
-                            console.print(f"统计错误: {e}", style="red", markup=False)
+                            self.print_error(e, json_output=False, prefix="统计错误")
                     else:
                         console.print("用法: stats <表达式> <次数>", style="red")
                     continue
@@ -231,7 +245,7 @@ class OneRollCLI:
                     self.history.extend(result["results"])
                     self.print_program_result(result)
                 except Exception as e:
-                    console.print(f"错误: {e}", style="red", markup=False)
+                    self.print_error(e, json_output=False)
 
             except KeyboardInterrupt:
                 if Confirm.ask("\n确定要退出吗？"):
@@ -272,9 +286,12 @@ class OneRollCLI:
             # single roll mode
             try:
                 result = self.roller.run(args.expression)
-                self.print_program_result(result)
+                if args.json:
+                    print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+                else:
+                    self.print_program_result(result)
             except Exception as e:
-                console.print(f"错误: {e}", style="red", markup=False)
+                self.print_error(e, json_output=args.json)
                 sys.exit(1)
 
         elif args.stats:
@@ -282,18 +299,24 @@ class OneRollCLI:
             try:
                 times = args.times
 
-                with Progress(
-                    SpinnerColumn(),
-                    TextColumn("[progress.description]{task.description}"),
-                    console=console,
-                ) as progress:
-                    progress.add_task(f"正在统计 {args.stats}...", total=None)
+                if args.json:
                     stats = self.roller.roll_statistics(args.stats, times)
-                    progress.stop()
+                else:
+                    with Progress(
+                        SpinnerColumn(),
+                        TextColumn("[progress.description]{task.description}"),
+                        console=console,
+                    ) as progress:
+                        progress.add_task(f"正在统计 {args.stats}...", total=None)
+                        stats = self.roller.roll_statistics(args.stats, times)
+                        progress.stop()
 
-                self.print_statistics(stats, args.stats)
+                if args.json:
+                    print(json.dumps(stats, ensure_ascii=False, sort_keys=True))
+                else:
+                    self.print_statistics(stats, args.stats)
             except Exception as e:
-                console.print(f"错误: {e}", style="red", markup=False)
+                self.print_error(e, json_output=args.json)
                 sys.exit(1)
 
         else:
@@ -334,6 +357,12 @@ def main() -> None:
         help="以 JSON 输出当前资源限制并退出",
     )
 
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        help="以 JSON 输出结果或 RFC-0003 结构化错误",
+    )
+
     parser.add_argument("--version", action="version", version=oneroll.__version__)
 
     parser.add_argument("--tui", action="store_true", help="启动终端用户界面 (TUI)")
@@ -351,7 +380,25 @@ def main() -> None:
                 raise ValueError("limit value must be non-negative")
             policy = policy.with_limit(name, value)
         except ValueError as error:
-            parser.error(str(error))
+            structured = (
+                error
+                if isinstance(error, OneRollError)
+                else ValidationError(
+                    {
+                        "phase": "validate",
+                        "code": "policy.invalid_limit",
+                        "message": str(error),
+                    }
+                )
+            )
+            if args.json:
+                print(
+                    json.dumps(
+                        structured.to_envelope(), ensure_ascii=False, sort_keys=True
+                    )
+                )
+                raise SystemExit(2)
+            parser.error(str(structured))
 
     if args.show_limits:
         print(json.dumps(policy.limits(), sort_keys=True))

@@ -61,6 +61,17 @@ exhausted evaluations raise `ValueError` instead of hanging or panicking.
 Parsing, recursion, generated values, collections, output, work, and batches
 all have safe defaults and non-disableable hard ceilings.
 
+Failures are also RFC-0003 objects. Existing `ValueError` handlers continue to
+work, while callers can branch on stable fields without parsing the message:
+
+```python
+try:
+    oneroll.roll("1 / 0")
+except oneroll.OneRollError as error:
+    print(error.phase, error.code, error.span.to_dict())
+    print(error.to_dict())
+```
+
 Create an immutable policy when an embedding needs lower limits:
 
 ```python
@@ -75,6 +86,7 @@ print(policy.limits())
 python -m oneroll "3d6 + 2"
 python -m oneroll "1d20 + 5; 2d6 # encounter"
 python -m oneroll --stats "3d6" --times 100
+python -m oneroll --json "1 / 0"
 python -m oneroll --show-limits
 python -m oneroll --limit generated_values=2000 "20d6"
 ```

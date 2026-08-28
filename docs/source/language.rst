@@ -68,10 +68,11 @@ Syntax shown there is a target contract unless its implementation-status table
 marks a feature implemented.
 
 The versioned ``ProgramResult``, typed Value union, normalized RollNode pool,
-trace DAG, and structured error envelope are frozen for review in
-:doc:`rfc-0003`.  They are target v2 contracts; the current ``roll`` and ``run``
-dictionaries remain the compatibility API until their implementation issues
-land.
+trace DAG, and structured error envelope are frozen in :doc:`rfc-0003`.
+Structured errors are implemented across Rust, Python exception attributes,
+and CLI ``--json``.  Typed success results remain target v2 contracts; the
+current ``roll`` and ``run`` dictionaries stay as the compatibility API until
+their implementation issues land.
 
 Important compatibility decisions are:
 
