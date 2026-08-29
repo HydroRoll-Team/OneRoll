@@ -85,6 +85,13 @@ impl DiceCalculator {
         self.random.as_ref().map(RequestRandom::descriptor)
     }
 
+    fn attach_random_context<T>(&self, result: Result<T, DiceError>) -> Result<T, DiceError> {
+        result.map_err(|error| match self.random_descriptor() {
+            Some(descriptor) => error.with_random(descriptor),
+            None => error,
+        })
+    }
+
     fn charge_instruction_activation(&mut self) -> Result<(), DiceError> {
         self.budget.charge("executed_instructions", 1)?;
         self.budget.charge("work_units", 1)
@@ -120,21 +127,28 @@ impl DiceCalculator {
 
     pub fn roll_dice(&mut self, dice: &DiceRoll) -> Result<Vec<Vec<i64>>, DiceError> {
         self.reset_request_budget();
-        self.charge_instruction_activation()?;
-        let rolls = self.roll_dice_with_budget(dice)?;
-        self.charge_output_items_for_rolls(&rolls)?;
-        self.charge_serialized_output(&rolls)?;
-        Ok(rolls)
+        let result = (|| {
+            self.charge_instruction_activation()?;
+            let rolls = self.roll_dice_with_budget(dice)?;
+            self.charge_output_items_for_rolls(&rolls)?;
+            self.charge_serialized_output(&rolls)?;
+            Ok(rolls)
+        })();
+        self.attach_random_context(result)
     }
 
     pub fn roll_simple(&mut self, dice: &DiceRoll) -> Result<i64, DiceError> {
         self.reset_request_budget();
-        self.charge_instruction_activation()?;
-        let rolls = self.roll_dice_with_budget(dice)?;
-        let total = Self::checked_sum(rolls.iter().flatten().copied(), "simple roll aggregation")?;
-        self.budget.charge("output_items", 1)?;
-        self.charge_serialized_output(&total)?;
-        Ok(total)
+        let result = (|| {
+            self.charge_instruction_activation()?;
+            let rolls = self.roll_dice_with_budget(dice)?;
+            let total =
+                Self::checked_sum(rolls.iter().flatten().copied(), "simple roll aggregation")?;
+            self.budget.charge("output_items", 1)?;
+            self.charge_serialized_output(&total)?;
+            Ok(total)
+        })();
+        self.attach_random_context(result)
     }
 
     fn roll_dice_with_budget(&mut self, dice: &DiceRoll) -> Result<Vec<Vec<i64>>, DiceError> {
@@ -360,33 +374,39 @@ impl DiceCalculator {
 
     pub fn evaluate_expression(&mut self, expr: &Expression) -> Result<DiceResult, DiceError> {
         self.reset_request_budget();
-        self.charge_instruction_activation()?;
-        let result = self.evaluate_expression_with_budget(expr)?;
-        self.ensure_random()?;
-        self.charge_output_items_for_result(&result)?;
-        self.charge_serialized_output(&result)?;
-        Ok(result)
+        let result = (|| {
+            self.charge_instruction_activation()?;
+            let result = self.evaluate_expression_with_budget(expr)?;
+            self.ensure_random()?;
+            self.charge_output_items_for_result(&result)?;
+            self.charge_serialized_output(&result)?;
+            Ok(result)
+        })();
+        self.attach_random_context(result)
     }
 
     pub fn evaluate_program(&mut self, program: &Program) -> Result<ProgramResult, DiceError> {
         self.reset_request_budget();
-        self.budget
-            .ensure("collection_items", program.instructions.len())?;
-        let mut results = Vec::with_capacity(program.instructions.len());
-        for instruction in &program.instructions {
-            self.charge_instruction_activation()?;
-            let result = self.evaluate_expression_with_budget(instruction)?;
-            self.charge_output_items_for_result(&result)?;
-            results.push(result);
-        }
+        let result = (|| {
+            self.budget
+                .ensure("collection_items", program.instructions.len())?;
+            let mut results = Vec::with_capacity(program.instructions.len());
+            for instruction in &program.instructions {
+                self.charge_instruction_activation()?;
+                let result = self.evaluate_expression_with_budget(instruction)?;
+                self.charge_output_items_for_result(&result)?;
+                results.push(result);
+            }
 
-        let result = ProgramResult {
-            results,
-            comment: program.comment.clone(),
-        };
-        self.ensure_random()?;
-        self.charge_serialized_output(&result)?;
-        Ok(result)
+            let result = ProgramResult {
+                results,
+                comment: program.comment.clone(),
+            };
+            self.ensure_random()?;
+            self.charge_serialized_output(&result)?;
+            Ok(result)
+        })();
+        self.attach_random_context(result)
     }
 
     pub fn evaluate_batch(
@@ -395,18 +415,21 @@ impl DiceCalculator {
         samples: usize,
     ) -> Result<Vec<DiceResult>, DiceError> {
         self.reset_request_budget();
-        self.budget.charge("batch_samples", samples)?;
-        self.budget.ensure("collection_items", samples)?;
-        let mut results = Vec::with_capacity(samples);
-        for _ in 0..samples {
-            self.charge_instruction_activation()?;
-            let result = self.evaluate_expression_with_budget(expression)?;
-            self.charge_output_items_for_result(&result)?;
-            results.push(result);
-        }
-        self.ensure_random()?;
-        self.charge_serialized_output(&results)?;
-        Ok(results)
+        let result = (|| {
+            self.budget.charge("batch_samples", samples)?;
+            self.budget.ensure("collection_items", samples)?;
+            let mut results = Vec::with_capacity(samples);
+            for _ in 0..samples {
+                self.charge_instruction_activation()?;
+                let result = self.evaluate_expression_with_budget(expression)?;
+                self.charge_output_items_for_result(&result)?;
+                results.push(result);
+            }
+            self.ensure_random()?;
+            self.charge_serialized_output(&results)?;
+            Ok(results)
+        })();
+        self.attach_random_context(result)
     }
 
     fn evaluate_expression_with_budget(
@@ -612,7 +635,10 @@ mod tests {
         expected_limit: usize,
     ) {
         match result {
-            Err(DiceError::BudgetExceeded { limit }) => assert_eq!(limit, expected_limit),
+            Err(error) => match error.root_cause() {
+                DiceError::BudgetExceeded { limit } => assert_eq!(*limit, expected_limit),
+                other => panic!("expected budget exhaustion, got {other:?}"),
+            },
             other => panic!("expected budget exhaustion, got {other:?}"),
         }
     }

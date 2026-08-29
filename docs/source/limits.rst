@@ -136,10 +136,11 @@ Failure behavior
 
 Limit failures are atomic: the API raises ``ValueError`` and returns no partial
 Program or batch.  Machine-readable codes use ``limit.<resource>``; for
-example, ``limit.source_bytes`` and ``limit.generated_values``.  The error text
-also reports the units already used, the rejected charge, and the active
-limit.  Error objects will gain structured fields under RFC-0003 without
-changing these codes.
+example, ``limit.source_bytes`` and ``limit.generated_values``.  Every
+``ResourceLimitError`` exposes ``resource``, ``used``, ``requested``, and
+``limit`` together; failures after random initialization also expose the replay
+descriptor.  ``to_dict()`` returns the inner RFC-0003 error object, and CLI
+``--json`` prints the versioned envelope.
 
 Benchmarking the defaults
 -------------------------

@@ -30,10 +30,13 @@ result = roller.roll("4d6kh3")
 total = oneroll.roll_simple(3, 6)
 """
 
-from typing import Any, Dict, List, Optional, Union
+import copy
+import json
+from typing import Any, Callable, Dict, List, NoReturn, Optional, Type, TypeVar, Union
+
 from ._core import (
     OneRoll as _OneRoll,
-    ResourcePolicy,
+    ResourcePolicy as _ResourcePolicy,
     __version__,
     roll_dice as _roll_dice,
     roll_simple as _roll_simple,
@@ -42,6 +45,179 @@ from ._core import (
 
 __author__ = "HsiangNianian"
 __description__ = "高性能骰子表达式解析器"
+
+_T = TypeVar("_T")
+
+
+class Span:
+    """Half-open UTF-8 byte range into the submitted source."""
+
+    def __init__(self, start_byte: int, end_byte: int) -> None:
+        self.start_byte = start_byte
+        self.end_byte = end_byte
+
+    def to_dict(self) -> Dict[str, int]:
+        return {"start_byte": self.start_byte, "end_byte": self.end_byte}
+
+
+class RandomDescriptor:
+    """Replay metadata for a request-scoped random stream."""
+
+    def __init__(self, payload: Dict[str, Any]) -> None:
+        self.algorithm = str(payload["algorithm"])
+        self.seed = str(payload["seed"])
+        self.rng_words = int(payload["rng_words"])
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "algorithm": self.algorithm,
+            "seed": self.seed,
+            "rng_words": self.rng_words,
+        }
+
+
+class BatchFailureDescriptor:
+    """Root batch context attached to an atomic sample failure."""
+
+    def __init__(self, payload: Dict[str, Any]) -> None:
+        self.algorithm = str(payload["algorithm"])
+        self.seed = str(payload["seed"])
+        self.samples = int(payload["samples"])
+        sample_index = payload.get("sample_index")
+        self.sample_index = None if sample_index is None else int(sample_index)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "algorithm": self.algorithm,
+            "seed": self.seed,
+            "samples": self.samples,
+            "sample_index": self.sample_index,
+        }
+
+
+class OneRollError(ValueError):
+    """Base exception carrying the RFC-0003 structured error vocabulary."""
+
+    def __init__(
+        self, payload: Dict[str, Any], display_message: Optional[str] = None
+    ) -> None:
+        self._payload = copy.deepcopy(payload)
+        self.phase = str(payload["phase"])
+        self.code = str(payload["code"])
+        self.message = str(payload["message"])
+
+        span = payload.get("span")
+        self.span = (
+            None
+            if span is None
+            else Span(int(span["start_byte"]), int(span["end_byte"]))
+        )
+        self.resource = payload.get("resource")
+        self.used = payload.get("used")
+        self.requested = payload.get("requested")
+        self.limit = payload.get("limit")
+        random = payload.get("random")
+        self.random = None if random is None else RandomDescriptor(random)
+        batch = payload.get("batch")
+        self.batch = None if batch is None else BatchFailureDescriptor(batch)
+        self.expected = tuple(str(item) for item in payload.get("expected", ()))
+        self.replacement = payload.get("replacement")
+        super().__init__(display_message or f"[{self.code}] {self.message}")
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Return the inner RFC-0003 ExecutionError object."""
+        return copy.deepcopy(self._payload)
+
+    def to_envelope(self) -> Dict[str, Any]:
+        return {
+            "schema_version": "2.0",
+            "kind": "error",
+            "error": self.to_dict(),
+        }
+
+
+class ParseError(OneRollError):
+    pass
+
+
+class ValidationError(OneRollError):
+    pass
+
+
+class EvaluationError(OneRollError):
+    pass
+
+
+class ResourceLimitError(EvaluationError):
+    pass
+
+
+class RandomError(EvaluationError):
+    pass
+
+
+class ArithmeticEvaluationError(EvaluationError):
+    pass
+
+
+class CancellationError(OneRollError):
+    pass
+
+
+class DeadlineExceededError(CancellationError):
+    pass
+
+
+def _exception_class(payload: Dict[str, Any]) -> Type[OneRollError]:
+    phase = payload["phase"]
+    code = str(payload["code"])
+    if phase == "parse":
+        return ParseError
+    if code == "execution.deadline_exceeded":
+        return DeadlineExceededError
+    if phase == "cancel":
+        return CancellationError
+    if code.startswith("limit."):
+        return ResourceLimitError
+    if code.startswith("random."):
+        return RandomError
+    if code.startswith("arithmetic."):
+        return ArithmeticEvaluationError
+    if phase == "validate":
+        return ValidationError
+    return EvaluationError
+
+
+def _raise_structured(core_error: ValueError) -> NoReturn:
+    encoded = getattr(core_error, "_oneroll_error_json", None)
+    if not isinstance(encoded, str):
+        raise core_error
+    envelope = json.loads(encoded)
+    payload = envelope["error"]
+    raise _exception_class(payload)(payload, str(core_error)) from None
+
+
+def _call_core(operation: Callable[..., _T], *args: Any) -> _T:
+    try:
+        return operation(*args)
+    except ValueError as error:
+        _raise_structured(error)
+
+
+class ResourcePolicy:
+    """Immutable resource limits with structured validation failures."""
+
+    def __init__(self, inner: Optional[_ResourcePolicy] = None) -> None:
+        self._inner = inner or _ResourcePolicy()
+
+    def with_limit(self, name: str, limit: int) -> "ResourcePolicy":
+        return ResourcePolicy(_call_core(self._inner.with_limit, name, limit))
+
+    def limits(self) -> Dict[str, int]:
+        return self._inner.limits()
+
+    def hard_limits(self) -> Dict[str, int]:
+        return self._inner.hard_limits()
 
 
 # 重新导出主要类和函数，提供更友好的接口
@@ -60,7 +236,7 @@ class OneRoll:
 
     def __init__(self, policy: Optional[ResourcePolicy] = None) -> None:
         """初始化 OneRoll 实例"""
-        self._roller = _OneRoll(policy)
+        self._roller = _OneRoll(None if policy is None else policy._inner)
 
     def roll(self, expression: str) -> Dict[str, Any]:
         """
@@ -85,11 +261,11 @@ class OneRoll:
             print(f"总点数: {result['total']}")
             print(f"详情: {result['details']}")
         """
-        return self._roller.roll(expression)
+        return _call_core(self._roller.roll, expression)
 
     def run(self, program: str) -> Dict[str, Any]:
         """Execute a semicolon-separated program in order."""
-        return self._roller.run(program)
+        return _call_core(self._roller.run, program)
 
     def roll_simple(self, dice_count: int, dice_sides: int) -> int:
         """
@@ -108,15 +284,19 @@ class OneRoll:
         Example:
             total = roller.roll_simple(3, 6)  # 投掷 3d6
         """
-        return self._roller.roll_simple(dice_count, dice_sides)
+        return _call_core(self._roller.roll_simple, dice_count, dice_sides)
 
     def roll_multiple(self, expression: str, times: int) -> List[Dict[str, Any]]:
         """Roll an expression repeatedly under one shared request budget."""
         if times <= 0:
-            raise ValueError(
-                "[input.invalid_batch_samples] times must be greater than zero"
+            raise ValidationError(
+                {
+                    "phase": "validate",
+                    "code": "input.invalid_batch_samples",
+                    "message": "times must be greater than zero",
+                }
             )
-        return self._roller.roll_multiple(expression, times)
+        return _call_core(self._roller.roll_multiple, expression, times)
 
     def roll_statistics(
         self, expression: str, times: int
@@ -153,7 +333,9 @@ class OneRoll:
         Example:
             result = roller.roll_with_modifiers(4, 6, ["kh3"])  # 4d6kh3
         """
-        return self._roller.roll_with_modifiers(dice_count, dice_sides, modifiers)
+        return _call_core(
+            self._roller.roll_with_modifiers, dice_count, dice_sides, modifiers
+        )
 
 
 # 便捷函数
@@ -171,12 +353,12 @@ def roll(expression: str) -> Dict[str, Any]:
         result = oneroll.roll("3d6 + 2 # 攻击投掷")
         print(result["comment"])  # 输出: "攻击投掷"
     """
-    return _roll_dice(expression)
+    return _call_core(_roll_dice, expression)
 
 
 def run(program: str) -> Dict[str, Any]:
     """Execute one or more semicolon-separated instructions."""
-    return _run_program(program)
+    return _call_core(_run_program, program)
 
 
 def roll_simple(dice_count: int, dice_sides: int) -> int:
@@ -193,7 +375,7 @@ def roll_simple(dice_count: int, dice_sides: int) -> int:
     Example:
         total = oneroll.roll_simple(3, 6)
     """
-    return _roll_simple(dice_count, dice_sides)
+    return _call_core(_roll_simple, dice_count, dice_sides)
 
 
 def roll_multiple(expression: str, times: int) -> List[Dict[str, Any]]:

@@ -154,10 +154,14 @@ fn rfc_0002_random_descriptor_appears_only_after_initialization() {
 
     let mut failure_after_draw = DiceCalculator::with_seed(seed);
     let expression = DiceParser::parse_expression("1d6 / 0").unwrap();
+    let error = failure_after_draw
+        .evaluate_expression(&expression)
+        .unwrap_err();
     assert!(matches!(
-        failure_after_draw.evaluate_expression(&expression),
-        Err(DiceError::ArithmeticDivideByZero)
+        error.root_cause(),
+        DiceError::ArithmeticDivideByZero
     ));
+    assert_eq!(error.execution_error().random.unwrap().rng_words, 1);
     assert_eq!(failure_after_draw.random_descriptor().unwrap().rng_words, 1);
 }
 

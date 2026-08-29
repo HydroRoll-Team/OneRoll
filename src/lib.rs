@@ -20,7 +20,9 @@ mod conformance_tests;
 mod property_tests;
 
 pub use calculator::DiceCalculator;
-pub use errors::DiceError;
+pub use errors::{
+    DiceError, ErrorEnvelope, ErrorPhase, ExecutionError, SourceSpan, ERROR_SCHEMA_VERSION,
+};
 pub use parser::DiceParser;
 pub use python_bindings::{roll_dice, roll_simple, run_program, OneRoll, PyResourcePolicy};
 pub use random::{RandomDescriptor, RandomSeed, RANDOM_PROTOCOL_ID};

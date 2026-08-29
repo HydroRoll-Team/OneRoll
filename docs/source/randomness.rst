@@ -25,8 +25,9 @@ The reusable Rust foundation is implemented now:
   and without-replacement sources will share.
 
 The frozen Python ``Engine(...).roll(..., seed=...)`` and CLI seed/result
-envelopes are not exposed yet.  They depend on the typed result and structured
-error work tracked by issues :issue:`12`, :issue:`39`, and :issue:`19`.
+envelopes are not exposed yet.  Structured failures now retain replay metadata;
+the remaining seed/result surfaces depend on typed result work tracked by
+issues :issue:`39` and :issue:`19`.
 Compatibility helpers intentionally keep their RFC-0004 signatures instead of
 adding a temporary seed API that would later need removal.
 
