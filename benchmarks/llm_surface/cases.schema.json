@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/HydroRoll-Team/OneRoll/blob/dev/benchmarks/llm_surface/cases.schema.json",
+  "title": "OneRoll v2 LLM surface corpus",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "benchmark",
+    "language_target",
+    "grammar",
+    "description",
+    "cases"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "benchmark": {
+      "const": "oneroll-v2-llm-surface"
+    },
+    "language_target": {
+      "const": "RFC-0001"
+    },
+    "grammar": {
+      "const": "docs/rfcs/0001-v2-target.pest"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/case"
+      }
+    }
+  },
+  "$defs": {
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "intent_id",
+        "locale",
+        "prompt",
+        "expected",
+        "feature_tags",
+        "rfc_reference"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_.-]*\\.(en|zh-CN)$"
+        },
+        "intent_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_.-]*$"
+        },
+        "locale": {
+          "enum": [
+            "en",
+            "zh-CN"
+          ]
+        },
+        "prompt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expected": {
+          "$ref": "#/$defs/expected"
+        },
+        "feature_tags": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "rfc_reference": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "canonical"
+      ],
+      "properties": {
+        "kind": {
+          "const": "expression"
+        },
+        "canonical": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

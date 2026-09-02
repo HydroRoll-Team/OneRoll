@@ -7,6 +7,22 @@ use crate::{DiceCalculator, DiceError, DiceParser, RandomSeed, ResourcePolicy};
 #[grammar = "docs/rfcs/0001-v2-target.pest"]
 struct V2TargetParser;
 
+#[derive(Deserialize)]
+struct LlmSurfaceCorpus {
+    cases: Vec<LlmSurfaceCase>,
+}
+
+#[derive(Deserialize)]
+struct LlmSurfaceCase {
+    id: String,
+    expected: LlmSurfaceExpected,
+}
+
+#[derive(Deserialize)]
+struct LlmSurfaceExpected {
+    canonical: String,
+}
+
 #[test]
 fn rfc_0002_chacha12_all_zero_seed_matches_raw_words() {
     let mut budget = ExecutionBudget::new(ResourcePolicy::default());
@@ -217,6 +233,24 @@ fn v2_target_grammar_parses_normative_syntax_shapes() {
         assert!(
             V2TargetParser::parse(Rule::program, source).is_err(),
             "RFC-0001 target grammar accepted invalid source {source:?}"
+        );
+    }
+}
+
+#[test]
+fn v2_target_grammar_parses_llm_surface_corpus() {
+    use pest::Parser;
+
+    let corpus: LlmSurfaceCorpus =
+        serde_json::from_str(include_str!("../benchmarks/llm_surface/cases.json"))
+            .expect("LLM surface corpus must be valid JSON");
+
+    for case in corpus.cases {
+        assert!(
+            V2TargetParser::parse(Rule::program, &case.expected.canonical).is_ok(),
+            "RFC-0001 target grammar rejected LLM surface case {}: {:?}",
+            case.id,
+            case.expected.canonical
         );
     }
 }

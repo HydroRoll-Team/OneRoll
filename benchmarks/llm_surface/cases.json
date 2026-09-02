@@ -1,0 +1,529 @@
+{
+  "schema_version": 1,
+  "benchmark": "oneroll-v2-llm-surface",
+  "language_target": "RFC-0001",
+  "grammar": "docs/rfcs/0001-v2-target.pest",
+  "description": "Provider-neutral natural-language to canonical OneRoll v2 surface corpus.",
+  "cases": [
+    {
+      "id": "numeric_dice.en",
+      "intent_id": "numeric_dice",
+      "locale": "en",
+      "prompt": "Roll two six-sided dice.",
+      "expected": {
+        "kind": "expression",
+        "canonical": "2d6"
+      },
+      "feature_tags": [
+        "dice.numeric"
+      ],
+      "rfc_reference": "dice.numeric"
+    },
+    {
+      "id": "numeric_dice.zh-CN",
+      "intent_id": "numeric_dice",
+      "locale": "zh-CN",
+      "prompt": "掷两个六面骰。",
+      "expected": {
+        "kind": "expression",
+        "canonical": "2d6"
+      },
+      "feature_tags": [
+        "dice.numeric"
+      ],
+      "rfc_reference": "dice.numeric"
+    },
+    {
+      "id": "keep_high.en",
+      "intent_id": "keep_high",
+      "locale": "en",
+      "prompt": "Roll four six-sided dice and keep the highest three.",
+      "expected": {
+        "kind": "expression",
+        "canonical": "4d6k3"
+      },
+      "feature_tags": [
+        "dice.numeric",
+        "option.keep"
+      ],
+      "rfc_reference": "kN"
+    },
+    {
+      "id": "keep_high.zh-CN",
+      "intent_id": "keep_high",
+      "locale": "zh-CN",
+      "prompt": "掷四个六面骰并保留最高的三个。",
+      "expected": {
+        "kind": "expression",
+        "canonical": "4d6k3"
+      },
+      "feature_tags": [
+        "dice.numeric",
+        "option.keep"
+      ],
+      "rfc_reference": "kN"
+    },
+    {
+      "id": "count_even.en",
+      "intent_id": "count_even",
+      "locale": "en",
+      "prompt": "Roll four six-sided dice and count the even results.",
+      "expected": {
+        "kind": "expression",
+        "canonical": "4d6c[%2=0]"
+      },
+      "feature_tags": [
+        "dice.numeric",
+        "validator.modulo",
+        "option.count"
+      ],
+      "rfc_reference": "validator.modulo"
+    },
+    {
+      "id": "count_even.zh-CN",
+      "intent_id": "count_even",
+      "locale": "zh-CN",
+      "prompt": "掷四个六面骰并统计偶数结果的数量。",
+      "expected": {
+        "kind": "expression",
+        "canonical": "4d6c[%2=0]"
+      },
+      "feature_tags": [
+        "dice.numeric",
+        "validator.modulo",
+        "option.count"
+      ],
+      "rfc_reference": "validator.modulo"
+    },
+    {
+      "id": "reroll_ones.en",
+      "intent_id": "reroll_ones",
+      "locale": "en",
+      "prompt": "Roll four six-sided dice and reroll each 1 once.",
+      "expected": {
+        "kind": "expression",
+        "canonical": "4d6r[=1]"
+      },
+      "feature_tags": [
+        "dice.numeric",
+        "validator.comparison",
+        "option.reroll"
+      ],
+      "rfc_reference": "rV"
+    },
+    {
+      "id": "reroll_ones.zh-CN",
+      "intent_id": "reroll_ones",
+      "locale": "zh-CN",
+      "prompt": "掷四个六面骰，每个结果为 1 的骰子重掷一次。",
+      "expected": {
+        "kind": "expression",
+        "canonical": "4d6r[=1]"
+      },
+      "feature_tags": [
+        "dice.numeric",
+        "validator.comparison",
+        "option.reroll"
+      ],
+      "rfc_reference": "rV"
+    },
+    {
+      "id": "explode_max.en",
+      "intent_id": "explode_max",
+      "locale": "en",
+      "prompt": "Roll four six-sided dice and explode on the maximum face.",
+      "expected": {
+        "kind": "expression",
+        "canonical": "4d6e[=max]"
+      },
+      "feature_tags": [
+        "dice.numeric",
+        "validator.source_bound",
+        "option.explode"
+      ],
+      "rfc_reference": "eV"
+    },
+    {
+      "id": "explode_max.zh-CN",
+      "intent_id": "explode_max",
+      "locale": "zh-CN",
+      "prompt": "掷四个六面骰，掷出最大点数时爆骰。",
+      "expected": {
+        "kind": "expression",
+        "canonical": "4d6e[=max]"
+      },
+      "feature_tags": [
+        "dice.numeric",
+        "validator.source_bound",
+        "option.explode"
+      ],
+      "rfc_reference": "eV"
+    },
+    {
+      "id": "weighted_list.en",
+      "intent_id": "weighted_list",
+      "locale": "en",
+      "prompt": "Choose once: common with 80 percent probability or rare with 20 percent.",
+      "expected": {
+        "kind": "expression",
+        "canonical": "1L[\"common\"[80%], \"rare\"[20%]]"
+      },
+      "feature_tags": [
+        "dice.list",
+        "list.weighted"
+      ],
+      "rfc_reference": "weight.percent"
+    },
+    {
+      "id": "weighted_list.zh-CN",
+      "intent_id": "weighted_list",
+      "locale": "zh-CN",
+      "prompt": "抽取一次：common 的概率为 80%，rare 的概率为 20%。",
+      "expected": {
+        "kind": "expression",
+        "canonical": "1L[\"common\"[80%], \"rare\"[20%]]"
+      },
+      "feature_tags": [
+        "dice.list",
+        "list.weighted"
+      ],
+      "rfc_reference": "weight.percent"
+    },
+    {
+      "id": "unique_list.en",
+      "intent_id": "unique_list",
+      "locale": "en",
+      "prompt": "Draw two different values from yes and no without replacement.",
+      "expected": {
+        "kind": "expression",
+        "canonical": "2Lu[\"yes\", \"no\"]"
+      },
+      "feature_tags": [
+        "dice.unique_list",
+        "list.unique",
+        "collection.selection"
+      ],
+      "rfc_reference": "dice.unique_list"
+    },
+    {
+      "id": "unique_list.zh-CN",
+      "intent_id": "unique_list",
+      "locale": "zh-CN",
+      "prompt": "从 yes 和 no 中不放回地抽取两个不同结果。",
+      "expected": {
+        "kind": "expression",
+        "canonical": "2Lu[\"yes\", \"no\"]"
+      },
+      "feature_tags": [
+        "dice.unique_list",
+        "list.unique",
+        "collection.selection"
+      ],
+      "rfc_reference": "dice.unique_list"
+    },
+    {
+      "id": "compound_conditional.en",
+      "intent_id": "compound_conditional",
+      "locale": "en",
+      "prompt": "Evaluate 1 plus 2, then return 10 if the complete result is greater than 2.",
+      "expected": {
+        "kind": "expression",
+        "canonical": "(1 + 2)i:[>2]{10}"
+      },
+      "feature_tags": [
+        "conditional.compound",
+        "pipeline.compound",
+        "validator.comparison"
+      ],
+      "rfc_reference": "pipeline.compound"
+    },
+    {
+      "id": "compound_conditional.zh-CN",
+      "intent_id": "compound_conditional",
+      "locale": "zh-CN",
+      "prompt": "计算 1 加 2，如果整个结果大于 2，则返回 10。",
+      "expected": {
+        "kind": "expression",
+        "canonical": "(1 + 2)i:[>2]{10}"
+      },
+      "feature_tags": [
+        "conditional.compound",
+        "pipeline.compound",
+        "validator.comparison"
+      ],
+      "rfc_reference": "pipeline.compound"
+    },
+    {
+      "id": "each_conditional.en",
+      "intent_id": "each_conditional",
+      "locale": "en",
+      "prompt": "Roll four six-sided dice and add 1 to each result below 3.",
+      "expected": {
+        "kind": "expression",
+        "canonical": "4d6i[<3]{${0} + 1}"
+      },
+      "feature_tags": [
+        "dice.numeric",
+        "conditional.each",
+        "validator.comparison",
+        "collection.map"
+      ],
+      "rfc_reference": "4d6i[<3]{${0}+1}"
+    },
+    {
+      "id": "each_conditional.zh-CN",
+      "intent_id": "each_conditional",
+      "locale": "zh-CN",
+      "prompt": "掷四个六面骰，并给每个小于 3 的结果加 1。",
+      "expected": {
+        "kind": "expression",
+        "canonical": "4d6i[<3]{${0} + 1}"
+      },
+      "feature_tags": [
+        "dice.numeric",
+        "conditional.each",
+        "validator.comparison",
+        "collection.map"
+      ],
+      "rfc_reference": "4d6i[<3]{${0}+1}"
+    },
+    {
+      "id": "aggregate_conditional.en",
+      "intent_id": "aggregate_conditional",
+      "locale": "en",
+      "prompt": "Roll four d6; if any result equals the source maximum, return critical, otherwise ordinary.",
+      "expected": {
+        "kind": "expression",
+        "canonical": "4d6i.[=max]{\"critical\"}{\"ordinary\"}"
+      },
+      "feature_tags": [
+        "dice.numeric",
+        "conditional.aggregate",
+        "validator.source_bound",
+        "collection.aggregate"
+      ],
+      "rfc_reference": "conditional.aggregate"
+    },
+    {
+      "id": "aggregate_conditional.zh-CN",
+      "intent_id": "aggregate_conditional",
+      "locale": "zh-CN",
+      "prompt": "掷四个 d6；如果任一结果等于骰子最大值，返回 critical，否则返回 ordinary。",
+      "expected": {
+        "kind": "expression",
+        "canonical": "4d6i.[=max]{\"critical\"}{\"ordinary\"}"
+      },
+      "feature_tags": [
+        "dice.numeric",
+        "conditional.aggregate",
+        "validator.source_bound",
+        "collection.aggregate"
+      ],
+      "rfc_reference": "conditional.aggregate"
+    },
+    {
+      "id": "repeat_program.en",
+      "intent_id": "repeat_program",
+      "locale": "en",
+      "prompt": "Repeat three times: roll one d6, then choose yes or no.",
+      "expected": {
+        "kind": "expression",
+        "canonical": "repeat(3; 1d6; 1L[\"yes\", \"no\"])"
+      },
+      "feature_tags": [
+        "function.repeat",
+        "program.repeat",
+        "dice.numeric",
+        "list.choice"
+      ],
+      "rfc_reference": "repeat.zero"
+    },
+    {
+      "id": "repeat_program.zh-CN",
+      "intent_id": "repeat_program",
+      "locale": "zh-CN",
+      "prompt": "重复三次：先掷一个 d6，再从 yes 和 no 中选择一个。",
+      "expected": {
+        "kind": "expression",
+        "canonical": "repeat(3; 1d6; 1L[\"yes\", \"no\"])"
+      },
+      "feature_tags": [
+        "function.repeat",
+        "program.repeat",
+        "dice.numeric",
+        "list.choice"
+      ],
+      "rfc_reference": "repeat.zero"
+    },
+    {
+      "id": "multi_instruction_program.en",
+      "intent_id": "multi_instruction_program",
+      "locale": "en",
+      "prompt": "Run a d20 plus 5, then roll two d6, and label the program encounter.",
+      "expected": {
+        "kind": "expression",
+        "canonical": "1d20 + 5; 2d6 # encounter"
+      },
+      "feature_tags": [
+        "program.multiple",
+        "program.comment",
+        "dice.numeric"
+      ],
+      "rfc_reference": "program.multiple"
+    },
+    {
+      "id": "multi_instruction_program.zh-CN",
+      "intent_id": "multi_instruction_program",
+      "locale": "zh-CN",
+      "prompt": "先执行 d20 加 5，再掷两个 d6，并将整个程序注释为 encounter。",
+      "expected": {
+        "kind": "expression",
+        "canonical": "1d20 + 5; 2d6 # encounter"
+      },
+      "feature_tags": [
+        "program.multiple",
+        "program.comment",
+        "dice.numeric"
+      ],
+      "rfc_reference": "program.multiple"
+    },
+    {
+      "id": "drop_filter_sort.en",
+      "intent_id": "drop_filter_sort",
+      "locale": "en",
+      "prompt": "Roll four d6, drop the highest one, keep values at least 2, then sort ascending.",
+      "expected": {
+        "kind": "expression",
+        "canonical": "4d6d1f[>=2]sl"
+      },
+      "feature_tags": [
+        "dice.numeric",
+        "option.drop",
+        "option.filter",
+        "option.sort",
+        "validator.comparison",
+        "collection.pipeline"
+      ],
+      "rfc_reference": "dN"
+    },
+    {
+      "id": "drop_filter_sort.zh-CN",
+      "intent_id": "drop_filter_sort",
+      "locale": "zh-CN",
+      "prompt": "掷四个 d6，丢弃最高的一个，只保留至少为 2 的结果，最后升序排序。",
+      "expected": {
+        "kind": "expression",
+        "canonical": "4d6d1f[>=2]sl"
+      },
+      "feature_tags": [
+        "dice.numeric",
+        "option.drop",
+        "option.filter",
+        "option.sort",
+        "validator.comparison",
+        "collection.pipeline"
+      ],
+      "rfc_reference": "dN"
+    },
+    {
+      "id": "occurrences_filter.en",
+      "intent_id": "occurrences_filter",
+      "locale": "en",
+      "prompt": "Roll ten d10 and report values below 6 that occur at least twice.",
+      "expected": {
+        "kind": "expression",
+        "canonical": "10d10o(2, [<6])"
+      },
+      "feature_tags": [
+        "dice.numeric",
+        "option.occurrences",
+        "validator.comparison",
+        "collection.aggregate"
+      ],
+      "rfc_reference": "occurrences.filtered"
+    },
+    {
+      "id": "occurrences_filter.zh-CN",
+      "intent_id": "occurrences_filter",
+      "locale": "zh-CN",
+      "prompt": "掷十个 d10，统计小于 6 且至少出现两次的点数。",
+      "expected": {
+        "kind": "expression",
+        "canonical": "10d10o(2, [<6])"
+      },
+      "feature_tags": [
+        "dice.numeric",
+        "option.occurrences",
+        "validator.comparison",
+        "collection.aggregate"
+      ],
+      "rfc_reference": "occurrences.filtered"
+    },
+    {
+      "id": "paint_rolls.en",
+      "intent_id": "paint_rolls",
+      "locale": "en",
+      "prompt": "Roll four d6, mark the first two retained dice red and the next one #00ff00.",
+      "expected": {
+        "kind": "expression",
+        "canonical": "4d6p[red:2, #00ff00:1]"
+      },
+      "feature_tags": [
+        "dice.numeric",
+        "option.paint",
+        "collection.annotation"
+      ],
+      "rfc_reference": "p[color:N,...]"
+    },
+    {
+      "id": "paint_rolls.zh-CN",
+      "intent_id": "paint_rolls",
+      "locale": "zh-CN",
+      "prompt": "掷四个 d6，将前两个保留骰标记为 red，并将下一个标记为 #00ff00。",
+      "expected": {
+        "kind": "expression",
+        "canonical": "4d6p[red:2, #00ff00:1]"
+      },
+      "feature_tags": [
+        "dice.numeric",
+        "option.paint",
+        "collection.annotation"
+      ],
+      "rfc_reference": "p[color:N,...]"
+    },
+    {
+      "id": "split_group.en",
+      "intent_id": "split_group",
+      "locale": "en",
+      "prompt": "Roll four d6, split compound draws and group the results in groups of two.",
+      "expected": {
+        "kind": "expression",
+        "canonical": "4d6yg2"
+      },
+      "feature_tags": [
+        "dice.numeric",
+        "option.split",
+        "option.group",
+        "collection.transform"
+      ],
+      "rfc_reference": "gN"
+    },
+    {
+      "id": "split_group.zh-CN",
+      "intent_id": "split_group",
+      "locale": "zh-CN",
+      "prompt": "掷四个 d6，将复合投掷展开后按每组两个进行分组。",
+      "expected": {
+        "kind": "expression",
+        "canonical": "4d6yg2"
+      },
+      "feature_tags": [
+        "dice.numeric",
+        "option.split",
+        "option.group",
+        "collection.transform"
+      ],
+      "rfc_reference": "gN"
+    }
+  ]
+}
