@@ -4,8 +4,35 @@ on:
   push:
     branches:
       - main
-      - dev
+    paths:
+      - "docs/**"
+      - "src/**"
+      - "Cargo.toml"
+      - "pyproject.toml"
+      - "uv.lock"
+      - "package.json"
+      - "package-lock.json"
+      - "wrangler.docs.jsonc"
+      - ".github/workflows/docs.yml"
+  pull_request:
+    paths:
+      - "docs/**"
+      - "src/**"
+      - "Cargo.toml"
+      - "pyproject.toml"
+      - "uv.lock"
+      - "package.json"
+      - "package-lock.json"
+      - "wrangler.docs.jsonc"
+      - ".github/workflows/docs.yml"
   workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   quality:
@@ -14,10 +41,11 @@ jobs:
   build:
     needs: quality
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
@@ -27,15 +55,63 @@ jobs:
       - name: Install dependencies
         run: uv sync --all-groups --frozen
 
-      - name: Build documentation
-        run: uv run --frozen sphinx-build -W --keep-going -b html docs/source docs/_build/html
+      - name: Build Furo documentation
+        run: npm run docs:build
 
-      - name: Deploy to GitHub Pages
-        if: github.ref == 'refs/heads/main'
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Verify deployment artifact
+        run: |
+          set -euo pipefail
+          test -s docs/_build/html/index.html
+          grep -Fq "furo" docs/_build/html/index.html
+          test ! -e docs/_build/html/.doctrees
+
+      - name: Upload documentation
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          github_token: ${{ secrets.BOT_TOKEN }}
-          publish_dir: ./docs/_build/html
-          publish_branch: gh-pages
-          user_name: "hydroroll-bot"
-          user_email: "bot@hydroroll.team"
+          name: oneroll-docs-${{ github.sha }}
+          path: docs/_build/html
+          if-no-files-found: error
+          retention-days: 7
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment:
+      name: docs-production
+      url: https://oneroll.hydroroll.team/
+    steps:
+      - name: Checkout deployment configuration
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Download documentation
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: oneroll-docs-${{ github.sha }}
+          path: docs/_build/html
+
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4.0.0
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4.116.0"
+          packageManager: npm
+          command: deploy --config wrangler.docs.jsonc --strict
+
+      - name: Verify production documentation
+        run: |
+          set -euo pipefail
+          for path in / /language /deployment; do
+            curl --fail --show-error --silent --location \
+              --retry 12 --retry-delay 5 --retry-all-errors \
+              "https://oneroll.hydroroll.team${path}" > /dev/null
+          done
+          missing_status="$(curl --show-error --silent --output /dev/null \
+            --write-out '%{http_code}' \
+            https://oneroll.hydroroll.team/this-page-must-not-exist)"
+          test "${missing_status}" = "404"
+          curl --fail --show-error --silent --location \
+            https://oneroll.hydroroll.team/ | grep --fixed-strings "OneRoll" > /dev/null

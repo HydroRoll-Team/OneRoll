@@ -101,11 +101,13 @@ compatibility-sensitive behavior and known defects.
 
 ## Roadmap and specification
 
+- [Live documentation](https://oneroll.hydroroll.team/)
 - [Language guide](docs/source/language.rst)
 - [Resource limits](docs/source/limits.rst)
 - [Deterministic randomness](docs/source/randomness.rst)
 - [Fuzzing and property gates](docs/source/fuzzing.rst)
 - [Production roadmap](docs/source/roadmap.rst)
+- [Documentation deployment](docs/source/deployment.rst)
 - [RFC-0001: OneRoll Program Language v2](docs/rfcs/0001-dice-program-language-v2.rst)
 - [RFC-0002: Execution Safety, Budgets, and Randomness](docs/rfcs/0002-execution-safety-budgets-randomness.rst)
 - [RFC-0003: Typed Program Results, Roll Traces, and Errors](docs/rfcs/0003-typed-results-traces-errors.rst)

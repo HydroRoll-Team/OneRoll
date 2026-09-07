@@ -43,6 +43,7 @@ Documentation
    fuzzing
    conformance
    quality
+   deployment
    releasing
    roadmap
    rfc-0001

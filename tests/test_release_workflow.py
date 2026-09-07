@@ -139,6 +139,17 @@ class ReleaseWorkflowContractTests(unittest.TestCase):
         self.assertNotIn("PYPI_API_TOKEN", serialized)
         self.assertNotIn("MATURIN_PYPI_TOKEN", serialized)
 
+    def test_publication_retry_verifies_an_existing_github_release(self):
+        release = load_workflow("changelog.yml")
+        commands = workflow_commands(release)
+
+        self.assertIn('gh release download "${TAG}"', commands)
+        self.assertIn("sha256sum --check SHA256SUMS", commands)
+        self.assertIn("diff -u", commands)
+        self.assertIn("release-candidate/packages", commands)
+        self.assertNotIn("release edit", commands)
+        self.assertNotIn("--clobber", commands)
+
     def test_release_contract_extracts_versioned_notes_and_validates_artifacts(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
