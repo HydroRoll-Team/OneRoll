@@ -38,6 +38,7 @@ Documentation
    :maxdepth: 2
 
    language
+   expression-spec
    limits
    randomness
    fuzzing
